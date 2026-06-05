@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Paradox Maze: Absolute Reality Distortion Engine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Syne:wght@700;800&display=swap');
+
+        :root {
+            --bg-void: #020205;
+            --panel-dark: #07070c;
+            --panel-brd: rgba(139, 92, 246, 0.25);
+            --neon-purple: #8b5cf6;
+            --neon-green: #22c55e;
+            --neon-red: #ef4444;
+            --neon-gold: #eab308;
+            --neon-blue: #3b82f6;
+            --neon-pink: #ec4899;
+            --text-main: #f8fafc;
+            --text-muted: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            touch-action: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-void);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Scanline CRT Simulation Effect Overlay */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            z-index: 9999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        .crt-flicker {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9998;
+            pointer-events: none;
+            background: rgba(139, 92, 246, 0.003);
+            animation: crtBlurEffect 0.15s infinite;
+        }
+
+        @keyframes crtBlurEffect {
+            0% { opacity: 0.93; }
+            50% { opacity: 1; }
+            100% { opacity: 0.95; }
+        }
+
+        .screen-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 24px;
+            background: radial-gradient(circle at center, rgba(7, 7, 12, 0.99) 0%, rgba(2, 2, 5, 1) 100%);
+        }
+
+        .screen-overlay.active {
+            display: flex;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Syne', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-align: center;
+        }
+
+        .title-glow {
+            font-size: 3.8rem;
+            color: var(--text-main);
+            text-shadow: 0 0 15px var(--neon-purple), 0 0 35px rgba(139, 92, 246, 0.4);
+            margin-bottom: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--neon-green);
+            font-family: monospace;
+            letter-spacing: 7px;
+            margin-bottom: 45px;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            background: rgba(139, 92, 246, 0.06);
+            border: 1px solid var(--neon-purple);
+            color: var(--text-main);
+            padding: 16px 36px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            margin: 10px 0;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: var(--neon-purple);
+            color: #020205;
+            box-shadow: 0 0 25px var(--neon-purple);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .panel-container {
+            background: var(--panel-dark);
+            border: 1px solid var(--panel-brd);
+            border-radius: 8px;
+            padding: 32px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .shop-filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #94a3b8;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+            background: rgba(139, 92, 246, 0.12);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 150px));
+            gap: 16px;
+            justify-content: center;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 12px;
+            margin: 16px 0;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(0,0,0,0.4);
+            border-radius: 6px;
+        }
+
+        .shop-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .shop-grid::-webkit-scrollbar-thumb {
+            background: var(--panel-brd);
+            border-radius: 3px;
+        }
+
+        .shop-item {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 6px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .shop-item:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.25);
+            transform: scale(1.03);
+        }
+
+        .shop-item.equipped {
+            border-color: var(--neon-green) !important;
+            background: rgba(34, 197, 94, 0.05);
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
+        }
+
+        .shop-item.unlocked {
+            border-color: var(--neon-blue);
+        }
+
+        .shop-item-canvas {
+            width: 60px;
+            height: 75px;
+            image-rendering: pixelated;
+            margin-bottom: 8px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 4px;
+        }
+
+        .shop-item-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            margin-bottom: 6px;
+            color: #e2e8f0;
+        }
+
+        .shop-item-cost {
+            font-size: 0.75rem;
+            font-family: 'Orbitron', monospace;
+            color: var(--neon-gold);
+            font-weight: 600;
+        }
+
+        .rarity-tag {
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        #game-hud {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(2,2,5,0.95) 0%, rgba(2,2,5,0) 100%);
+        }
+
+        .hud-element {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            background: rgba(7, 7, 12, 0.85);
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        #sanity-bar-container {
+            width: 160px;
+            height: 10px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        #sanity-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--neon-red), #b91c1c);
+            transition: width 0.1s linear;
+        }
+
+        #canvas-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+        }
+
+        canvas#main-game-canvas {
+            background-color: #020204;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+        }
+
+        #joystick-zone {
+            position: absolute;
+            bottom: 40px; left: 40px;
+            width: 140px; height: 140px;
+            background: rgba(255,255,255,0.01);
+            border: 2px dashed rgba(255,255,255,0.08);
+            border-radius: 50%;
+            z-index: 90;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #joystick-handle {
+            width: 55px; height: 55px;
+            background: radial-gradient(circle, var(--neon-purple) 0%, rgba(139,92,246,0.3) 100%);
+            border: 2px solid rgba(255,255,255,0.7);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+
+        .lang-toggle {
+            position: absolute;
+            top: 24px; right: 24px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #64748b;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            z-index: 500;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .lang-toggle:hover {
+            border-color: var(--neon-purple);
+            color: var(--text-main);
+        }
+
+        .lang-toggle span.active {
+            color: var(--neon-green);
+            text-shadow: 0 0 6px var(--neon-green);
+        }
+
+        .info-row {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255,255,255,0.06);
+            padding-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .skin-desc-panel {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 6px;
+            min-height: 54px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="crt-flicker"></div>
+
+    <div class="lang-toggle" id="lang-node-toggle">
+        <span id="lang-en">EN</span> | <span id="lang-id">ID</span>
+    </div>
+
+    <!-- MAIN INTERACTIVE HUD -->
+    <div id="game-hud" style="display: none;">
+        <div class="hud-element">
+            <span id="hud-label-identity">SUBJECT:</span>
+            <span id="hud-value-name" style="color:var(--neon-green); font-weight:800;">AL FAN</span>
+        </div>
+        <div class="hud-element">
+            <span id="hud-label-sanity">SANITY:</span>
+            <div id="sanity-bar-container">
+                <div id="sanity-bar-fill"></div>
+            </div>
+        </div>
+        <div class="hud-element">
+            <span id="hud-label-currency">CHIPS:</span>
+            <span id="hud-value-coins" style="color:var(--neon-gold); font-weight:bold;">0</span>
+        </div>
+    </div>
+
+    <!-- SCREEN 1: LOBBY -->
+    <div id="screen-lobby" class="screen-overlay active">
+        <h1 class="title-glow">PARADOX MAZE</h1>
+        <p class="subtitle" id="lobby-tagline">Absolute Reality Distortion Engine</p>
+        <button class="btn" id="btn-lobby-start">START MANIFESTATION</button>
+        <button class="btn" id="btn-lobby-shop">SKIN REGISTRIES</button>
+        <button class="btn" id="btn-lobby-config">CONFIG SCHEMATICS</button>
+    </div>
+
+    <!-- SCREEN 2: SKIN REGISTRY SHOP -->
+    <div id="screen-shop" class="screen-overlay">
+        <div class="panel-container">
+            <h2 id="shop-title-header">SKIN REGISTRIES</h2>
+            <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.9rem;">
+                <div><span id="shop-label-balance">NET VALUE:</span> <span id="shop-balance-value" style="color:var(--neon-gold); font-weight:bold;">0</span></div>
+                <div id="shop-rarity-desc" style="font-size:0.75rem; color:var(--text-muted)">STABLE TIMELINE QUANTUM ENCRYPTED</div>
+            </div>
+            <div class="shop-filter-tabs" id="shop-tab-container">
+                <button class="tab-btn active" data-filter="all">ALL</button>
+                <button class="tab-btn" data-filter="0">COMMON</button>
+                <button class="tab-btn" data-filter="1">RARE</button>
+                <button class="tab-btn" data-filter="2">EPIC</button>
+                <button class="tab-btn" data-filter="3">LEGENDARY</button>
+                <button class="tab-btn" data-filter="4">MYTHICAL</button>
+                <button class="tab-btn" data-filter="5">COSMIC</button>
+            </div>
+            <div class="shop-grid" id="shop-items-grid-container"></div>
+            <div class="skin-desc-panel" id="skin-details-description">Select skin target sequence.</div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn" id="btn-shop-back" style="width:100%">RETURN TO CORE LOBBY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: CONFIGURATION SCHEMATICS -->
+    <div id="screen-config" class="screen-overlay">
+        <div class="panel-container" style="max-width: 500px;">
+            <h2 id="config-title-header">SYSTEM CONFIG</h2>
+            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-bottom: 30px;" id="config-sub">Adjust internal audio schematics</p>
+            <div class="info-row" style="padding: 12px 0;">
+                <span id="config-label-music">AMBIENT BACKGROUND MUSIC</span>
+                <input type="checkbox" id="cfg-check-music" checked style="accent-color:var(--neon-purple); transform: scale(1.3); cursor:pointer;">
+            </div>
+            <div class="info-row" style="padding: 12px 0; margin-bottom: 35px;">
+                <span id="config-label-sfx">OPERATIONAL SFX FEEDBACK</span>
+                <input type="checkbox" id="cfg-check-sfx" checked style="accent-color:var(--neon-purple); transform: scale(1.3); cursor:pointer;">
+            </div>
+            <button class="btn" id="btn-config-reset" style="width:100%; border-color:var(--neon-red); background:rgba(239,68,68,0.02); font-size:0.85rem; margin-bottom:12px;">RESET ALL PROGRESS DATA</button>
+            <button class="btn" id="btn-config-back" style="width:100%">SAVE & RETURN</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: GAME OVER -->
+    <div id="screen-gameover" class="screen-overlay" style="background: radial-gradient(circle, #1c0505 0%, #020205 100%);">
+        <h1 class="title-glow" style="color:var(--neon-red); text-shadow:0 0 25px var(--neon-red);" id="go-title">MANIFESTATION FAILED</h1>
+        <p class="subtitle" id="go-subtitle" style="color:var(--text-muted);">Your sanity dissolved completely into the loop matrix</p>
+        <button class="btn" id="btn-go-retry">RE-ENTER PARADOX</button>
+        <button class="btn" id="btn-go-menu">ABANDON TO LOBBY</button>
+    </div>
+
+    <!-- SCREEN 5: CLEAR/VICTORY -->
+    <div id="screen-victory" class="screen-overlay" style="background: radial-gradient(circle, #051e0f 0%, #020205 100%);">
+        <h1 class="title-glow" style="color:var(--neon-green); text-shadow:0 0 25px var(--neon-green);" id="vic-title">CORE REACHED</h1>
+        <p class="subtitle" id="vic-subtitle" style="color:var(--neon-gold);">The absolute reality loop breaks... temporarily</p>
+        <button class="btn" id="btn-vic-continue">PROCEED TO NEXT CYCLE</button>
+    </div>
+
+    <div id="canvas-wrapper">
+        <canvas id="main-game-canvas" width="640" height="480"></canvas>
+    </div>
+
+    <div id="joystick-zone">
+        <div id="joystick-handle"></div>
+    </div>
+
+    <script>
+        "use strict";
+
+        // ============================================================================
+        // DICTIONARY LOCALIZATION SYSTEM
+        // ============================================================================
+        const LocalizationEngine = {
+            en: {
+                tagline: "Absolute Reality Distortion Engine",
+                start: "START MANIFESTATION",
+                shop: "SKIN REGISTRIES",
+                config: "CONFIG SCHEMATICS",
+                shopTitle: "SKIN REGISTRIES",
+                balance: "NET VALUE:",
+                returnLobby: "RETURN TO CORE LOBBY",
+                sysConfig: "SYSTEM CONFIG",
+                configSub: "Adjust internal audio schematics",
+                bgMusic: "AMBIENT BACKGROUND MUSIC",
+                opSfx: "OPERATIONAL SFX FEEDBACK",
+                resetProg: "RESET ALL PROGRESS DATA",
+                saveReturn: "SAVE & RETURN",
+                failedTitle: "MANIFESTATION FAILED",
+                failedSub: "Your sanity dissolved completely into the loop matrix",
+                reenter: "RE-ENTER PARADOX",
+                abandon: "ABANDON TO LOBBY",
+                coreReached: "CORE REACHED",
+                loopBreaks: "The absolute reality loop breaks... temporarily",
+                proceedNext: "PROCEED TO NEXT CYCLE"
+            },
+            id: {
+                tagline: "Mesin Distorsi Realitas Absolut",
+                start: "MULAI MANIFESTASI",
+                shop: "REGISTRI SKIN",
+                config: "SKEMATIK KONFIG",
+                shopTitle: "REGISTRI SKIN",
+                balance: "SALDO BERSIH:",
+                returnLobby: "KEMBALI KE LOBBY UTAMA",
+                sysConfig: "KONFIGURASI SISTEM",
+                configSub: "Sesuaikan skematik audio internal",
+                bgMusic: "MUSIK LATAR BELAKANG AMBIENT",
+                opSfx: "FEEDBACK SFX OPERASIONAL",
+                resetProg: "RESET SEMUA DATA PROGRESS",
+                saveReturn: "SIMPAN & KEMBALI",
+                failedTitle: "MANIFESTASI GAGAL",
+                failedSub: "Sanitas Anda larut sepenuhnya ke dalam matriks loop",
+                reenter: "MASUK ULANG PARADOKS",
+                abandon: "TINGGALKAN KE LOBBY",
+                coreReached: "INTI DIJANGKAU",
+                loopBreaks: "Loop realitas absolut terputus... untuk sementara",
+                proceedNext: "LANJUT KE SIKLUS BERIKUTNYA"
+            }
+        };
+
+        const GaslightingQuotes = {
+            en: [
+                "You are trapped in your own delusion, [NAME].",
+                "Did you really believe there was an escape, [NAME]?",
+                "Every turn you take has already been written by you.",
+                "The core is just another loop layer, [NAME].",
+                "Your shadow is moving faster than your reality.",
+                "Stop running from what you built, [NAME]."
+            ],
+            id: [
+                "Kamu terjebak dalam delusimu sendiri, [NAME].",
+                "Apakah kamu benar-benar percaya ada jalan keluar, [NAME]?",
+                "Setiap belokan yang kamu ambil sudah kamu tulis sendiri.",
+                "Inti itu hanyalah lapisan loop lainnya, [NAME].",
+                "Bayanganmu bergerak lebih cepat daripada realitasmu.",
+                "Berhentilah lari dari apa yang telah kamu bangun, [NAME]."
+            ]
+        };
+
+        // ============================================================================
+        // GLOBAL ENGINE CORE PROGRESS TRACKER
+        // ============================================================================
+        const ParadoxEngine = {
+            scene: 'Lobby',
+            lang: 'id',
+            music: true,
+            sfx: true,
+            player: {
+                name: 'AL FAN',
+                coins: 15000,
+                unlockedSkins: ['common1'],
+                equippedSkin: 'common1'
+            }
+        };
+
+        // ============================================================================
+        // WEB AUDIO PROCEDURAL SYNTHESIZER
+        // ============================================================================
+        const SoundEngine = {
+            ctx: null,
+            droneOsc: null,
+            droneGain: null,
+
+            init() {
+                if (this.ctx) return;
+                try {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    this.startAmbientDrone();
+                } catch (e) {
+                    console.error("AudioContext initialization blocked or unsupported", e);
+                }
+            },
+
+            startAmbientDrone() {
+                if (!this.ctx || !ParadoxEngine.music || this.droneOsc) return;
+                try {
+                    this.droneOsc = this.ctx.createOscillator();
+                    this.droneGain = this.ctx.createGain();
+                    
+                    this.droneOsc.type = 'sawtooth';
+                    this.droneOsc.frequency.setValueAtTime(45, this.ctx.currentTime);
+                    
+                    // Filter out high harsh frequencies for a deep dark ambient horror drone
+                    let filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(120, this.ctx.currentTime);
+                    
+                    this.droneGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    
+                    this.droneOsc.connect(filter);
+                    filter.connect(this.droneGain);
+                    this.droneGain.connect(this.ctx.destination);
+                    
+                    this.droneOsc.start();
+                } catch(e) {}
+            },
+
+            stopAmbientDrone() {
+                try {
+                    if (this.droneOsc) {
+                        this.droneOsc.stop();
+                        this.droneOsc.disconnect();
+                        this.droneOsc = null;
+                    }
+                    if (this.droneGain) {
+                        this.droneGain.disconnect();
+                        this.droneGain = null;
+                    }
+                } catch(e){}
+            },
+
+            playClick() {
+                if (!ParadoxEngine.sfx || !this.ctx) return;
+                try {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.05);
+                } catch(e){}
+            },
+
+            playBump() {
+                if (!ParadoxEngine.sfx || !this.ctx) return;
+                try {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(110, this.ctx.currentTime);
+                    osc.frequency.setValueAtTime(90, this.ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.18);
+                } catch(e){}
+            },
+
+            playParadoxBlast() {
+                if (!ParadoxEngine.sfx || !this.ctx) return;
+                try {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.6);
+                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.6);
+                } catch(e){}
+            },
+
+            playVictory() {
+                if (!ParadoxEngine.sfx || !this.ctx) return;
+                try {
+                    let now = this.ctx.currentTime;
+                    let notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 Major Triad Arpeggio
+                    notes.forEach((freq, idx) => {
+                        let osc = this.ctx.createOscillator();
+                        let gain = this.ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.12, now + idx * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.4);
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.4);
+                    });
+                } catch(e){}
+            }
+        };
+
+        // ============================================================================
+        // 30 MASTER SKIN REGISTRY DATABASE (FULLY IMPLEMENTED TIERS)
+        // ============================================================================
+        const SkinRegistryDatabase = [
+            // --- TIER 1: COMMON (Natural Elements) ---
+            {
+                id: 'common1', name: 'Forest Whisperer', rarity: 0, rarityName: 'Common', cost: 0, color: '#22c55e', element: 'earth',
+                desc_en: 'Channels natural emerald leaves and earth particle streams.',
+                desc_id: 'Menyalurkan daun zamrud alami dan aliran partikel tanah.'
+            },
+            {
+                id: 'common2', name: 'Rust & Iron', rarity: 0, rarityName: 'Common', cost: 100, color: '#b45309', element: 'spark',
+                desc_en: 'Discharges jagged metallic sparks and industrial flakes.',
+                desc_id: 'Mengeluarkan percikan logam bergerigi dan serpihan industri.'
+            },
+            {
+                id: 'common3', name: 'River Pebble', rarity: 0, rarityName: 'Common', cost: 200, color: '#64748b', element: 'pebble',
+                desc_en: 'Features a smooth blue-gray flowing gradient stone palette.',
+                desc_id: 'Menampilkan palet batu gradien mengalir abu-abu biru yang halus.'
+            },
+            {
+                id: 'common4', name: 'Desert Nomad', rarity: 0, rarityName: 'Common', cost: 300, color: '#d97706', element: 'sand',
+                desc_en: 'Generates sweeping sand storm and dry dust trail micro-particles.',
+                desc_id: 'Menghasikan sapuan badai pasir dan mikro-partikel jejak debu kering.'
+            },
+            {
+                id: 'common5', name: 'Breeze Wanderer', rarity: 0, rarityName: 'Common', cost: 400, color: '#06b6d4', element: 'wind',
+                desc_en: 'Summons cyan wind gust lines cutting through grid space.',
+                desc_id: 'Memanggil garis hembusan angin sian yang memotong ruang kisi.'
+            },
+
+            // --- TIER 2: RARE (Runic & Mechanical) ---
+            {
+                id: 'rare1', name: 'Frostbitten Guard', rarity: 1, rarityName: 'Rare', cost: 1000, color: '#38bdf8', element: 'ice',
+                desc_en: 'Emits a sub-zero icicle protective aura with outer shadow glow.',
+                desc_id: 'Memancarkan aura pelindung es di bawah nol dengan pendaran luar.'
+            },
+            {
+                id: 'rare2', name: 'Runic Scholar', rarity: 1, rarityName: 'Rare', cost: 1250, color: '#6366f1', element: 'glyph',
+                desc_en: 'Manifests glowing neon aqua ancient runic script symbols.',
+                desc_id: 'Dimanifestasikan oleh simbol skrip kuno aqua neon yang menyala.'
+            },
+            {
+                id: 'rare3', name: 'Copper Steam', rarity: 1, rarityName: 'Rare', cost: 1500, color: '#ca8a04', element: 'steam',
+                desc_en: 'Expels automated clockwork brass cloud steam smoke puffs.',
+                desc_id: 'Mengeluarkan embusan asap uap kuningan mekanis otomatis.'
+            },
+            {
+                id: 'rare4', name: 'Abalone Shell', rarity: 1, rarityName: 'Rare', cost: 1750, color: '#fda4af', element: 'pearl',
+                desc_en: 'Refracts a pearlescent shifting neon aqua dimensional prism.',
+                desc_id: 'Membiaskan prisma dimensi aqua neon mutiara yang bergeser.'
+            },
+            {
+                id: 'rare5', name: 'Cavern Geomancer', rarity: 1, rarityName: 'Rare', cost: 2000, color: '#c084fc', element: 'amethyst',
+                desc_en: 'Deposits rich purple amethyst crystalline matrix trails.',
+                desc_id: 'Meninggalkan jejak matriks kristal batu kecubung ungu yang kaya.'
+            },
+
+            // --- TIER 3: EPIC (Anomalies & Mutation) ---
+            {
+                id: 'epic1', name: 'Shadow Stalker', rarity: 2, rarityName: 'Epic', cost: 3000, color: '#312e81', element: 'void',
+                desc_en: 'Projects unstable shadow void trails with row glitch displacement.',
+                desc_id: 'Memproyeksikan jejak kosong bayangan dengan pergeseran gangguan baris.'
+            },
+            {
+                id: 'epic2', name: 'Solar Templar', rarity: 2, rarityName: 'Epic', cost: 3500, color: '#f59e0b', element: 'solar',
+                desc_en: 'Radiates solar flare bright yellow sparks with high glitch rate.',
+                desc_id: 'Memancarkan percikan kuning cerah suar surya dengan gangguan baris acak.'
+            },
+            {
+                id: 'epic3', name: 'Bio-Luminescent', rarity: 2, rarityName: 'Epic', cost: 4000, color: '#22d3ee', element: 'neonjelly',
+                desc_en: 'Pulses organic deep-sea radioactive neon glow displacements.',
+                desc_id: 'Berdenyut efek gangguan organik bercahaya neon radioaktif laut dalam.'
+            },
+            {
+                id: 'epic4', name: 'Volcanic Core', rarity: 2, rarityName: 'Epic', cost: 4500, color: '#ea580c', element: 'magma',
+                desc_en: 'Maintains a flowing magma internal heat engine matrix distortion.',
+                desc_id: 'Mempertahankan distorsi mesin internal magma panas yang mengalir.'
+            },
+            {
+                id: 'epic5', name: 'Aether Alchemist', rarity: 2, rarityName: 'Epic', cost: 5000, color: '#16a34a', element: 'mercury',
+                desc_en: 'Bubbles volatile green acidic chemical rows onto canvas layers.',
+                desc_id: 'Gelembung baris kimia asam hijau yang mudah menguap pada lapisan kanvas.'
+            },
+
+            // --- TIER 4: LEGENDARY (Mythological Beings) ---
+            {
+                id: 'legendary1', name: 'Dragon Lord', rarity: 3, rarityName: 'Legendary', cost: 7000, color: '#dc2626', element: 'dragon',
+                desc_en: 'Unleashes fiery dragon scale amber dust particles floating upwards.',
+                desc_id: 'Melepaskan partikel debu ambar sisik naga api yang melayang ke atas.'
+            },
+            {
+                id: 'legendary2', name: 'Phoenix Rebirth', rarity: 3, rarityName: 'Legendary', cost: 7750, color: '#f97316', element: 'phoenix',
+                desc_en: 'Sheds gold ancestral feathers that float up and die smoothly.',
+                desc_id: 'Meluruhkan bulu emas leluhur yang melayang ke atas dan memudar halus.'
+            },
+            {
+                id: 'legendary3', name: 'Cyber Shogun', rarity: 3, rarityName: 'Legendary', cost: 8500, color: '#a855f7', element: 'glitch',
+                desc_en: 'Projects high-tech data gold particle streams behind movement paths.',
+                desc_id: 'Memproyeksikan aliran partikel emas data teknologi tinggi di belakang jalur.'
+            },
+            {
+                id: 'legendary4', name: 'Celestial Monarch', rarity: 3, rarityName: 'Legendary', cost: 9250, color: '#fcd34d', element: 'holy',
+                desc_en: 'Beams continuous divine rays of structural light and gold dust.',
+                desc_id: 'Memancarkan sinar suci ilahi dari cahaya struktural dan debu emas.'
+            },
+            {
+                id: 'legendary5', name: 'Abyssal Kraken', rarity: 3, rarityName: 'Legendary', cost: 10000, color: '#2563eb', element: 'kraken',
+                desc_en: 'Spawns deep blue fluid aquatic fading trace elements behind.',
+                desc_id: 'Menghasilkan jejak elemen air memudar biru tua mengalir di belakang.'
+            },
+
+            // --- TIER 5: MYTHICAL (Temporal Alteration) ---
+            {
+                id: 'mythical1', name: 'Blood Moon Deity', rarity: 4, rarityName: 'Mythical', cost: 15000, color: '#991b1b', element: 'blood',
+                desc_en: 'Cycles pixel brightness via sine-wave mapping. Crimson aura fields.',
+                desc_id: 'Siklus kecerahan piksel via pemetaan gelombang sinus. Medan aura merah.'
+            },
+            {
+                id: 'mythical2', name: 'Chronos Weaver', rarity: 4, rarityName: 'Mythical', cost: 16250, color: '#1d4ed8', element: 'clock',
+                desc_en: 'Pulsates spatial temporal colors using automatic sine intensity.',
+                desc_id: 'Berdenyut warna temporal spasial menggunakan intensitas sinus otomatis.'
+            },
+            {
+                id: 'mythical3', name: 'Asura Wrath', rarity: 4, rarityName: 'Mythical', cost: 17500, color: '#c2410c', element: 'asura',
+                desc_en: 'Maintains blinding orange combat aura cycling brightness dynamically.',
+                desc_id: 'Mempertahankan aura tempur oranye dengan kecerahan siklus dinamis.'
+            },
+            {
+                id: 'mythical4', name: 'Jade Emperor', rarity: 4, rarityName: 'Mythical', cost: 18750, color: '#047857', element: 'jade',
+                desc_en: 'Erects imperial green jade fields that cycle luminance over time.',
+                desc_id: 'Mendirikan medan giok hijau kekaisaran dengan siklus pencahayaan waktu.'
+            },
+            {
+                id: 'mythical5', name: 'Plague Harbinger', rarity: 4, rarityName: 'Mythical', cost: 20000, color: '#14532d', element: 'swarm',
+                desc_en: 'Breeds toxic swarm matrix particles with synchronized sine pulses.',
+                desc_id: 'Membiakkan partikel matriks hama beracun dengan pulsa sinus sinkron.'
+            },
+
+            // --- TIER 6: COSMIC (Universal Paradox Gods) ---
+            {
+                id: 'cosmic1', name: 'Supernova Sovereign', rarity: 5, rarityName: 'Cosmic', cost: 30000, color: '#f43f5e', element: 'pulsar',
+                desc_en: 'Rainbow HSL gradient loops mixed with hyper starry twinkle flashes.',
+                desc_id: 'Gradien pelangi HSL bercampur dengan kilatan kedipan bintang kosmik.'
+            },
+            {
+                id: 'cosmic2', name: 'Void Singularity', rarity: 5, rarityName: 'Cosmic', cost: 35000, color: '#000000', element: 'blackhole',
+                desc_en: 'Absolute horizon black hole matrix shifting hues with star sparkles.',
+                desc_id: 'Matriks lubang hitam horison absolut pergeseran rona dan kilau bintang.'
+            },
+            {
+                id: 'cosmic3', name: 'Nebula Weaver', rarity: 5, rarityName: 'Cosmic', cost: 40000, color: '#4f46e5', element: 'nebula',
+                desc_en: 'Weaves cosmic dust cloud gas nodes shifting rainbow configurations.',
+                desc_id: 'Menenun simpul gas awan debu kosmik pergeseran konfigurasi pelangi.'
+            },
+            {
+                id: 'cosmic4', name: 'Quasar Overlord', rarity: 5, rarityName: 'Cosmic', cost: 50000, color: '#7c3aed', element: 'quasar',
+                desc_en: 'Ejects violet-shifting active galactic nuclei spectral rainbow bands.',
+                desc_id: 'Mengeluarkan pita pelangi spektral inti galaksi aktif pergeseran violet.'
+            },
+            {
+                id: 'cosmic5', name: 'Multiverse Anomaly', rarity: 5, rarityName: 'Cosmic', cost: 99999, color: '#dc2626', element: 'multiverse',
+                desc_en: 'The absolute pinnacle. Infinite rainbow spectrum overlay & total anomaly flashes.',
+                desc_id: 'Puncak absolut. Lapisan spektrum pelangi tak terbatas & kilatan anomali total.'
+            }
+        ];
+
+        // ============================================================================
+        // HUMAN-PHANTOM MASTER 12x15 SPRITE MATRIX TEMPLATE
+        // ============================================================================
+        const MasterSpriteMatrix = [
+            [0,0,0,0,1,1,1,1,0,0,0,0],
+            [0,0,1,1,2,2,2,2,1,1,0,0],
+            [0,1,2,2,2,2,2,2,2,2,1,0],
+            [1,2,2,2,2,2,2,2,2,2,2,1],
+            [1,2,3,3,2,2,2,2,3,3,2,1], // Eyes line row indices 4
+            [1,2,3,3,2,2,2,2,3,3,2,1],
+            [1,2,2,2,2,2,2,2,2,2,2,1],
+            [1,2,2,1,1,1,1,1,1,2,2,1],
+            [1,2,2,2,2,2,2,2,2,2,2,1],
+            [1,2,2,2,2,2,2,2,2,2,2,1],
+            [1,2,2,2,2,2,2,2,2,2,2,1],
+            [0,1,2,2,2,2,2,2,2,2,1,0],
+            [0,1,2,2,2,2,2,2,2,2,1,0],
+            [1,2,2,1,2,2,1,2,2,1,2,1],
+            [1,1,1,0,1,1,0,1,1,0,1,1]
+        ];
+
+        // ============================================================================
+        // ADVANCED MATRIX CANVAS DRAWER
+        // ============================================================================
+        function renderMatrixSprite(targetCtx, skinId, targetX, targetY, renderWidth, renderHeight, isFacingLeft) {
+            try {
+                const skin = SkinRegistryDatabase.find(s => s.id === skinId) || SkinRegistryDatabase[0];
+                const pixelWidth = renderWidth / 12;
+                const pixelHeight = renderHeight / 15;
+                const nowTimestamp = Date.now();
+
+                // Core Rarity-based Shader Properties Pre-evaluation
+                let baseColor = skin.color;
+                let isGlitchActive = (skin.rarity === 2);
+                let isSineActive = (skin.rarity === 4);
+                let isCosmicActive = (skin.rarity === 5);
+
+                targetCtx.save();
+
+                // Apply Outer Shadow Canvas Glow Filters for Rare Tier and higher
+                if (skin.rarity >= 1) {
+                    targetCtx.shadowBlur = 12;
+                    targetCtx.shadowColor = skin.color;
+                }
+
+                for (let row = 0; row < 15; row++) {
+                    // Epic Tier Row Offset Glitch Displacement Matrix Evaluation
+                    let rowOffsetOffset = 0;
+                    if (isGlitchActive && Math.random() < 0.08) {
+                        rowOffsetOffset = (Math.random() * 8) - 4;
+                    }
+
+                    for (let col = 0; col < 12; col++) {
+                        // Structural Column Inversion Logic for handling horizontal flipping
+                        let evaluationColumn = isFacingLeft ? (11 - col) : col;
+                        let cellValue = MasterSpriteMatrix[row][evaluationColumn];
+                        if (cellValue === 0) continue;
+
+                        let pixelRenderPositionX = targetX + (col * pixelWidth) + rowOffsetOffset;
+                        let pixelRenderPositionY = targetY + (row * pixelHeight);
+
+                        // Color Parsing based on matrix codes (1: Border, 2: Fill, 3: Eyes)
+                        if (cellValue === 1) {
+                            targetCtx.fillStyle = '#010204';
+                        } else if (cellValue === 3) {
+                            targetCtx.fillStyle = '#ef4444'; // Red Eyes for horror elements
+                        } else if (cellValue === 2) {
+                            // Default Fill
+                            targetCtx.fillStyle = baseColor;
+
+                            // Mythical Tier: Smooth Sine Wave Brightness Mapping Cycles
+                            if (isSineActive) {
+                                let cycleFactor = (Math.sin(nowTimestamp / 150) + 1) / 2; // Normalize to 0 -> 1
+                                targetCtx.fillStyle = adjustLuminanceHex(baseColor, cycleFactor * 0.4 - 0.2);
+                            }
+
+                            // Cosmic Tier: Dynamic Horizontal Shifting HSL Rainbow Shader Loop
+                            if (isCosmicActive) {
+                                let hueCycle = ((nowTimestamp / 12) + (col * 8) + (row * 4)) % 360;
+                                if (skin.id === 'cosmic2') { // Void Singularity special darker blend
+                                    targetCtx.fillStyle = `hsl(${hueCycle}, 95%, 15%)`;
+                                } else {
+                                    targetCtx.fillStyle = `hsl(${hueCycle}, 90%, 55%)`;
+                                }
+                            }
+                        }
+
+                        targetCtx.fillRect(
+                            Math.floor(pixelRenderPositionX), 
+                            Math.floor(pixelRenderPositionY), 
+                            Math.ceil(pixelWidth), 
+                            Math.ceil(pixelHeight)
+                        );
+
+                        // Cosmic Starry Twinkle Flashes Overlay
+                        if (isCosmicActive && cellValue === 2 && Math.random() < 0.003) {
+                            targetCtx.fillStyle = '#ffffff';
+                            targetCtx.fillRect(
+                                Math.floor(pixelRenderPositionX), 
+                                Math.floor(pixelRenderPositionY), 
+                                Math.ceil(pixelWidth), 
+                                Math.ceil(pixelHeight)
+                            );
+                        }
+                    }
+                }
+
+                targetCtx.restore();
+            } catch (error) {
+                console.error("Critical Runtime Error inside renderMatrixSprite layout system:", error);
+            }
+        }
+
+        function adjustLuminanceHex(hexCode, factor) {
+            try {
+                let r = parseInt(hexCode.substring(1, 3), 16);
+                let g = parseInt(hexCode.substring(3, 5), 16);
+                let b = parseInt(hexCode.substring(5, 7), 16);
+
+                if (factor > 0) {
+                    r = Math.min(255, Math.floor(r + (255 - r) * factor));
+                    g = Math.min(255, Math.floor(g + (255 - g) * factor));
+                    b = Math.min(255, Math.floor(b + (255 - b) * factor));
+                } else {
+                    r = Math.max(0, Math.floor(r + r * factor));
+                    g = Math.max(0, Math.floor(g + g * factor));
+                    b = Math.max(0, Math.floor(b + b * factor));
+                }
+
+                let rs = r.toString(16).padStart(2, '0');
+                let gs = g.toString(16).padStart(2, '0');
+                let bs = b.toString(16).padStart(2, '0');
+                return `#${rs}${gs}${bs}`;
+            } catch (e) {
+                return hexCode;
+            }
+        }
+
+        // ============================================================================
+        // HIGH PERFORMANCE MEMORY BALANCED PARTICLE GENERATOR POOL
+        // ============================================================================
+        class BalancedParticleEnginePool {
+            constructor(maxCapacity = 1500) {
+                this.capacity = maxCapacity;
+                this.pool = new Array(maxCapacity);
+                this.headIndex = 0;
+                for (let i = 0; i < maxCapacity; i++) {
+                    this.pool[i] = { active: false, x: 0, y: 0, vx: 0, vy: 0, color: '#fff', life: 0, maxLife: 1, size: 2 };
+                }
+            }
+
+            emit(x, y, vx, vy, color, lifeSpan, particleSize) {
+                try {
+                    let particle = this.pool[this.headIndex];
+                    particle.active = true;
+                    particle.x = x;
+                    particle.y = y;
+                    particle.vx = vx;
+                    particle.vy = vy;
+                    particle.color = color;
+                    particle.life = lifeSpan;
+                    particle.maxLife = lifeSpan;
+                    particle.size = particleSize;
+                    this.headIndex = (this.headIndex + 1) % this.capacity;
+                } catch (e) {}
+            }
+
+            update(deltaTime) {
+                for (let i = 0; i < this.capacity; i++) {
+                    let p = this.pool[i];
+                    if (!p.active) continue;
+                    p.life -= deltaTime;
+                    if (p.life <= 0) {
+                        p.active = false;
+                        continue;
+                    }
+                    p.x += p.vx * deltaTime;
+                    p.y += p.vy * deltaTime;
+                }
+            }
+
+            draw(targetCtx) {
+                targetCtx.save();
+                for (let i = 0; i < this.capacity; i++) {
+                    let p = this.pool[i];
+                    if (!p.active) continue;
+                    let alphaRatio = Math.max(0, Math.min(1, p.life / p.maxLife));
+                    targetCtx.globalAlpha = alphaRatio;
+                    targetCtx.fillStyle = p.color;
+                    targetCtx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+                }
+                targetCtx.restore();
+            }
+        }
+
+        const GlobalParticleSystem = new BalancedParticleEnginePool(1200);
+
+        // ============================================================================
+        // PERSISTENCE STORAGE CONTROLLER VIA DEEP JSON OPERATIONS
+        // ============================================================================
+        const PersistenceLocalStorageController = {
+            storageKeyName: "paradox_maze_v2026_production_data",
+
+            writeProgress() {
+                try {
+                    const compiledDataPayload = {
+                        lang: ParadoxEngine.lang,
+                        music: ParadoxEngine.music,
+                        sfx: ParadoxEngine.sfx,
+                        player: ParadoxEngine.player
+                    };
+                    localStorage.setItem(this.storageKeyName, JSON.stringify(compiledDataPayload));
+                } catch (error) {
+                    console.error("Local storage allocation writing transaction rejected:", error);
+                }
+            },
+
+            loadProgress() {
+                try {
+                    const localRawPayload = localStorage.getItem(this.storageKeyName);
+                    if (!localRawPayload) return;
+                    
+                    const structuralObject = JSON.parse(localRawPayload);
+                    if (structuralObject.lang) ParadoxEngine.lang = structuralObject.lang;
+                    if (structuralObject.music !== undefined) ParadoxEngine.music = structuralObject.music;
+                    if (structuralObject.sfx !== undefined) ParadoxEngine.sfx = structuralObject.sfx;
+                    if (structuralObject.player) {
+                        if (structuralObject.player.name) ParadoxEngine.player.name = structuralObject.player.name;
+                        if (structuralObject.player.coins !== undefined) ParadoxEngine.player.coins = structuralObject.player.coins;
+                        if (structuralObject.player.unlockedSkins) ParadoxEngine.player.unlockedSkins = structuralObject.player.unlockedSkins;
+                        if (structuralObject.player.equippedSkin) ParadoxEngine.player.equippedSkin = structuralObject.player.equippedSkin;
+                    }
+                } catch (error) {
+                    console.error("Local storage recovery payload execution fell back or corrupted:", error);
+                }
+            },
+
+            truncateAllProgress() {
+                try {
+                    localStorage.removeItem(this.storageKeyName);
+                    window.location.reload();
+                } catch (e) {}
+            }
+        };
+
+        // ============================================================================
+        // DYNAMIC SHOP REGISTRY GRAPHICAL INTERFACE
+        // ============================================================================
+        const ShopUserInterface = {
+            activeFilter: 'all',
+
+            renderRegistryGrid() {
+                try {
+                    const gridContainer = document.getElementById('shop-items-grid-container');
+                    if (!gridContainer) return;
+                    gridContainer.innerHTML = '';
+
+                    const filteredCollection = SkinRegistryDatabase.filter(skin => {
+                        if (this.activeFilter === 'all') return true;
+                        return skin.rarity.toString() === this.activeFilter;
+                    });
+
+                    filteredCollection.forEach(skin => {
+                        const itemCardNode = document.createElement('div');
+                        itemCardNode.className = 'shop-item';
+                        
+                        const isUnlocked = ParadoxEngine.player.unlockedSkins.includes(skin.id);
+                        const isEquipped = ParadoxEngine.player.equippedSkin === skin.id;
+
+                        if (isEquipped) itemCardNode.classList.add('equipped');
+                        else if (isUnlocked) itemCardNode.classList.add('unlocked');
+
+                        // Build Rarity Label Styles Dynamically
+                        let rarityBg = 'var(--text-muted)';
+                        if (skin.rarity === 1) rarityBg = 'var(--neon-blue)';
+                        if (skin.rarity === 2) rarityBg = 'var(--neon-purple)';
+                        if (skin.rarity === 3) rarityBg = 'var(--neon-gold)';
+                        if (skin.rarity === 4) rarityBg = 'var(--neon-pink)';
+                        if (skin.rarity === 5) rarityBg = 'var(--neon-red)';
+
+                        itemCardNode.innerHTML = `
+                            <span class="rarity-tag" style="background:${rarityBg}">${skin.rarityName}</span>
+                            <canvas class="shop-item-canvas" id="canvas-preview-${skin.id}" width="48" height="60"></canvas>
+                            <div class="shop-item-name">${skin.name}</div>
+                            <div class="shop-item-cost">${isEquipped ? 'EQUIPPED' : (isUnlocked ? 'EQUIP' : skin.cost + ' CHIPS')}</div>
+                        `;
+
+                        // Attach Event Bindings directly
+                        itemCardNode.addEventListener('click', () => {
+                            SoundEngine.playClick();
+                            this.handleSelectionSequence(skin);
+                        });
+
+                        gridContainer.appendChild(itemCardNode);
+
+                        // Trigger programmatic vector icon drawing onto the isolated preview canvas
+                        setTimeout(() => {
+                            const previewCanvas = document.getElementById(`canvas-preview-${skin.id}`);
+                            if (previewCanvas) {
+                                const pCtx = previewCanvas.getContext('2d');
+                                pCtx.clearRect(0,0,48,60);
+                                renderMatrixSprite(pCtx, skin.id, 0, 0, 48, 60, false);
+                            }
+                        }, 5);
+                    });
+
+                    document.getElementById('shop-balance-value').innerText = ParadoxEngine.player.coins + " CHIPS";
+                } catch (err) {
+                    console.error("Critical error running shop render matrix pipeline:", err);
+                }
+            },
+
+            handleSelectionSequence(skin) {
+                const detailsNode = document.getElementById('skin-details-description');
+                const isUnlocked = ParadoxEngine.player.unlockedSkins.includes(skin.id);
+                const descText = ParadoxEngine.lang === 'id' ? skin.desc_id : skin.desc_en;
+
+                if (ParadoxEngine.player.equippedSkin === skin.id) {
+                    detailsNode.innerText = `[${skin.name}] - ${descText}`;
+                    return;
+                }
+
+                if (isUnlocked) {
+                    ParadoxEngine.player.equippedSkin = skin.id;
+                    detailsNode.innerText = ParadoxEngine.lang === 'id' ? 
+                        `Berhasil melengkapi skin: ${skin.name}` : `Successfully equipped skin: ${skin.name}`;
+                    PersistenceLocalStorageController.writeProgress();
+                    this.renderRegistryGrid();
+                } else {
+                    // Check purchasing capabilities
+                    if (ParadoxEngine.player.coins >= skin.cost) {
+                        ParadoxEngine.player.coins -= skin.cost;
+                        ParadoxEngine.player.unlockedSkins.push(skin.id);
+                        ParadoxEngine.player.equippedSkin = skin.id;
+                        detailsNode.innerText = ParadoxEngine.lang === 'id' ? 
+                            `Berhasil membeli dan melengkapi: ${skin.name}` : `Purchased and equipped: ${skin.name}`;
+                        PersistenceLocalStorageController.writeProgress();
+                        this.renderRegistryGrid();
+                    } else {
+                        detailsNode.innerText = ParadoxEngine.lang === 'id' ? 
+                            `Saldo hancur! Chips Anda tidak cukup untuk: ${skin.name}` : `Quantum rejection! Insufficient chips for: ${skin.name}`;
+                    }
+                }
+            }
+        };
+
+        // ============================================================================
+        // GAMEPLAY SYSTEM: STRUCTURAL LABYRINTH & TEMPORAL MATRIX
+        // ============================================================================
+        const GameCoreEnvironment = {
+            canvas: null,
+            ctx: null,
+            isLoopRunning: false,
+            tileSize: 40,
+            animationFrameRequestId: null,
+            lastFrameTime: 0,
+
+            // Hardcoded structural 16x12 execution grid map matrix (1: Wall, 0: Floor)
+            gridMap: [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
+                [1,0,1,0,1,0,1,1,1,0,1,0,1,1,0,1],
+                [1,0,1,0,0,0,0,0,1,0,0,0,1,0,0,1],
+                [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],
+                [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+                [1,1,1,1,0,0,1,1,1,1,1,0,1,1,0,1],
+                [1,0,0,1,0,0,0,0,0,0,1,0,1,0,0,1],
+                [1,0,0,1,1,1,1,1,0,0,1,0,1,1,1,1],
+                [1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1],
+                [1,1,1,0,1,1,0,0,0,0,1,1,1,1,0,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ],
+
+            // Core Interactive Entities Tracking State Structures
+            player: {
+                gridX: 1, gridY: 1,
+                renderX: 40, renderY: 40,
+                targetRenderX: 40, targetRenderY: 40,
+                facing: 'right',
+                sanity: 100
+            },
+
+            targetCore: { gridX: 14, gridY: 10, anglePulse: 0 },
+            
+            shadowClone: {
+                active: false,
+                gridX: -1, gridY: -1,
+                renderX: -100, renderY: -100
+            },
+
+            ghostNpc: {
+                active: false,
+                gridX: -1, gridY: -1,
+                renderX: -100, renderY: -100,
+                displayMessage: "",
+                lifeTimer: 0
+            },
+
+            playerPathHistory: [], // Master structural array frame log storage for cloning playback
+            elapsedTimelineTicks: 0,
+            cameraShakeStrength: 0,
+
+            init() {
+                this.canvas = document.getElementById('main-game-canvas');
+                this.ctx = this.canvas.getContext('2d');
+            },
+
+            startSession() {
+                // Initialize default positioning states
+                this.player.gridX = 1;
+                this.player.gridY = 1;
+                this.player.renderX = 40;
+                this.player.renderY = 40;
+                this.player.targetRenderX = 40;
+                this.player.targetRenderY = 40;
+                this.player.sanity = 100;
+                this.player.facing = 'right';
+
+                this.shadowClone.active = false;
+                this.ghostNpc.active = false;
+                this.playerPathHistory = [];
+                this.elapsedTimelineTicks = 0;
+                this.cameraShakeStrength = 0;
+
+                // Configure randomized placement for Target Core Item inside structural floors
+                let validFloorCoordinates = [];
+                for (let r = 0; r < 12; r++) {
+                    for (let c = 0; c < 16; c++) {
+                        if (this.gridMap[r][c] === 0 && !(r === 1 && c === 1)) {
+                            validFloorCoordinates.push({x: c, y: r});
+                        }
+                    }
+                }
+                let pickedPair = validFloorCoordinates[Math.floor(Math.random() * validFloorCoordinates.length)];
+                this.targetCore.gridX = pickedPair.x;
+                this.targetCore.gridY = pickedPair.y;
+
+                document.getElementById('game-hud').style.display = 'flex';
+                this.updateHudMetrics();
+
+                this.isLoopRunning = true;
+                this.lastFrameTime = performance.now();
+                if (this.animationFrameRequestId) cancelAnimationFrame(this.animationFrameRequestId);
+                this.animationFrameRequestId = requestAnimationFrame((ts) => this.lifecycleFrame(ts));
+            },
+
+            stopSession() {
+                this.isLoopRunning = false;
+                if (this.animationFrameRequestId) cancelAnimationFrame(this.animationFrameRequestId);
+                document.getElementById('game-hud').style.display = 'none';
+            },
+
+            updateHudMetrics() {
+                document.getElementById('hud-value-name').innerText = ParadoxEngine.player.name;
+                document.getElementById('hud-value-coins').innerText = ParadoxEngine.player.coins;
+                const sanityFill = document.getElementById('sanity-bar-fill');
+                if (sanityFill) {
+                    sanityFill.style.width = `${this.player.sanity}%`;
+                }
+            },
+
+            executeDirectMoveCommand(deltaX, deltaY) {
+                if (!this.isLoopRunning) return;
+                
+                // Prevent queue-stack overlapping if linear interpolation hasn't met target metrics
+                if (this.player.renderX !== this.player.targetRenderX || this.player.renderY !== this.player.targetRenderY) {
+                    return; 
+                }
+
+                let plannedGridX = this.player.gridX + deltaX;
+                let plannedGridY = this.player.gridY + deltaY;
+
+                if (deltaX < 0) this.player.facing = 'left';
+                if (deltaX > 0) this.player.facing = 'right';
+
+                // Robust Spatial Collision Pre-checks Validation Function
+                if (this.gridMap[plannedGridY][plannedGridX] !== 1) {
+                    this.player.gridX = plannedGridX;
+                    this.player.gridY = plannedGridY;
+                    this.player.targetRenderX = plannedGridX * this.tileSize;
+                    this.player.targetRenderY = plannedGridY * this.tileSize;
+                } else {
+                    // Wall Collision Bump Event Reached
+                    SoundEngine.playBump();
+                    this.player.sanity = Math.max(0, this.player.sanity - 3);
+                    this.cameraShakeStrength = Math.min(10, this.cameraShakeStrength + 3);
+                    this.spawnWallImpactParticles(plannedGridX, plannedGridY, deltaX, deltaY);
+                    this.triggerGaslightingGhostManifestation();
+                    this.updateHudMetrics();
+                    this.evaluateSurvivalConstraints();
+                }
+            },
+
+            spawnWallImpactParticles(wgX, wgY, dx, dy) {
+                let px = (wgX * this.tileSize) + (this.tileSize / 2) - (dx * (this.tileSize / 2));
+                let py = (wgY * this.tileSize) + (this.tileSize / 2) - (dy * (this.tileSize / 2));
+                const skinColor = SkinRegistryDatabase.find(s => s.id === ParadoxEngine.player.equippedSkin)?.color || "#8b5cf6";
+                for (let i = 0; i < 15; i++) {
+                    let vx = (Math.random() * 80 - 40) - (dx * 30);
+                    let vy = (Math.random() * 80 - 40) - (dy * 30);
+                    GlobalParticleSystem.emit(px, py, vx, vy, skinColor, 0.4 + Math.random()*0.3, 2 + Math.random()*2);
+                }
+            },
+
+            triggerGaslightingGhostManifestation() {
+                // Find empty spot adjacent to player to draw phantom overlay
+                let offsets = [{x:0, y:1}, {x:0, y:-1}, {x:1, y:0}, {x:-1, y:0}];
+                for (let offset of offsets) {
+                    let gx = this.player.gridX + offset.x;
+                    let gy = this.player.gridY + offset.y;
+                    if (this.gridMap[gy][gx] === 0) {
+                        this.ghostNpc.active = true;
+                        this.ghostNpc.gridX = gx;
+                        this.ghostNpc.gridY = gy;
+                        this.ghostNpc.renderX = gx * this.tileSize;
+                        this.ghostNpc.renderY = gy * this.tileSize;
+                        this.ghostNpc.lifeTimer = 2.5; // visible on field canvas for 2.5 seconds max
+
+                        let selectedQuotes = GaslightingQuotes[ParadoxEngine.lang];
+                        let quote = selectedQuotes[Math.floor(Math.random() * selectedQuotes.length)];
+                        this.ghostNpc.displayMessage = quote.replace("[NAME]", ParadoxEngine.player.name);
+                        break;
+                    }
+                }
+            },
+
+            evaluateSurvivalConstraints() {
+                if (this.player.sanity <= 0) {
+                    this.stopSession();
+                    SoundEngine.playParadoxBlast();
+                    SceneOverlayManager.transitionToScene('GameOver');
+                }
+            },
+
+            evaluateVictoryCondition() {
+                this.stopSession();
+                SoundEngine.playVictory();
+                
+                // Reward token distribution calculation
+                ParadoxEngine.player.coins += 1250;
+                PersistenceLocalStorageController.writeProgress();
+                
+                SceneOverlayManager.transitionToScene('Victory');
+            },
+
+            // ============================================================================
+            // HIGH-FIDELITY GAMEPLAY FRAME LIFECYCLE MECHANICS
+            // ============================================================================
+            lifecycleFrame(currentHighResTimestamp) {
+                if (!this.isLoopRunning) return;
+
+                let deltaSeconds = (currentHighResTimestamp - this.lastFrameTime) / 1000;
+                if (deltaSeconds > 0.1) deltaSeconds = 0.1; // Cap extreme lag spikes
+                this.lastFrameTime = currentHighResTimestamp;
+
+                this.elapsedTimelineTicks++;
+
+                // --- 1. COMPUTATIONAL UPDATE OPERATIONS ---
+                // Continuous Linear Interpolation (Lerp) for ultra smooth player mesh traversal
+                const interpolationSpeed = 16.0; 
+                this.player.renderX += (this.player.targetRenderX - this.player.renderX) * interpolationSpeed * deltaSeconds;
+                this.player.renderY += (this.player.targetRenderY - this.player.renderY) * interpolationSpeed * deltaSeconds;
+
+                // Precision convergence thresholds check
+                if (Math.abs(this.player.renderX - this.player.targetRenderX) < 0.2) this.player.renderX = this.player.targetRenderX;
+                if (Math.abs(this.player.renderY - this.player.targetRenderY) < 0.2) this.player.renderY = this.player.targetRenderY;
+
+                // Historical trace coordinate log tracking allocation
+                if (this.elapsedTimelineTicks % 3 === 0) {
+                    this.playerPathHistory.push({
+                        x: this.player.renderX,
+                        y: this.player.renderY,
+                        facing: this.player.facing
+                    });
+                    if (this.playerPathHistory.length > 220) {
+                        this.playerPathHistory.shift();
+                    }
+                }
+
+                // Echo-cloning timeline offset playback calculations
+                const totalTracesCount = this.playerPathHistory.length;
+                const timelinePlaybackOffsetDelay = 55; // Frames behind main identity
+                if (totalTracesCount > timelinePlaybackOffsetDelay) {
+                    let historicalFrameData = this.playerPathHistory[totalTracesCount - timelinePlaybackOffsetDelay];
+                    this.shadowClone.active = true;
+                    this.shadowClone.renderX = historicalFrameData.x;
+                    this.shadowClone.renderY = historicalFrameData.y;
+                } else {
+                    this.shadowClone.active = false;
+                }
+
+                // Proximity shadow clone intersection damage evaluations
+                if (this.shadowClone.active) {
+                    let distanceToClone = Math.hypot(this.player.renderX - this.shadowClone.renderX, this.player.renderY - this.shadowClone.renderY);
+                    if (distanceToClone < 24) {
+                        this.player.sanity = Math.max(0, this.player.sanity - (22 * deltaSeconds));
+                        this.cameraShakeStrength = Math.min(6, this.cameraShakeStrength + 0.6);
+                        this.updateHudMetrics();
+                        this.evaluateSurvivalConstraints();
+                    }
+                }
+
+                // Gaslighting Ghost NPC lifecycle depletion tracking
+                if (this.ghostNpc.active) {
+                    this.ghostNpc.lifeTimer -= deltaSeconds;
+                    if (this.ghostNpc.lifeTimer <= 0) {
+                        this.ghostNpc.active = false;
+                    }
+                }
+
+                // Passive dynamic baseline sanity degradation over time
+                this.player.sanity = Math.max(0, this.player.sanity - (1.1 * deltaSeconds));
+                if (this.elapsedTimelineTicks % 30 === 0) {
+                    this.updateHudMetrics();
+                    this.evaluateSurvivalConstraints();
+                }
+
+                // Check goal destination intersection criteria
+                if (this.player.gridX === this.targetCore.gridX && this.player.gridY === this.targetCore.gridY) {
+                    if (this.player.renderX === this.player.targetRenderX && this.player.renderY === this.player.targetRenderY) {
+                        this.evaluateVictoryCondition();
+                        return;
+                    }
+                }
+
+                // Structural Particle Emission Patterns based on equipped tier element behaviors
+                this.emitSkinAmbientProceduralParticles();
+                GlobalParticleSystem.update(deltaSeconds);
+
+                // Decay structural camera frame vibration intensity matrix
+                if (this.cameraShakeStrength > 0) {
+                    this.cameraShakeStrength -= deltaSeconds * 12;
+                    if (this.cameraShakeStrength < 0) this.cameraShakeStrength = 0;
+                }
+
+                this.targetCore.anglePulse += deltaSeconds * 3;
+
+                // --- 2. CANVAS DRAW LAYERING STACK ---
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.ctx.save();
+                // Apply spatial matrix screen vibration coordinate shifts
+                if (this.cameraShakeStrength > 0) {
+                    let dx = (Math.random() - 0.5) * this.cameraShakeStrength;
+                    let dy = (Math.random() - 0.5) * this.cameraShakeStrength;
+                    this.ctx.translate(dx, dy);
+                }
+
+                this.drawLabyrinthWallsGrid();
+                this.drawTargetCoreGoalNode();
+
+                // Draw historical particle cloud elements
+                GlobalParticleSystem.draw(this.ctx);
+
+                // Draw Timeline Echo Shadow Clone Entity
+                if (this.shadowClone.active) {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = 0.42;
+                    renderMatrixSprite(this.ctx, 'epic1', this.shadowClone.renderX + 6, this.shadowClone.renderY + 2, 28, 36, false);
+                    this.ctx.restore();
+                }
+
+                // Draw Phantom Gaslighting Spirit Overlay text fields
+                if (this.ghostNpc.active) {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = 0.35 + (Math.sin(this.elapsedTimelineTicks / 5) * 0.15);
+                    renderMatrixSprite(this.ctx, 'mythical5', this.ghostNpc.renderX + 4, this.ghostNpc.renderY + 2, 32, 36, false);
+                    this.ctx.restore();
+
+                    // Render spatial atmospheric horror bubble text above specter mesh coordinates
+                    this.ctx.fillStyle = "rgba(239, 68, 68, 0.85)";
+                    this.ctx.font = "bold 9px monospace";
+                    this.ctx.textAlign = "center";
+                    this.ctx.fillText(this.ghostNpc.displayMessage, this.ghostNpc.renderX + 20, this.ghostNpc.renderY - 8);
+                }
+
+                // Draw Master Player Entity Model
+                renderMatrixSprite(
+                    this.ctx, 
+                    ParadoxEngine.player.equippedSkin, 
+                    this.player.renderX + 4, 
+                    this.player.renderY + 2, 
+                    32, 36, 
+                    (this.player.facing === 'left')
+                );
+
+                this.ctx.restore();
+
+                this.animationFrameRequestId = requestAnimationFrame((ts) => this.lifecycleFrame(ts));
+            },
+
+            emitSkinAmbientProceduralParticles() {
+                try {
+                    const skin = SkinRegistryDatabase.find(s => s.id === ParadoxEngine.player.equippedSkin) || SkinRegistryDatabase[0];
+                    const px = this.player.renderX + 20;
+                    const py = this.player.renderY + 20;
+
+                    // Common Tier Particle Mechanics
+                    if (skin.rarity === 0 && Math.random() < 0.15) {
+                        GlobalParticleSystem.emit(px, py, (Math.random()*20-10), (Math.random()*10-5), skin.color, 0.6, 2);
+                    }
+                    // Rare Tier Aura Fields Mechanics
+                    else if (skin.rarity === 1 && Math.random() < 0.35) {
+                        GlobalParticleSystem.emit(px + (Math.random()*16-8), py + (Math.random()*16-8), (Math.random()*10-5), (Math.random()*-20), skin.color, 0.8, 3);
+                    }
+                    // Epic Tier Heavy Structural Micro Displacements
+                    else if (skin.rarity === 2 && Math.random() < 0.55) {
+                        GlobalParticleSystem.emit(px + (Math.random()*24-12), py + (Math.random()*24-12), (Math.random()*40-20), (Math.random()*40-20), '#ffffff', 0.2, 1);
+                    }
+                    // Legendary High Velocity Trail Emissions
+                    else if (skin.rarity === 3 && Math.random() < 0.75) {
+                        GlobalParticleSystem.emit(px, py, (Math.random()*60-30), (Math.random()*60-30), skin.color, 0.5, 3);
+                    }
+                    // Mythical & Cosmic Space Distortion Tail Streams
+                    else if (skin.rarity >= 4) {
+                        for (let k = 0; k < 3; k++) {
+                            let hue = (skin.rarity === 5) ? (Date.now() / 8) % 360 : (skin.id === 'mythical1' ? 0 : 220);
+                            let colorStr = (skin.rarity === 5) ? `hsl(${hue}, 90%, 60%)` : skin.color;
+                            GlobalParticleSystem.emit(px + (Math.random()*10-5), py + (Math.random()*10-5), (Math.random()*80-40), (Math.random()*80-40), colorStr, 0.7, 2 + Math.random()*2);
+                        }
+                    }
+                } catch (e) {}
+            },
+
+            drawLabyrinthWallsGrid() {
+                this.ctx.fillStyle = '#0f111a';
+                this.ctx.strokeStyle = '#1e2235';
+                this.ctx.lineWidth = 1;
+
+                for (let r = 0; r < 12; r++) {
+                    for (let c = 0; c < 16; c++) {
+                        if (this.gridMap[r][c] === 1) {
+                            // Draw block wall geometry
+                            this.ctx.fillStyle = '#0b0c10';
+                            this.ctx.fillRect(c * this.tileSize, r * this.tileSize, this.tileSize, this.tileSize);
+                            
+                            // High-tech circuit trim lines styling overlay
+                            this.ctx.strokeStyle = 'rgba(139, 92, 246, 0.15)';
+                            this.ctx.strokeRect(c * this.tileSize + 2, r * this.tileSize + 2, this.tileSize - 4, this.tileSize - 4);
+                        } else {
+                            // Floor pathways lines grid mapping rendering trace blocks
+                            this.ctx.strokeStyle = 'rgba(255,255,255,0.015)';
+                            this.ctx.strokeRect(c * this.tileSize, r * this.tileSize, this.tileSize, this.tileSize);
+                        }
+                    }
+                }
+            },
+
+            drawTargetCoreGoalNode() {
+                let cx = (this.targetCore.gridX * this.tileSize) + (this.tileSize / 2);
+                let cy = (this.targetCore.gridY * this.tileSize) + (this.tileSize / 2);
+                let pulseRadius = 8 + Math.sin(this.targetCore.anglePulse) * 3;
+
+                this.ctx.save();
+                this.ctx.shadowBlur = 16;
+                this.ctx.shadowColor = 'var(--neon-gold)';
+
+                // Draw outer rotational structural diamond vector paths
+                this.ctx.translate(cx, cy);
+                this.ctx.rotate(this.targetCore.anglePulse / 2);
+                this.ctx.fillStyle = 'rgba(234, 179, 8, 0.2)';
+                this.ctx.strokeStyle = 'var(--neon-gold)';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, -pulseRadius - 4);
+                this.ctx.lineTo(pulseRadius + 4, 0);
+                this.ctx.lineTo(0, pulseRadius + 4);
+                this.ctx.lineTo(-pulseRadius - 4, 0);
+                this.ctx.closePath();
+                this.ctx.fill();
+                this.ctx.stroke();
+
+                this.ctx.restore();
+            }
+        };
+
+        // ============================================================================
+        // SCENE OVERLAY WINDOW MANAGER NAVIGATION LAYER
+        // ============================================================================
+        const SceneOverlayManager = {
+            transitionToScene(targetSceneName) {
+                ParadoxEngine.scene = targetSceneName;
+
+                // Deactivate all modal layout screens uniformly
+                document.getElementById('screen-lobby').classList.remove('active');
+                document.getElementById('screen-shop').classList.remove('active');
+                document.getElementById('screen-config').classList.remove('active');
+                document.getElementById('screen-gameover').classList.remove('active');
+                document.getElementById('screen-victory').classList.remove('active');
+
+                if (targetSceneName === 'Lobby') {
+                    document.getElementById('screen-lobby').classList.add('active');
+                } else if (targetSceneName === 'Shop') {
+                    document.getElementById('screen-shop').classList.add('active');
+                    ShopUserInterface.renderRegistryGrid();
+                } else if (targetSceneName === 'Config') {
+                    document.getElementById('screen-config').classList.add('active');
+                } else if (targetSceneName === 'GameOver') {
+                    document.getElementById('screen-gameover').classList.add('active');
+                } else if (targetSceneName === 'Victory') {
+                    document.getElementById('screen-victory').classList.add('active');
+                } else if (targetSceneName === 'Gameplay') {
+                    // Internal running layout state handles canvas focus automatically
+                    GameCoreEnvironment.startSession();
+                }
+            },
+
+            applyLocalizationStrings() {
+                const currentPack = LocalizationEngine[ParadoxEngine.lang];
+                
+                document.getElementById('lobby-tagline').innerText = currentPack.tagline;
+                document.getElementById('btn-lobby-start').innerText = currentPack.start;
+                document.getElementById('btn-lobby-shop').innerText = currentPack.shop;
+                document.getElementById('btn-lobby-config').innerText = currentPack.config;
+
+                document.getElementById('shop-title-header').innerText = currentPack.shopTitle;
+                document.getElementById('shop-label-balance').innerText = currentPack.balance;
+                document.getElementById('btn-shop-back').innerText = currentPack.returnLobby;
+
+                document.getElementById('config-title-header').innerText = currentPack.sysConfig;
+                document.getElementById('config-sub').innerText = currentPack.configSub;
+                document.getElementById('config-label-music').innerText = currentPack.bgMusic;
+                document.getElementById('config-label-sfx').innerText = currentPack.opSfx;
+                document.getElementById('btn-config-reset').innerText = currentPack.resetProg;
+                document.getElementById('btn-config-back').innerText = currentPack.saveReturn;
+
+                document.getElementById('go-title').innerText = currentPack.failedTitle;
+                document.getElementById('go-subtitle').innerText = currentPack.failedSub;
+                document.getElementById('btn-go-retry').innerText = currentPack.reenter;
+                document.getElementById('btn-go-menu').innerText = currentPack.abandon;
+
+                document.getElementById('vic-title').innerText = currentPack.coreReached;
+                document.getElementById('vic-subtitle').innerText = currentPack.loopBreaks;
+                document.getElementById('btn-vic-continue').innerText = currentPack.proceedNext;
+
+                // Adjust active class tokens on top language nodes
+                if (ParadoxEngine.lang === 'en') {
+                    document.getElementById('lang-en').className = 'active';
+                    document.getElementById('lang-id').className = '';
+                } else {
+                    document.getElementById('lang-en').className = '';
+                    document.getElementById('lang-id').className = 'active';
+                }
+            }
+        };
+
+        // ============================================================================
+        // FULL ARCHITECTURE ENGINE INITIALIZATION ON DOM CONTENT LOADED
+        // ============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Restore structural tracking parameters from previous hardware session
+            PersistenceLocalStorageController.loadProgress();
+
+            GameCoreEnvironment.init();
+            SceneOverlayManager.applyLocalizationStrings();
+
+            // Synch config interface input nodes to live variable data mappings
+            document.getElementById('cfg-check-music').checked = ParadoxEngine.music;
+            document.getElementById('cfg-check-sfx').checked = ParadoxEngine.sfx;
+
+            // --- ATTACH EXPLICIT RECT WEB INTERACTIVE USER INPUT CLICK EVENT BINDINGS ---
+            document.getElementById('lang-node-toggle').addEventListener('click', () => {
+                ParadoxEngine.lang = (ParadoxEngine.lang === 'en') ? 'id' : 'en';
+                SoundEngine.playClick();
+                PersistenceLocalStorageController.writeProgress();
+                SceneOverlayManager.applyLocalizationStrings();
+                if (ParadoxEngine.scene === 'Shop') ShopUserInterface.renderRegistryGrid();
+            });
+
+            document.getElementById('btn-lobby-start').addEventListener('click', () => {
+                SoundEngine.init();
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Gameplay');
+            });
+
+            document.getElementById('btn-lobby-shop').addEventListener('click', () => {
+                SoundEngine.init();
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Shop');
+            });
+
+            document.getElementById('btn-lobby-config').addEventListener('click', () => {
+                SoundEngine.init();
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Config');
+            });
+
+            document.getElementById('btn-shop-back').addEventListener('click', () => {
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Lobby');
+            });
+
+            document.getElementById('btn-config-back').addEventListener('click', () => {
+                SoundEngine.playClick();
+                ParadoxEngine.music = document.getElementById('cfg-check-music').checked;
+                ParadoxEngine.sfx = document.getElementById('cfg-check-sfx').checked;
+                
+                if (ParadoxEngine.music) SoundEngine.startAmbientDrone();
+                else SoundEngine.stopAmbientDrone();
+
+                PersistenceLocalStorageController.writeProgress();
+                SceneOverlayManager.transitionToScene('Lobby');
+            });
+
+            document.getElementById('btn-config-reset').addEventListener('click', () => {
+                if (confirm("WARNING: Irreversible reality distortion imminent. Reset all local matrix progress data?")) {
+                    PersistenceLocalStorageController.truncateAllProgress();
+                }
+            });
+
+            document.getElementById('btn-go-retry').addEventListener('click', () => {
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Gameplay');
+            });
+
+            document.getElementById('btn-go-menu').addEventListener('click', () => {
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Lobby');
+            });
+
+            document.getElementById('btn-vic-continue').addEventListener('click', () => {
+                SoundEngine.playClick();
+                SceneOverlayManager.transitionToScene('Gameplay');
+            });
+
+            // Attach Shop Tab Filters Selection Routing
+            const tabButtonsList = document.querySelectorAll('#shop-tab-container .tab-btn');
+            tabButtonsList.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    tabButtonsList.forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    ShopUserInterface.activeFilter = e.target.getAttribute('data-filter');
+                    ShopUserInterface.renderRegistryGrid();
+                });
+            });
+
+            // --- KEYBOARD HARDWARE DESKTOP INPUT INTERFACE MAP BINDINGS ---
+            window.addEventListener('keydown', (event) => {
+                if (ParadoxEngine.scene !== 'Gameplay') return;
+                
+                const code = event.code;
+                if (code === 'ArrowUp' || code === 'KeyW') GameCoreEnvironment.executeDirectMoveCommand(0, -1);
+                else if (code === 'ArrowDown' || code === 'KeyS') GameCoreEnvironment.executeDirectMoveCommand(0, 1);
+                else if (code === 'ArrowLeft' || code === 'KeyA') GameCoreEnvironment.executeDirectMoveCommand(-1, 0);
+                else if (code === 'ArrowRight' || code === 'KeyD') GameCoreEnvironment.executeDirectMoveCommand(1, 0);
+            });
+
+            // --- VIRTUAL JOYSTICK ACCESSIBILITY CONTROLS FOR MOBILE VIEWPORTS ---
+            const joystickZoneNode = document.getElementById('joystick-zone');
+            const joystickHandleNode = document.getElementById('joystick-handle');
+            
+            if (window.matchMedia("(max-width: 1024px)").matches || 'ontouchstart' in window) {
+                joystickZoneNode.style.display = 'flex';
+            }
+
+            let joystickActiveState = false;
+            let joystickOriginCoordinateX = 0;
+            let joystickOriginCoordinateY = 0;
+
+            joystickZoneNode.addEventListener('touchstart', (e) => {
+                joystickActiveState = true;
+                SoundEngine.init();
+                let touch = e.touches[0];
+                let boundingBox = joystickZoneNode.getBoundingClientRect();
+                joystickOriginCoordinateX = boundingBox.left + (boundingBox.width / 2);
+                joystickOriginCoordinateY = boundingBox.top + (boundingBox.height / 2);
+            });
+
+            joystickZoneNode.addEventListener('touchmove', (e) => {
+                if (!joystickActiveState) return;
+                e.preventDefault();
+                let touch = e.touches[0];
+                
+                let deltaMoveX = touch.clientX - joystickOriginCoordinateX;
+                let deltaMoveY = touch.clientY - joystickOriginCoordinateY;
+                let totalDistance = Math.hypot(deltaMoveX, deltaMoveY);
+                
+                // Keep visual node bounded within css track constraints limit parameters
+                const maxLimitingRadius = 40;
+                if (totalDistance > maxLimitingRadius) {
+                    deltaMoveX = (deltaMoveX / totalDistance) * maxLimitingRadius;
+                    deltaMoveY = (deltaMoveY / totalDistance) * maxLimitingRadius;
+                }
+
+                joystickHandleNode.style.transform = `translate(${deltaMoveX}px, ${deltaMoveY}px)`;
+
+                // Threshold cross detection to fire movement matrix pulses discrete commands
+                if (totalDistance > 22) {
+                    if (Math.abs(deltaMoveX) > Math.abs(deltaMoveY)) {
+                        if (deltaMoveX > 0) GameCoreEnvironment.executeDirectMoveCommand(1, 0);
+                        else GameCoreEnvironment.executeDirectMoveCommand(-1, 0);
+                    } else {
+                        if (deltaMoveY > 0) GameCoreEnvironment.executeDirectMoveCommand(0, 1);
+                        else GameCoreEnvironment.executeDirectMoveCommand(0, -1);
+                    }
+                }
+            });
+
+            const resetJoystickHandleVisualCoordinates = () => {
+                joystickActiveState = false;
+                joystickHandleNode.style.transform = 'translate(0px, 0px)';
+            };
+
+            joystickZoneNode.addEventListener('touchend', resetJoystickHandleVisualCoordinates);
+            joystickZoneNode.addEventListener('touchcancel', resetJoystickHandleVisualCoordinates);
+        });
+    </script>
+</body>
+</html>
