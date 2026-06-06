@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Paradox Maze: Absolute Reality Distortion Engine</title>
+    <title>Paradox Maze: Absolute Reality Distortion Engine v2.0</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Syne:wght@700;800&display=swap');
 
@@ -17,22 +17,15 @@
             --neon-gold: #eab308;
             --neon-blue: #3b82f6;
             --neon-pink: #ec4899;
+            --neon-cyan: #06b6d4;
             --text-main: #f8fafc;
             --text-muted: #475569;
         }
 
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            margin: 0;
-            padding: 0;
-            touch-action: none;
-        }
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; touch-action: none; }
 
         body, html {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background-color: var(--bg-void);
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--text-main);
@@ -40,1872 +33,1743 @@
             position: relative;
         }
 
-        /* Scanline CRT Simulation Effect Overlay */
+        /* CRT Scanline */
         body::before {
-            content: " ";
-            display: block;
-            position: absolute;
+            content: " "; display: block; position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.45) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-            z-index: 9999;
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-            opacity: 0.35;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.45) 50%),
+                        linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.02), rgba(0,0,255,0.05));
+            z-index: 9999; background-size: 100% 4px, 6px 100%;
+            pointer-events: none; opacity: 0.3;
         }
 
         .crt-flicker {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 9998;
-            pointer-events: none;
-            background: rgba(139, 92, 246, 0.003);
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            z-index: 9998; pointer-events: none;
+            background: rgba(139,92,246,0.003);
             animation: crtBlurEffect 0.15s infinite;
         }
+        @keyframes crtBlurEffect { 0%{opacity:0.93} 50%{opacity:1} 100%{opacity:0.95} }
 
-        @keyframes crtBlurEffect {
-            0% { opacity: 0.93; }
-            50% { opacity: 1; }
-            100% { opacity: 0.95; }
+        /* ===== LOBBY PREMIUM EFFECTS ===== */
+        .lobby-bg-particles {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            pointer-events: none; overflow: hidden; z-index: 1;
+        }
+        .lobby-orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0.15; animation: orbFloat 8s ease-in-out infinite;
+        }
+        .lobby-orb:nth-child(1) { width:400px; height:400px; background:var(--neon-purple); top:-100px; left:-100px; animation-delay:0s; }
+        .lobby-orb:nth-child(2) { width:300px; height:300px; background:var(--neon-blue); bottom:-80px; right:-80px; animation-delay:-3s; }
+        .lobby-orb:nth-child(3) { width:200px; height:200px; background:var(--neon-pink); top:50%; left:50%; transform:translate(-50%,-50%); animation-delay:-6s; }
+        @keyframes orbFloat {
+            0%,100%{transform:translateY(0) scale(1)}
+            50%{transform:translateY(-30px) scale(1.05)}
         }
 
         .screen-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 24px;
-            background: radial-gradient(circle at center, rgba(7, 7, 12, 0.99) 0%, rgba(2, 2, 5, 1) 100%);
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 100; padding: 24px;
+            background: radial-gradient(circle at center, rgba(7,7,12,0.97) 0%, rgba(2,2,5,1) 100%);
         }
+        .screen-overlay.active { display: flex; }
 
-        .screen-overlay.active {
-            display: flex;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Syne', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-align: center;
-        }
+        h1, h2, h3 { font-family: 'Syne', sans-serif; text-transform: uppercase; letter-spacing: 4px; text-align: center; }
 
         .title-glow {
-            font-size: 3.8rem;
+            font-size: clamp(2rem, 6vw, 4rem);
             color: var(--text-main);
-            text-shadow: 0 0 15px var(--neon-purple), 0 0 35px rgba(139, 92, 246, 0.4);
-            margin-bottom: 6px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
+            text-shadow: 0 0 15px var(--neon-purple), 0 0 40px rgba(139,92,246,0.5), 0 0 80px rgba(139,92,246,0.2);
+            margin-bottom: 8px; font-family: 'Orbitron', sans-serif; font-weight: 900;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+        @keyframes titlePulse {
+            0%,100%{text-shadow:0 0 15px var(--neon-purple), 0 0 40px rgba(139,92,246,0.5)}
+            50%{text-shadow:0 0 25px var(--neon-purple), 0 0 60px rgba(139,92,246,0.8), 0 0 100px rgba(139,92,246,0.3)}
         }
 
         .subtitle {
-            font-size: 0.85rem;
-            color: var(--neon-green);
-            font-family: monospace;
-            letter-spacing: 7px;
-            margin-bottom: 45px;
-            text-transform: uppercase;
+            font-size: 0.75rem; color: var(--neon-green); font-family: monospace;
+            letter-spacing: 6px; margin-bottom: 12px; text-transform: uppercase;
+        }
+
+        .lobby-version-badge {
+            font-family: 'Orbitron', monospace; font-size: 0.6rem;
+            color: var(--neon-gold); letter-spacing: 3px; margin-bottom: 36px;
+            padding: 4px 12px; border: 1px solid rgba(234,179,8,0.3); border-radius: 20px;
+            background: rgba(234,179,8,0.05);
+        }
+
+        .lobby-name-container {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(139,92,246,0.3);
+            border-radius: 6px; padding: 10px 16px; width: 300px;
+        }
+        .lobby-name-label { font-family: 'Orbitron', monospace; font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; }
+        .lobby-name-input {
+            background: transparent; border: none; outline: none;
+            color: var(--neon-green); font-family: 'Orbitron', monospace; font-size: 0.85rem; font-weight: 700;
+            width: 100%; touch-action: auto;
         }
 
         .btn {
-            background: rgba(139, 92, 246, 0.06);
-            border: 1px solid var(--neon-purple);
-            color: var(--text-main);
-            padding: 16px 36px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            margin: 10px 0;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            position: relative;
-            overflow: hidden;
+            background: rgba(139,92,246,0.06); border: 1px solid var(--neon-purple);
+            color: var(--text-main); padding: 14px 36px; font-size: 0.85rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 2.5px; border-radius: 4px; cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16,1,0.3,1); margin: 6px 0; width: 300px; text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6); position: relative; overflow: hidden;
         }
-
         .btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
+            content: ''; position: absolute; top:0; left:-100%; width:100%; height:100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
             transition: all 0.6s ease;
         }
+        .btn:hover::before { left: 100%; }
+        .btn:hover { background: var(--neon-purple); color: #020205; box-shadow: 0 0 30px var(--neon-purple); transform: translateY(-2px); }
+        .btn:active { transform: translateY(1px); }
 
-        .btn:hover::before {
-            left: 100%;
+        .btn-daily {
+            border-color: var(--neon-gold); background: rgba(234,179,8,0.05);
+            animation: dailyGlow 2s ease-in-out infinite;
+        }
+        .btn-daily:hover { background: var(--neon-gold); color: #020205; box-shadow: 0 0 30px var(--neon-gold); }
+        @keyframes dailyGlow {
+            0%,100%{box-shadow:0 0 8px rgba(234,179,8,0.3)}
+            50%{box-shadow:0 0 20px rgba(234,179,8,0.6)}
         }
 
-        .btn:hover {
-            background: var(--neon-purple);
-            color: #020205;
-            box-shadow: 0 0 25px var(--neon-purple);
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-        }
-
+        /* ===== PANEL ===== */
         .panel-container {
-            background: var(--panel-dark);
-            border: 1px solid var(--panel-brd);
-            border-radius: 8px;
-            padding: 32px;
-            width: 100%;
-            max-width: 900px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.85);
-            backdrop-filter: blur(12px);
+            background: var(--panel-dark); border: 1px solid var(--panel-brd); border-radius: 10px;
+            padding: 28px; width: 100%; max-width: 960px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9); backdrop-filter: blur(16px);
+            max-height: 90vh; overflow-y: auto;
         }
+        .panel-container::-webkit-scrollbar { width: 5px; }
+        .panel-container::-webkit-scrollbar-thumb { background: var(--panel-brd); border-radius: 3px; }
 
-        .shop-filter-tabs {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-            width: 100%;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-
+        /* ===== SHOP UPGRADE ===== */
+        .shop-filter-tabs { display:flex; gap:6px; margin-top:14px; width:100%; overflow-x:auto; padding-bottom:4px; }
         .tab-btn {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #94a3b8;
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);
+            color: #94a3b8; padding: 7px 14px; font-size: 0.7rem; cursor: pointer;
+            text-transform: uppercase; font-weight: bold; border-radius: 20px; transition: all 0.2s ease; white-space: nowrap;
         }
-
-        .tab-btn.active {
-            border-color: var(--neon-purple);
-            color: var(--neon-purple);
-            background: rgba(139, 92, 246, 0.12);
-            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
-        }
+        .tab-btn.active { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(139,92,246,0.15); box-shadow: 0 0 12px rgba(139,92,246,0.3); }
 
         .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 150px));
-            gap: 16px;
-            justify-content: center;
-            max-height: 380px;
-            overflow-y: auto;
-            padding: 12px;
-            margin: 16px 0;
-            border: 1px solid rgba(255,255,255,0.04);
-            background: rgba(0,0,0,0.4);
-            border-radius: 6px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px; justify-content: center; max-height: 340px; overflow-y: auto;
+            padding: 12px; margin: 14px 0; border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(0,0,0,0.5); border-radius: 8px;
         }
-
-        .shop-grid::-webkit-scrollbar {
-            width: 6px;
-        }
-        .shop-grid::-webkit-scrollbar-thumb {
-            background: var(--panel-brd);
-            border-radius: 3px;
-        }
+        .shop-grid::-webkit-scrollbar { width: 5px; }
+        .shop-grid::-webkit-scrollbar-thumb { background: var(--panel-brd); border-radius: 3px; }
 
         .shop-item {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 6px;
-            padding: 12px 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
+            background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px; padding: 12px 8px; display: flex; flex-direction: column;
+            align-items: center; cursor: pointer; transition: all 0.25s ease; position: relative;
         }
-
-        .shop-item:hover {
-            background: rgba(255,255,255,0.04);
-            border-color: rgba(255,255,255,0.25);
-            transform: scale(1.03);
-        }
-
-        .shop-item.equipped {
-            border-color: var(--neon-green) !important;
-            background: rgba(34, 197, 94, 0.05);
-            box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
-        }
-
-        .shop-item.unlocked {
-            border-color: var(--neon-blue);
-        }
-
-        .shop-item-canvas {
-            width: 60px;
-            height: 75px;
-            image-rendering: pixelated;
-            margin-bottom: 8px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 4px;
-        }
-
-        .shop-item-name {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-            margin-bottom: 6px;
-            color: #e2e8f0;
-        }
-
-        .shop-item-cost {
-            font-size: 0.75rem;
-            font-family: 'Orbitron', monospace;
-            color: var(--neon-gold);
-            font-weight: 600;
-        }
-
+        .shop-item:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
+        .shop-item.equipped { border-color: var(--neon-green) !important; background: rgba(34,197,94,0.07); box-shadow: 0 0 16px rgba(34,197,94,0.2); }
+        .shop-item.unlocked { border-color: var(--neon-blue); }
+        .shop-item-canvas { width:56px; height:70px; image-rendering:pixelated; margin-bottom:8px; background:rgba(0,0,0,0.4); border-radius:4px; }
+        .shop-item-name { font-size:0.7rem; font-weight:700; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; margin-bottom:4px; color:#e2e8f0; }
+        .shop-item-cost { font-size:0.7rem; font-family:'Orbitron',monospace; color:var(--neon-gold); font-weight:600; }
         .rarity-tag {
-            font-size: 0.55rem;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-            color: #ffffff;
-            letter-spacing: 0.5px;
+            font-size:0.5rem; padding:2px 7px; border-radius:10px; font-weight:900;
+            text-transform:uppercase; margin-bottom:6px; color:#fff; letter-spacing:0.5px;
         }
-
-        #game-hud {
-            position: absolute;
-            top: 0; left: 0; width: 100%;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 50;
-            pointer-events: none;
-            background: linear-gradient(to bottom, rgba(2,2,5,0.95) 0%, rgba(2,2,5,0) 100%);
-        }
-
-        .hud-element {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.85rem;
-            background: rgba(7, 7, 12, 0.85);
-            padding: 8px 16px;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.04);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            letter-spacing: 1px;
-        }
-
-        #sanity-bar-container {
-            width: 160px;
-            height: 10px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 3px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-
-        #sanity-bar-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--neon-red), #b91c1c);
-            transition: width 0.1s linear;
-        }
-
-        #canvas-wrapper {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000000;
-        }
-
-        canvas#main-game-canvas {
-            background-color: #020204;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            image-rendering: pixelated;
-            box-shadow: 0 0 40px rgba(0,0,0,0.9);
-        }
-
-        #joystick-zone {
-            position: absolute;
-            bottom: 40px; left: 40px;
-            width: 140px; height: 140px;
-            background: rgba(255,255,255,0.01);
-            border: 2px dashed rgba(255,255,255,0.08);
-            border-radius: 50%;
-            z-index: 90;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #joystick-handle {
-            width: 55px; height: 55px;
-            background: radial-gradient(circle, var(--neon-purple) 0%, rgba(139,92,246,0.3) 100%);
-            border: 2px solid rgba(255,255,255,0.7);
-            border-radius: 50%;
-            position: absolute;
-            box-shadow: 0 0 15px var(--neon-purple);
-        }
-
-        .lang-toggle {
-            position: absolute;
-            top: 24px; right: 24px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #64748b;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            z-index: 500;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .lang-toggle:hover {
-            border-color: var(--neon-purple);
-            color: var(--text-main);
-        }
-
-        .lang-toggle span.active {
-            color: var(--neon-green);
-            text-shadow: 0 0 6px var(--neon-green);
-        }
-
-        .info-row {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px dashed rgba(255,255,255,0.06);
-            padding-bottom: 6px;
-            letter-spacing: 0.5px;
-        }
-
         .skin-desc-panel {
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.04);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-top: 6px;
-            min-height: 54px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.4;
+            background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.04); padding:12px;
+            border-radius:8px; font-size:0.8rem; color:#94a3b8; margin-top:8px; min-height:52px;
+            text-align:center; display:flex; align-items:center; justify-content:center; line-height:1.5;
+        }
+
+        /* ===== HUD ===== */
+        #game-hud {
+            position: absolute; top:0; left:0; width:100%;
+            padding: 12px 20px; display:flex; justify-content:space-between; align-items:center;
+            z-index: 50; pointer-events: none;
+            background: linear-gradient(to bottom, rgba(2,2,5,0.95) 0%, rgba(2,2,5,0) 100%);
+            gap: 8px; flex-wrap: wrap;
+        }
+        .hud-element {
+            font-family:'Orbitron',monospace; font-size:0.75rem;
+            background:rgba(7,7,12,0.9); padding:7px 12px; border-radius:4px;
+            border:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; gap:8px;
+        }
+        #sanity-bar-container { width:120px; height:8px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); }
+        #sanity-bar-fill { height:100%; width:100%; background:linear-gradient(90deg,var(--neon-red),#b91c1c); transition:width 0.2s linear; }
+
+        /* ===== CANVAS ===== */
+        #canvas-wrapper {
+            width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000;
+        }
+        canvas#main-game-canvas {
+            background-color:#020204; max-width:100%; max-height:100%; object-fit:contain;
+            image-rendering:pixelated; box-shadow:0 0 60px rgba(0,0,0,0.9), 0 0 30px rgba(139,92,246,0.1);
+        }
+
+        /* ===== JOYSTICK ===== */
+        #joystick-zone {
+            position:absolute; bottom:30px; left:30px; width:130px; height:130px;
+            background:rgba(255,255,255,0.01); border:2px dashed rgba(255,255,255,0.1);
+            border-radius:50%; z-index:90; display:none; align-items:center; justify-content:center;
+        }
+        #joystick-handle {
+            width:50px; height:50px;
+            background:radial-gradient(circle, var(--neon-purple) 0%, rgba(139,92,246,0.3) 100%);
+            border:2px solid rgba(255,255,255,0.7); border-radius:50%; position:absolute;
+            box-shadow:0 0 18px var(--neon-purple);
+        }
+
+        /* ===== D-PAD FOR MOBILE ===== */
+        #dpad-zone {
+            position:absolute; bottom:30px; right:30px; width:140px; height:140px;
+            z-index:90; display:none;
+        }
+        .dpad-btn {
+            position:absolute; width:44px; height:44px; background:rgba(139,92,246,0.15);
+            border:1px solid rgba(139,92,246,0.4); border-radius:6px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff;
+            transition:background 0.1s; -webkit-tap-highlight-color:transparent;
+        }
+        .dpad-btn:active { background:rgba(139,92,246,0.5); }
+        .dpad-up { top:0; left:50%; transform:translateX(-50%); }
+        .dpad-down { bottom:0; left:50%; transform:translateX(-50%); }
+        .dpad-left { left:0; top:50%; transform:translateY(-50%); }
+        .dpad-right { right:0; top:50%; transform:translateY(-50%); }
+
+        /* ===== LANG TOGGLE ===== */
+        .lang-toggle {
+            position:absolute; top:16px; right:16px;
+            background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+            color:#64748b; padding:5px 12px; border-radius:4px; cursor:pointer;
+            font-size:0.7rem; z-index:500; font-family:'Orbitron',sans-serif; font-weight:bold; transition:all 0.2s;
+        }
+        .lang-toggle:hover { border-color:var(--neon-purple); color:var(--text-main); }
+        .lang-toggle span.active { color:var(--neon-green); text-shadow:0 0 6px var(--neon-green); }
+
+        /* ===== DAILY REWARD SCREEN ===== */
+        #screen-daily { position:absolute; top:0; left:0; width:100%; height:100%; display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; padding:24px; background:radial-gradient(circle at center, rgba(7,7,18,0.99) 0%, rgba(2,2,5,1) 100%); }
+        #screen-daily.active { display:flex; }
+
+        .daily-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin:24px 0; width:100%; max-width:680px; }
+        .daily-card {
+            background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08);
+            border-radius:8px; padding:12px 6px; display:flex; flex-direction:column; align-items:center;
+            gap:6px; transition:all 0.3s ease; position:relative;
+        }
+        .daily-card.claimed { border-color:var(--neon-green); background:rgba(34,197,94,0.08); }
+        .daily-card.today { border-color:var(--neon-gold); background:rgba(234,179,8,0.08); box-shadow:0 0 16px rgba(234,179,8,0.25); animation:dailyPulse 1.5s infinite; }
+        .daily-card.locked { opacity:0.4; }
+        @keyframes dailyPulse { 0%,100%{box-shadow:0 0 10px rgba(234,179,8,0.2)} 50%{box-shadow:0 0 25px rgba(234,179,8,0.5)} }
+        .daily-day { font-family:'Orbitron',monospace; font-size:0.55rem; color:var(--text-muted); }
+        .daily-icon { font-size:1.4rem; }
+        .daily-amount { font-family:'Orbitron',monospace; font-size:0.6rem; color:var(--neon-gold); font-weight:bold; }
+        .daily-check { position:absolute; top:4px; right:4px; color:var(--neon-green); font-size:0.7rem; }
+
+        /* ===== INFO ROW ===== */
+        .info-row { margin-bottom:12px; font-size:0.85rem; display:flex; justify-content:space-between; border-bottom:1px dashed rgba(255,255,255,0.06); padding-bottom:8px; align-items:center; }
+
+        /* ===== GAMEOVER / VICTORY ===== */
+        #screen-gameover { background: radial-gradient(circle, #1c0505 0%, #020205 100%); }
+        #screen-victory { background: radial-gradient(circle, #051e0f 0%, #020205 100%); }
+
+        /* ===== MONSTER ALERT ===== */
+        .monster-alert {
+            position:absolute; top:60px; left:50%; transform:translateX(-50%);
+            background:rgba(239,68,68,0.15); border:1px solid var(--neon-red);
+            border-radius:6px; padding:6px 16px; font-family:'Orbitron',monospace;
+            font-size:0.7rem; color:var(--neon-red); z-index:200; pointer-events:none;
+            opacity:0; transition:opacity 0.3s; letter-spacing:2px;
+        }
+        .monster-alert.show { opacity:1; }
+
+        /* ===== MINI COMPASS ===== */
+        #compass-hud {
+            position:absolute; bottom:100px; right:20px; z-index:91;
+            display:none; flex-direction:column; align-items:center; gap:4px;
+        }
+        .compass-label { font-family:'Orbitron',monospace; font-size:0.55rem; color:var(--text-muted); letter-spacing:1px; }
+        #compass-canvas { width:70px; height:70px; border-radius:50%; border:1px solid rgba(139,92,246,0.3); background:rgba(0,0,0,0.6); }
+
+        @media (max-width:768px) {
+            .title-glow { font-size:1.8rem; letter-spacing:2px; }
+            .subtitle { font-size:0.6rem; letter-spacing:3px; }
+            .btn { width:260px; font-size:0.75rem; padding:12px 20px; }
+            .panel-container { padding:16px; }
+            .daily-grid { grid-template-columns:repeat(4,1fr); }
+            .shop-grid { grid-template-columns:repeat(auto-fill, minmax(110px,1fr)); }
         }
     </style>
 </head>
 <body>
+<div class="crt-flicker"></div>
 
-    <div class="crt-flicker"></div>
+<div class="lang-toggle" id="lang-node-toggle">
+    <span id="lang-en">EN</span> | <span id="lang-id">ID</span>
+</div>
 
-    <div class="lang-toggle" id="lang-node-toggle">
-        <span id="lang-en">EN</span> | <span id="lang-id">ID</span>
+<!-- HUD -->
+<div id="game-hud" style="display:none;">
+    <div class="hud-element">
+        <span style="color:var(--text-muted);font-size:0.65rem;">ID:</span>
+        <span id="hud-value-name" style="color:var(--neon-green);font-weight:800;font-size:0.8rem;">PLAYER</span>
     </div>
-
-    <!-- MAIN INTERACTIVE HUD -->
-    <div id="game-hud" style="display: none;">
-        <div class="hud-element">
-            <span id="hud-label-identity">SUBJECT:</span>
-            <span id="hud-value-name" style="color:var(--neon-green); font-weight:800;">AL FAN</span>
-        </div>
-        <div class="hud-element">
-            <span id="hud-label-sanity">SANITY:</span>
-            <div id="sanity-bar-container">
-                <div id="sanity-bar-fill"></div>
-            </div>
-        </div>
-        <div class="hud-element">
-            <span id="hud-label-currency">CHIPS:</span>
-            <span id="hud-value-coins" style="color:var(--neon-gold); font-weight:bold;">0</span>
-        </div>
+    <div class="hud-element">
+        <span style="color:var(--text-muted);font-size:0.65rem;" id="hud-label-sanity">SANITY</span>
+        <div id="sanity-bar-container"><div id="sanity-bar-fill"></div></div>
+        <span id="sanity-num" style="font-size:0.65rem;color:var(--neon-red);">100</span>
     </div>
+    <div class="hud-element">
+        <span style="color:var(--neon-gold);font-size:0.65rem;">❖</span>
+        <span id="hud-value-coins" style="color:var(--neon-gold);font-weight:bold;">0</span>
+    </div>
+    <div class="hud-element" style="color:var(--neon-cyan);font-size:0.65rem;">
+        <span id="hud-level-label">LVL:</span>
+        <span id="hud-value-level">1</span>
+    </div>
+</div>
 
-    <!-- SCREEN 1: LOBBY -->
-    <div id="screen-lobby" class="screen-overlay active">
+<div class="monster-alert" id="monster-alert">⚠ ENTITY SPAWNED</div>
+
+<!-- SCREEN: LOBBY -->
+<div id="screen-lobby" class="screen-overlay active" style="position:relative;">
+    <div class="lobby-bg-particles">
+        <div class="lobby-orb"></div>
+        <div class="lobby-orb"></div>
+        <div class="lobby-orb"></div>
+    </div>
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;width:100%;">
         <h1 class="title-glow">PARADOX MAZE</h1>
         <p class="subtitle" id="lobby-tagline">Absolute Reality Distortion Engine</p>
-        <button class="btn" id="btn-lobby-start">START MANIFESTATION</button>
-        <button class="btn" id="btn-lobby-shop">SKIN REGISTRIES</button>
-        <button class="btn" id="btn-lobby-config">CONFIG SCHEMATICS</button>
+        <div class="lobby-version-badge">v2.0 · ENHANCED REALITY MATRIX</div>
+        <div class="lobby-name-container">
+            <span class="lobby-name-label" id="lobby-name-label">IDENTITY:</span>
+            <input class="lobby-name-input" id="player-name-input" type="text" maxlength="12" value="AL FAN" placeholder="ENTER NAME" autocomplete="off" spellcheck="false">
+        </div>
+        <button class="btn" id="btn-lobby-start">▶ START MANIFESTATION</button>
+        <button class="btn btn-daily" id="btn-lobby-daily">☀ DAILY REWARD</button>
+        <button class="btn" id="btn-lobby-shop">◈ SKIN REGISTRIES</button>
+        <button class="btn" id="btn-lobby-config">⚙ CONFIG SCHEMATICS</button>
     </div>
+</div>
 
-    <!-- SCREEN 2: SKIN REGISTRY SHOP -->
-    <div id="screen-shop" class="screen-overlay">
-        <div class="panel-container">
-            <h2 id="shop-title-header">SKIN REGISTRIES</h2>
-            <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.9rem;">
-                <div><span id="shop-label-balance">NET VALUE:</span> <span id="shop-balance-value" style="color:var(--neon-gold); font-weight:bold;">0</span></div>
-                <div id="shop-rarity-desc" style="font-size:0.75rem; color:var(--text-muted)">STABLE TIMELINE QUANTUM ENCRYPTED</div>
-            </div>
-            <div class="shop-filter-tabs" id="shop-tab-container">
-                <button class="tab-btn active" data-filter="all">ALL</button>
-                <button class="tab-btn" data-filter="0">COMMON</button>
-                <button class="tab-btn" data-filter="1">RARE</button>
-                <button class="tab-btn" data-filter="2">EPIC</button>
-                <button class="tab-btn" data-filter="3">LEGENDARY</button>
-                <button class="tab-btn" data-filter="4">MYTHICAL</button>
-                <button class="tab-btn" data-filter="5">COSMIC</button>
-            </div>
-            <div class="shop-grid" id="shop-items-grid-container"></div>
-            <div class="skin-desc-panel" id="skin-details-description">Select skin target sequence.</div>
-            <div style="text-align: center; margin-top: 15px;">
-                <button class="btn" id="btn-shop-back" style="width:100%">RETURN TO CORE LOBBY</button>
+<!-- SCREEN: DAILY REWARD -->
+<div id="screen-daily" class="screen-overlay">
+    <h2 id="daily-title" style="font-size:1.5rem;margin-bottom:8px;">DAILY NEXUS REWARD</h2>
+    <p style="font-size:0.75rem;color:var(--text-muted);letter-spacing:2px;" id="daily-sub">WEEKLY RESET EVERY SUNDAY</p>
+    <div class="daily-grid" id="daily-reward-grid"></div>
+    <p style="font-size:0.7rem;color:var(--text-muted);margin-bottom:16px;" id="daily-next-label">Next reward resets in: <span id="daily-countdown" style="color:var(--neon-gold);">--</span></p>
+    <button class="btn" id="btn-daily-claim" style="border-color:var(--neon-gold);background:rgba(234,179,8,0.08);">CLAIM TODAY'S REWARD</button>
+    <button class="btn" id="btn-daily-back" style="margin-top:6px;">RETURN TO LOBBY</button>
+</div>
+
+<!-- SCREEN: SHOP -->
+<div id="screen-shop" class="screen-overlay">
+    <div class="panel-container">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <h2 id="shop-title-header" style="font-size:1.2rem;letter-spacing:3px;">SKIN REGISTRIES</h2>
+            <div style="text-align:right;">
+                <div style="font-size:0.7rem;color:var(--text-muted);" id="shop-label-balance">NET VALUE</div>
+                <div id="shop-balance-value" style="color:var(--neon-gold);font-weight:bold;font-family:'Orbitron',monospace;">0 CHIPS</div>
             </div>
         </div>
-    </div>
-
-    <!-- SCREEN 3: CONFIGURATION SCHEMATICS -->
-    <div id="screen-config" class="screen-overlay">
-        <div class="panel-container" style="max-width: 500px;">
-            <h2 id="config-title-header">SYSTEM CONFIG</h2>
-            <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); margin-bottom: 30px;" id="config-sub">Adjust internal audio schematics</p>
-            <div class="info-row" style="padding: 12px 0;">
-                <span id="config-label-music">AMBIENT BACKGROUND MUSIC</span>
-                <input type="checkbox" id="cfg-check-music" checked style="accent-color:var(--neon-purple); transform: scale(1.3); cursor:pointer;">
-            </div>
-            <div class="info-row" style="padding: 12px 0; margin-bottom: 35px;">
-                <span id="config-label-sfx">OPERATIONAL SFX FEEDBACK</span>
-                <input type="checkbox" id="cfg-check-sfx" checked style="accent-color:var(--neon-purple); transform: scale(1.3); cursor:pointer;">
-            </div>
-            <button class="btn" id="btn-config-reset" style="width:100%; border-color:var(--neon-red); background:rgba(239,68,68,0.02); font-size:0.85rem; margin-bottom:12px;">RESET ALL PROGRESS DATA</button>
-            <button class="btn" id="btn-config-back" style="width:100%">SAVE & RETURN</button>
+        <div class="shop-filter-tabs" id="shop-tab-container">
+            <button class="tab-btn active" data-filter="all">⬡ ALL</button>
+            <button class="tab-btn" data-filter="0">▪ COMMON</button>
+            <button class="tab-btn" data-filter="1">◆ RARE</button>
+            <button class="tab-btn" data-filter="2">★ EPIC</button>
+            <button class="tab-btn" data-filter="3">❋ LEGENDARY</button>
+            <button class="tab-btn" data-filter="4">☯ MYTHICAL</button>
+            <button class="tab-btn" data-filter="5">✦ COSMIC</button>
+        </div>
+        <div class="shop-grid" id="shop-items-grid-container"></div>
+        <div class="skin-desc-panel" id="skin-details-description">Select skin target sequence.</div>
+        <div style="text-align:center;margin-top:12px;">
+            <button class="btn" id="btn-shop-back" style="width:100%">↩ RETURN TO CORE LOBBY</button>
         </div>
     </div>
+</div>
 
-    <!-- SCREEN 4: GAME OVER -->
-    <div id="screen-gameover" class="screen-overlay" style="background: radial-gradient(circle, #1c0505 0%, #020205 100%);">
-        <h1 class="title-glow" style="color:var(--neon-red); text-shadow:0 0 25px var(--neon-red);" id="go-title">MANIFESTATION FAILED</h1>
-        <p class="subtitle" id="go-subtitle" style="color:var(--text-muted);">Your sanity dissolved completely into the loop matrix</p>
-        <button class="btn" id="btn-go-retry">RE-ENTER PARADOX</button>
-        <button class="btn" id="btn-go-menu">ABANDON TO LOBBY</button>
+<!-- SCREEN: CONFIG -->
+<div id="screen-config" class="screen-overlay">
+    <div class="panel-container" style="max-width:500px;">
+        <h2 id="config-title-header" style="font-size:1.2rem;margin-bottom:20px;">⚙ SYSTEM CONFIG</h2>
+        <div class="info-row">
+            <span id="config-label-music">AMBIENT MUSIC</span>
+            <input type="checkbox" id="cfg-check-music" checked style="accent-color:var(--neon-purple);transform:scale(1.4);cursor:pointer;">
+        </div>
+        <div class="info-row">
+            <span id="config-label-sfx">SFX FEEDBACK</span>
+            <input type="checkbox" id="cfg-check-sfx" checked style="accent-color:var(--neon-purple);transform:scale(1.4);cursor:pointer;">
+        </div>
+        <div class="info-row">
+            <span id="config-label-horror">HORROR AMBIENCE</span>
+            <input type="checkbox" id="cfg-check-horror" checked style="accent-color:var(--neon-red);transform:scale(1.4);cursor:pointer;">
+        </div>
+        <div class="info-row" style="border:none;margin-top:8px;">
+            <span style="font-size:0.8rem;color:var(--text-muted);" id="config-label-vol">MASTER VOLUME</span>
+            <input type="range" id="cfg-volume" min="0" max="100" value="70" style="width:120px;accent-color:var(--neon-purple);cursor:pointer;" touch-action="auto">
+        </div>
+        <button class="btn" id="btn-config-reset" style="width:100%;border-color:var(--neon-red);background:rgba(239,68,68,0.02);margin-top:20px;margin-bottom:10px;">⚠ RESET ALL PROGRESS</button>
+        <button class="btn" id="btn-config-back" style="width:100%">✓ SAVE & RETURN</button>
     </div>
+</div>
 
-    <!-- SCREEN 5: CLEAR/VICTORY -->
-    <div id="screen-victory" class="screen-overlay" style="background: radial-gradient(circle, #051e0f 0%, #020205 100%);">
-        <h1 class="title-glow" style="color:var(--neon-green); text-shadow:0 0 25px var(--neon-green);" id="vic-title">CORE REACHED</h1>
-        <p class="subtitle" id="vic-subtitle" style="color:var(--neon-gold);">The absolute reality loop breaks... temporarily</p>
-        <button class="btn" id="btn-vic-continue">PROCEED TO NEXT CYCLE</button>
-    </div>
+<!-- SCREEN: GAME OVER -->
+<div id="screen-gameover" class="screen-overlay">
+    <h1 class="title-glow" style="color:var(--neon-red);text-shadow:0 0 30px var(--neon-red);" id="go-title">MANIFESTATION FAILED</h1>
+    <p class="subtitle" id="go-subtitle" style="color:var(--text-muted);">Your sanity dissolved into the loop matrix</p>
+    <button class="btn" id="btn-go-retry">↺ RE-ENTER PARADOX</button>
+    <button class="btn" id="btn-go-menu">⏏ ABANDON TO LOBBY</button>
+</div>
 
-    <div id="canvas-wrapper">
-        <canvas id="main-game-canvas" width="640" height="480"></canvas>
-    </div>
+<!-- SCREEN: VICTORY -->
+<div id="screen-victory" class="screen-overlay">
+    <h1 class="title-glow" style="color:var(--neon-green);text-shadow:0 0 30px var(--neon-green);" id="vic-title">CORE REACHED</h1>
+    <p class="subtitle" id="vic-subtitle" style="color:var(--neon-gold);">The reality loop breaks... temporarily</p>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:20px;" id="vic-reward-text">+1250 CHIPS REWARDED</p>
+    <button class="btn" id="btn-vic-continue">▶ NEXT CYCLE</button>
+    <button class="btn" id="btn-vic-menu" style="border-color:var(--text-muted);">⏏ LOBBY</button>
+</div>
 
-    <div id="joystick-zone">
-        <div id="joystick-handle"></div>
-    </div>
+<div id="canvas-wrapper">
+    <canvas id="main-game-canvas" width="800" height="560"></canvas>
+</div>
 
-    <script>
-        "use strict";
+<div id="joystick-zone"><div id="joystick-handle"></div></div>
+<div id="dpad-zone">
+    <div class="dpad-btn dpad-up" id="dpad-up">▲</div>
+    <div class="dpad-btn dpad-down" id="dpad-down">▼</div>
+    <div class="dpad-btn dpad-left" id="dpad-left">◀</div>
+    <div class="dpad-btn dpad-right" id="dpad-right">▶</div>
+</div>
 
-        // ============================================================================
-        // DICTIONARY LOCALIZATION SYSTEM
-        // ============================================================================
-        const LocalizationEngine = {
-            en: {
-                tagline: "Absolute Reality Distortion Engine",
-                start: "START MANIFESTATION",
-                shop: "SKIN REGISTRIES",
-                config: "CONFIG SCHEMATICS",
-                shopTitle: "SKIN REGISTRIES",
-                balance: "NET VALUE:",
-                returnLobby: "RETURN TO CORE LOBBY",
-                sysConfig: "SYSTEM CONFIG",
-                configSub: "Adjust internal audio schematics",
-                bgMusic: "AMBIENT BACKGROUND MUSIC",
-                opSfx: "OPERATIONAL SFX FEEDBACK",
-                resetProg: "RESET ALL PROGRESS DATA",
-                saveReturn: "SAVE & RETURN",
-                failedTitle: "MANIFESTATION FAILED",
-                failedSub: "Your sanity dissolved completely into the loop matrix",
-                reenter: "RE-ENTER PARADOX",
-                abandon: "ABANDON TO LOBBY",
-                coreReached: "CORE REACHED",
-                loopBreaks: "The absolute reality loop breaks... temporarily",
-                proceedNext: "PROCEED TO NEXT CYCLE"
-            },
-            id: {
-                tagline: "Mesin Distorsi Realitas Absolut",
-                start: "MULAI MANIFESTASI",
-                shop: "REGISTRI SKIN",
-                config: "SKEMATIK KONFIG",
-                shopTitle: "REGISTRI SKIN",
-                balance: "SALDO BERSIH:",
-                returnLobby: "KEMBALI KE LOBBY UTAMA",
-                sysConfig: "KONFIGURASI SISTEM",
-                configSub: "Sesuaikan skematik audio internal",
-                bgMusic: "MUSIK LATAR BELAKANG AMBIENT",
-                opSfx: "FEEDBACK SFX OPERASIONAL",
-                resetProg: "RESET SEMUA DATA PROGRESS",
-                saveReturn: "SIMPAN & KEMBALI",
-                failedTitle: "MANIFESTASI GAGAL",
-                failedSub: "Sanitas Anda larut sepenuhnya ke dalam matriks loop",
-                reenter: "MASUK ULANG PARADOKS",
-                abandon: "TINGGALKAN KE LOBBY",
-                coreReached: "INTI DIJANGKAU",
-                loopBreaks: "Loop realitas absolut terputus... untuk sementara",
-                proceedNext: "LANJUT KE SIKLUS BERIKUTNYA"
-            }
-        };
+<div id="compass-hud">
+    <canvas id="compass-canvas" width="70" height="70"></canvas>
+    <div class="compass-label" id="compass-label">RADAR</div>
+</div>
 
-        const GaslightingQuotes = {
-            en: [
-                "You are trapped in your own delusion, [NAME].",
-                "Did you really believe there was an escape, [NAME]?",
-                "Every turn you take has already been written by you.",
-                "The core is just another loop layer, [NAME].",
-                "Your shadow is moving faster than your reality.",
-                "Stop running from what you built, [NAME]."
-            ],
-            id: [
-                "Kamu terjebak dalam delusimu sendiri, [NAME].",
-                "Apakah kamu benar-benar percaya ada jalan keluar, [NAME]?",
-                "Setiap belokan yang kamu ambil sudah kamu tulis sendiri.",
-                "Inti itu hanyalah lapisan loop lainnya, [NAME].",
-                "Bayanganmu bergerak lebih cepat daripada realitasmu.",
-                "Berhentilah lari dari apa yang telah kamu bangun, [NAME]."
-            ]
-        };
+<script>
+"use strict";
+// ============================================================================
+// LOCALIZATION
+// ============================================================================
+const L10n = {
+    en: {
+        tagline:"Absolute Reality Distortion Engine", start:"▶ START MANIFESTATION",
+        daily:"☀ DAILY REWARD", shop:"◈ SKIN REGISTRIES", config:"⚙ CONFIG SCHEMATICS",
+        shopTitle:"SKIN REGISTRIES", balance:"NET VALUE", returnLobby:"↩ RETURN TO CORE LOBBY",
+        sysConfig:"⚙ SYSTEM CONFIG", bgMusic:"AMBIENT MUSIC", opSfx:"SFX FEEDBACK",
+        horror:"HORROR AMBIENCE", vol:"MASTER VOLUME",
+        resetProg:"⚠ RESET ALL PROGRESS", saveReturn:"✓ SAVE & RETURN",
+        failedTitle:"MANIFESTATION FAILED", failedSub:"Your sanity dissolved into the loop matrix",
+        reenter:"↺ RE-ENTER PARADOX", abandon:"⏏ ABANDON TO LOBBY",
+        coreReached:"CORE REACHED", loopBreaks:"The reality loop breaks... temporarily",
+        proceedNext:"▶ NEXT CYCLE", lobbyName:"IDENTITY:", dailyTitle:"DAILY NEXUS REWARD",
+        dailySub:"WEEKLY RESET EVERY SUNDAY", dailyClaim:"CLAIM TODAY'S REWARD",
+        dailyBack:"RETURN TO LOBBY", compass:"RADAR", levelLabel:"LVL:",
+        vicReward:"+1250 CHIPS REWARDED", vicMenu:"⏏ LOBBY"
+    },
+    id: {
+        tagline:"Mesin Distorsi Realitas Absolut", start:"▶ MULAI MANIFESTASI",
+        daily:"☀ HADIAH HARIAN", shop:"◈ REGISTRI SKIN", config:"⚙ SKEMATIK KONFIG",
+        shopTitle:"REGISTRI SKIN", balance:"SALDO BERSIH", returnLobby:"↩ KEMBALI KE LOBBY",
+        sysConfig:"⚙ KONFIGURASI SISTEM", bgMusic:"MUSIK AMBIENT", opSfx:"UMPAN BALIK SFX",
+        horror:"AMBIENS HORROR", vol:"VOLUME MASTER",
+        resetProg:"⚠ RESET SEMUA PROGRESS", saveReturn:"✓ SIMPAN & KEMBALI",
+        failedTitle:"MANIFESTASI GAGAL", failedSub:"Sanitas Anda larut ke dalam matriks loop",
+        reenter:"↺ MASUK ULANG PARADOKS", abandon:"⏏ TINGGALKAN KE LOBBY",
+        coreReached:"INTI DIJANGKAU", loopBreaks:"Loop realitas terputus... untuk sementara",
+        proceedNext:"▶ SIKLUS BERIKUTNYA", lobbyName:"IDENTITAS:", dailyTitle:"HADIAH NEXUS HARIAN",
+        dailySub:"RESET MINGGUAN SETIAP MINGGU", dailyClaim:"KLAIM HADIAH HARI INI",
+        dailyBack:"KEMBALI KE LOBBY", compass:"RADAR", levelLabel:"LVL:",
+        vicReward:"+1250 CHIPS DIBERIKAN", vicMenu:"⏏ LOBBY"
+    }
+};
 
-        // ============================================================================
-        // GLOBAL ENGINE CORE PROGRESS TRACKER
-        // ============================================================================
-        const ParadoxEngine = {
-            scene: 'Lobby',
-            lang: 'id',
-            music: true,
-            sfx: true,
-            player: {
-                name: 'AL FAN',
-                coins: 15000,
-                unlockedSkins: ['common1'],
-                equippedSkin: 'common1'
-            }
-        };
+const GaslightingQuotes = {
+    en:[
+        "You are trapped in your own delusion, [NAME].",
+        "Did you really believe there was an escape, [NAME]?",
+        "Every turn has already been written by you.",
+        "The core is just another loop layer, [NAME].",
+        "Your shadow moves faster than your reality.",
+        "Stop running from what you built, [NAME].",
+        "They've been watching you since the beginning, [NAME].",
+        "The walls remember your every step, [NAME].",
+        "You're not escaping. You're just delaying, [NAME].",
+        "Even your heartbeat belongs to the maze, [NAME]."
+    ],
+    id:[
+        "Kamu terjebak dalam delusimu sendiri, [NAME].",
+        "Apakah kamu benar-benar percaya ada jalan keluar, [NAME]?",
+        "Setiap belokan sudah kamu tulis sendiri.",
+        "Inti itu hanyalah lapisan loop lainnya, [NAME].",
+        "Bayanganmu bergerak lebih cepat dari realitasmu.",
+        "Berhentilah lari dari apa yang telah kamu bangun, [NAME].",
+        "Mereka sudah mengawasimu sejak awal, [NAME].",
+        "Dinding-dinding ini mengingat setiap langkahmu, [NAME].",
+        "Kamu tidak kabur. Kamu hanya menunda, [NAME].",
+        "Bahkan detak jantungmu milik labirin ini, [NAME]."
+    ]
+};
 
-        // ============================================================================
-        // WEB AUDIO PROCEDURAL SYNTHESIZER
-        // ============================================================================
-        const SoundEngine = {
-            ctx: null,
-            droneOsc: null,
-            droneGain: null,
+// ============================================================================
+// ENGINE STATE
+// ============================================================================
+const ParadoxEngine = {
+    scene:'Lobby', lang:'id', music:true, sfx:true, horror:true, volume:0.7,
+    player:{ name:'AL FAN', coins:15000, level:1, unlockedSkins:['common1'], equippedSkin:'common1' },
+    daily:{ lastClaimed:-1, weekStart:0, claimedDays:[] }
+};
 
-            init() {
-                if (this.ctx) return;
-                try {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    this.startAmbientDrone();
-                } catch (e) {
-                    console.error("AudioContext initialization blocked or unsupported", e);
+// ============================================================================
+// DAILY REWARD DATA
+// ============================================================================
+const DailyRewards = [
+    { day:1, icon:'💎', amount:500 },
+    { day:2, icon:'⚡', amount:800 },
+    { day:3, icon:'🔮', amount:1200 },
+    { day:4, icon:'🌙', amount:1600 },
+    { day:5, icon:'💀', amount:2200 },
+    { day:6, icon:'🌌', amount:3000 },
+    { day:7, icon:'👑', amount:5000 }
+];
+
+// ============================================================================
+// 55 SKIN DATABASE
+// ============================================================================
+const SkinDB = [
+    // COMMON (0)
+    {id:'common1',name:'Forest Whisperer',rarity:0,rN:'Common',cost:0,color:'#22c55e',element:'earth',en:'Channels emerald leaves and earth particle streams.',id2:'Menyalurkan daun zamrud dan aliran partikel tanah.'},
+    {id:'common2',name:'Rust & Iron',rarity:0,rN:'Common',cost:100,color:'#b45309',element:'spark',en:'Discharges metallic sparks and industrial flakes.',id2:'Mengeluarkan percikan logam dan serpihan industri.'},
+    {id:'common3',name:'River Pebble',rarity:0,rN:'Common',cost:200,color:'#64748b',element:'pebble',en:'Smooth blue-gray flowing gradient stone palette.',id2:'Palet batu gradien mengalir abu-abu biru yang halus.'},
+    {id:'common4',name:'Desert Nomad',rarity:0,rN:'Common',cost:300,color:'#d97706',element:'sand',en:'Sweeping sand storm and dry dust trail particles.',id2:'Sapuan badai pasir dan partikel debu kering.'},
+    {id:'common5',name:'Breeze Wanderer',rarity:0,rN:'Common',cost:400,color:'#06b6d4',element:'wind',en:'Cyan wind gust lines cutting through grid space.',id2:'Garis hembusan angin sian yang memotong ruang kisi.'},
+    {id:'common6',name:'Clay Golem',rarity:0,rN:'Common',cost:500,color:'#92400e',element:'clay',en:'Ancient clay construct emitting earth dust clouds.',id2:'Konstruksi tanah liat kuno yang memancarkan awan debu.'},
+    {id:'common7',name:'Thorn Walker',rarity:0,rN:'Common',cost:600,color:'#4d7c0f',element:'thorn',en:'Dark vine and thorn energy field surrounds this entity.',id2:'Medan energi sulur dan duri gelap mengelilingi entitas ini.'},
+    // RARE (1)
+    {id:'rare1',name:'Frostbitten Guard',rarity:1,rN:'Rare',cost:1000,color:'#38bdf8',element:'ice',en:'Sub-zero icicle aura with outer shadow glow.',id2:'Aura pelindung es di bawah nol dengan pendaran luar.'},
+    {id:'rare2',name:'Runic Scholar',rarity:1,rN:'Rare',cost:1250,color:'#6366f1',element:'glyph',en:'Glowing neon aqua ancient runic script symbols.',id2:'Simbol skrip kuno aqua neon yang menyala.'},
+    {id:'rare3',name:'Copper Steam',rarity:1,rN:'Rare',cost:1500,color:'#ca8a04',element:'steam',en:'Automated clockwork brass cloud steam smoke puffs.',id2:'Embusan asap uap kuningan mekanis otomatis.'},
+    {id:'rare4',name:'Abalone Shell',rarity:1,rN:'Rare',cost:1750,color:'#fda4af',element:'pearl',en:'Pearlescent shifting neon aqua dimensional prism.',id2:'Prisma dimensi aqua neon mutiara yang bergeser.'},
+    {id:'rare5',name:'Cavern Geomancer',rarity:1,rN:'Rare',cost:2000,color:'#c084fc',element:'amethyst',en:'Rich purple amethyst crystalline matrix trails.',id2:'Jejak matriks kristal batu kecubung ungu yang kaya.'},
+    {id:'rare6',name:'Lightning Rod',rarity:1,rN:'Rare',cost:2250,color:'#fbbf24',element:'thunder',en:'Static electric field crackles with golden arcs.',id2:'Medan listrik statis berderak dengan busur emas.'},
+    {id:'rare7',name:'Neon Reaper',rarity:1,rN:'Rare',cost:2500,color:'#a78bfa',element:'neon',en:'Vivid neon violet haze with sharp electric edges.',id2:'Kabut violet neon dengan tepi listrik tajam.'},
+    {id:'rare8',name:'Arctic Wraith',rarity:1,rN:'Rare',cost:2750,color:'#bae6fd',element:'blizzard',en:'Blizzard ice shards orbit and scatter on impact.',id2:'Pecahan es blizzard mengorbit dan menyebar saat benturan.'},
+    // EPIC (2)
+    {id:'epic1',name:'Shadow Stalker',rarity:2,rN:'Epic',cost:3000,color:'#312e81',element:'void',en:'Unstable shadow void trails with glitch displacement.',id2:'Jejak kosong bayangan dengan pergeseran gangguan.'},
+    {id:'epic2',name:'Solar Templar',rarity:2,rN:'Epic',cost:3500,color:'#f59e0b',element:'solar',en:'Solar flare bright yellow sparks with high glitch rate.',id2:'Percikan kuning cerah suar surya dengan gangguan tinggi.'},
+    {id:'epic3',name:'Bio-Luminescent',rarity:2,rN:'Epic',cost:4000,color:'#22d3ee',element:'neonjelly',en:'Organic deep-sea radioactive neon glow displacements.',id2:'Gangguan organik bercahaya neon radioaktif laut dalam.'},
+    {id:'epic4',name:'Volcanic Core',rarity:2,rN:'Epic',cost:4500,color:'#ea580c',element:'magma',en:'Flowing magma internal heat engine matrix distortion.',id2:'Distorsi mesin internal magma panas yang mengalir.'},
+    {id:'epic5',name:'Aether Alchemist',rarity:2,rN:'Epic',cost:5000,color:'#16a34a',element:'mercury',en:'Volatile green acidic chemical rows on canvas layers.',id2:'Baris kimia asam hijau yang mudah menguap.'},
+    {id:'epic6',name:'Spectral Warden',rarity:2,rN:'Epic',cost:5500,color:'#818cf8',element:'ghost',en:'Spectral translucent shimmer with haunting echo trails.',id2:'Kilap transparan spektral dengan jejak gaung menghantui.'},
+    {id:'epic7',name:'Abyssal Diver',rarity:2,rN:'Epic',cost:6000,color:'#1e40af',element:'deep',en:'Deep pressure abyss field with bioluminescent edges.',id2:'Medan jurang tekanan dalam dengan tepi bioluminesensi.'},
+    {id:'epic8',name:'Tempest Blade',rarity:2,rN:'Epic',cost:6500,color:'#7c3aed',element:'storm',en:'Storm blade energy radiates crackling violet arcs.',id2:'Energi bilah badai memancarkan busur violet berderak.'},
+    // LEGENDARY (3)
+    {id:'legendary1',name:'Dragon Lord',rarity:3,rN:'Legendary',cost:7000,color:'#dc2626',element:'dragon',en:'Fiery dragon scale amber dust particles floating upward.',id2:'Partikel debu ambar sisik naga api melayang ke atas.'},
+    {id:'legendary2',name:'Phoenix Rebirth',rarity:3,rN:'Legendary',cost:7750,color:'#f97316',element:'phoenix',en:'Gold ancestral feathers float up and fade smoothly.',id2:'Bulu emas leluhur melayang ke atas dan memudar halus.'},
+    {id:'legendary3',name:'Cyber Shogun',rarity:3,rN:'Legendary',cost:8500,color:'#a855f7',element:'glitch',en:'High-tech data gold particle streams behind movement.',id2:'Aliran partikel emas data teknologi tinggi di belakang.'},
+    {id:'legendary4',name:'Celestial Monarch',rarity:3,rN:'Legendary',cost:9250,color:'#fcd34d',element:'holy',en:'Divine rays of structural light and gold dust.',id2:'Sinar suci cahaya struktural dan debu emas.'},
+    {id:'legendary5',name:'Abyssal Kraken',rarity:3,rN:'Legendary',cost:10000,color:'#2563eb',element:'kraken',en:'Deep blue fluid aquatic fading trace elements behind.',id2:'Jejak elemen air biru tua memudar di belakang.'},
+    {id:'legendary6',name:'Storm Emperor',rarity:3,rN:'Legendary',cost:11000,color:'#0ea5e9',element:'cyclone',en:'Cyclone pressure ring radiating electric golden storms.',id2:'Cincin tekanan siklon memancarkan badai emas elektrik.'},
+    {id:'legendary7',name:'Iron Colossus',rarity:3,rN:'Legendary',cost:12000,color:'#6b7280',element:'titan',en:'Molten iron titan with seismic shockwave pulses.',id2:'Titan besi cair dengan denyut gelombang kejut seismik.'},
+    {id:'legendary8',name:'Inferno Arch-Mage',rarity:3,rN:'Legendary',cost:13000,color:'#b91c1c',element:'hellfire',en:'Hellfire arch-mage radiating crimson inferno aura trails.',id2:'Archmage api neraka dengan jejak aura merah membara.'},
+    // MYTHICAL (4)
+    {id:'mythical1',name:'Blood Moon Deity',rarity:4,rN:'Mythical',cost:15000,color:'#991b1b',element:'blood',en:'Sine-wave pixel brightness cycling. Crimson aura fields.',id2:'Siklus kecerahan piksel gelombang sinus. Medan aura merah.'},
+    {id:'mythical2',name:'Chronos Weaver',rarity:4,rN:'Mythical',cost:16250,color:'#1d4ed8',element:'clock',en:'Spatial temporal colors using automatic sine intensity.',id2:'Warna temporal spasial menggunakan intensitas sinus otomatis.'},
+    {id:'mythical3',name:'Asura Wrath',rarity:4,rN:'Mythical',cost:17500,color:'#c2410c',element:'asura',en:'Blinding orange combat aura cycling brightness dynamically.',id2:'Aura tempur oranye dengan kecerahan siklus dinamis.'},
+    {id:'mythical4',name:'Jade Emperor',rarity:4,rN:'Mythical',cost:18750,color:'#047857',element:'jade',en:'Imperial green jade fields cycling luminance over time.',id2:'Medan giok hijau kekaisaran dengan siklus pencahayaan.'},
+    {id:'mythical5',name:'Plague Harbinger',rarity:4,rN:'Mythical',cost:20000,color:'#14532d',element:'swarm',en:'Toxic swarm matrix particles with synchronized sine pulses.',id2:'Partikel matriks hama beracun dengan pulsa sinus sinkron.'},
+    {id:'mythical6',name:'Rift Sovereign',rarity:4,rN:'Mythical',cost:22000,color:'#4c1d95',element:'rift',en:'Reality rift sovereign with dimensional fold sine shifts.',id2:'Penguasa celah realitas dengan lipatan dimensi sinus.'},
+    {id:'mythical7',name:'Void Titan',rarity:4,rN:'Mythical',cost:24000,color:'#1e1b4b',element:'titan_void',en:'Void titan pulses with gravity-warped sine luminance cycles.',id2:'Titan kosong berdenyut dengan siklus luminansi gravitasi.'},
+    {id:'mythical8',name:'Entropy God',rarity:4,rN:'Mythical',cost:26000,color:'#7f1d1d',element:'entropy',en:'Entropy field collapses pixel brightness in entropic waves.',id2:'Medan entropi meruntuhkan kecerahan piksel dalam gelombang.'},
+    // COSMIC (5)
+    {id:'cosmic1',name:'Supernova Sovereign',rarity:5,rN:'Cosmic',cost:30000,color:'#f43f5e',element:'pulsar',en:'Rainbow HSL gradient loops with hyper starry twinkle.',id2:'Gradien pelangi HSL dengan kilatan bintang kosmik.'},
+    {id:'cosmic2',name:'Void Singularity',rarity:5,rN:'Cosmic',cost:35000,color:'#000000',element:'blackhole',en:'Black hole matrix shifting hues with star sparkles.',id2:'Matriks lubang hitam pergeseran rona dan kilau bintang.'},
+    {id:'cosmic3',name:'Nebula Weaver',rarity:5,rN:'Cosmic',cost:40000,color:'#4f46e5',element:'nebula',en:'Cosmic dust cloud gas nodes shifting rainbow configs.',id2:'Simpul gas awan debu kosmik pergeseran konfigurasi pelangi.'},
+    {id:'cosmic4',name:'Quasar Overlord',rarity:5,rN:'Cosmic',cost:50000,color:'#7c3aed',element:'quasar',en:'Violet-shifting active galactic nuclei spectral rainbow bands.',id2:'Pita pelangi spektral inti galaksi aktif pergeseran violet.'},
+    {id:'cosmic5',name:'Multiverse Anomaly',rarity:5,rN:'Cosmic',cost:99999,color:'#dc2626',element:'multiverse',en:'The absolute pinnacle. Infinite rainbow spectrum & total anomaly.',id2:'Puncak absolut. Spektrum pelangi tak terbatas & anomali total.'},
+    // 25 NEW SKINS
+    {id:'new1',name:'Crystal Phantom',rarity:0,rN:'Common',cost:350,color:'#a5f3fc',element:'crystal',en:'Crystal-clear phantom form refracts ambient light softly.',id2:'Bentuk phantom kristal membiaskan cahaya sekitar dengan lembut.'},
+    {id:'new2',name:'Ember Shade',rarity:0,rN:'Common',cost:450,color:'#fb923c',element:'ember',en:'Smoldering ember shade with warm trail smoke.',id2:'Bayangan bara membara dengan asap jejak hangat.'},
+    {id:'new3',name:'Moss Phantom',rarity:1,rN:'Rare',cost:1100,color:'#65a30d',element:'moss',en:'Ancient moss energy weaving through stone pathways.',id2:'Energi lumut kuno menenun melalui jalur batu.'},
+    {id:'new4',name:'Plasma Dancer',rarity:1,rN:'Rare',cost:1350,color:'#e879f9',element:'plasma',en:'Plasma ribbons dance in synchronized neon waves.',id2:'Pita plasma menari dalam gelombang neon tersinkronisasi.'},
+    {id:'new5',name:'Wraith Knight',rarity:1,rN:'Rare',cost:1600,color:'#94a3b8',element:'wraith',en:'Wraith knight leaves fading silver echo trails.',id2:'Ksatria hantu meninggalkan jejak gema perak yang memudar.'},
+    {id:'new6',name:'Acid Rain',rarity:2,rN:'Epic',cost:3250,color:'#a3e635',element:'acid',en:'Toxic acid rain streams corrode the floor grid.',id2:'Aliran hujan asam beracun mengikis kisi lantai.'},
+    {id:'new7',name:'Magnet Core',rarity:2,rN:'Epic',cost:3750,color:'#60a5fa',element:'magnet',en:'Magnetic field lines radiate and pull particle trails.',id2:'Garis medan magnet memancar dan menarik jejak partikel.'},
+    {id:'new8',name:'Bone Walker',rarity:2,rN:'Epic',cost:4250,color:'#e2e8f0',element:'bone',en:'Skeletal bone energy with cracking white fracture sparks.',id2:'Energi tulang skeletal dengan percikan putih retak.'},
+    {id:'new9',name:'Cursed Prophet',rarity:3,rN:'Legendary',cost:7500,color:'#7e22ce',element:'curse',en:'Cursed prophecy glyphs orbit and bleed dark violet.',id2:'Glyph nubuat terkutuk mengorbit dan memancarkan violet gelap.'},
+    {id:'new10',name:'Sacred Flame',rarity:3,rN:'Legendary',cost:8750,color:'#fbbf24',element:'sacred',en:'Sacred flame aura with golden divine light explosion.',id2:'Aura api suci dengan ledakan cahaya ilahi emas.'},
+    {id:'new11',name:'Lunar Eclipse',rarity:3,rN:'Legendary',cost:9500,color:'#475569',element:'lunar',en:'Lunar eclipse field dims surrounding light in dark halos.',id2:'Medan gerhana bulan meredupkan cahaya sekitar dalam halo.'},
+    {id:'new12',name:'Gravity Well',rarity:4,rN:'Mythical',cost:19000,color:'#0f172a',element:'gravity',en:'Gravitational lens warps all nearby particle trajectories.',id2:'Lensa gravitasi membelokkan semua trajektori partikel sekitar.'},
+    {id:'new13',name:'Time Fragment',rarity:4,rN:'Mythical',cost:21000,color:'#5eead4',element:'time',en:'Time fragments crystallize then shatter in sine loops.',id2:'Fragmen waktu mengkristal lalu hancur dalam loop sinus.'},
+    {id:'new14',name:'Solar Oblivion',rarity:5,rN:'Cosmic',cost:45000,color:'#fef3c7',element:'oblivion',en:'Solar oblivion blinds all reality in pure white spectrum.',id2:'Kelupaan surya membutakan semua realita dalam spektrum putih.'},
+    {id:'new15',name:'Dark Matter God',rarity:5,rN:'Cosmic',cost:60000,color:'#1e293b',element:'darkmatter',en:'Dark matter field absorbs and re-emits all spectral energy.',id2:'Medan materi gelap menyerap dan memancarkan kembali energi.'},
+    {id:'new16',name:'Chaos Engine',rarity:5,rN:'Cosmic',cost:75000,color:'#ef4444',element:'chaos',en:'Pure chaos entropy engine rendering total color collapse.',id2:'Mesin entropi kekacauan murni menghasilkan keruntuhan warna.'},
+    {id:'new17',name:'Prism Specter',rarity:2,rN:'Epic',cost:5200,color:'#f0abfc',element:'prism',en:'Prism light splits into refracted rainbow specter trails.',id2:'Cahaya prisma terpecah menjadi jejak specter pelangi.'},
+    {id:'new18',name:'Titan Breaker',rarity:3,rN:'Legendary',cost:11500,color:'#374151',element:'breaker',en:'Titan breaker shockwave fields crack every grid tile.',id2:'Medan gelombang kejut titan breaker memecah setiap ubin.'},
+    {id:'new19',name:'Nova Pulse',rarity:4,rN:'Mythical',cost:23000,color:'#f43f5e',element:'nova',en:'Nova pulse expands and collapses in bright sine bursts.',id2:'Denyut nova mengembang dan runtuh dalam sinar sinus cerah.'},
+    {id:'new20',name:'Phantom Lotus',rarity:1,rN:'Rare',cost:2100,color:'#f9a8d4',element:'lotus',en:'Phantom lotus petals orbit in a sacred geometric bloom.',id2:'Kelopak lotus phantom mengorbit dalam mekar geometris suci.'},
+    {id:'new21',name:'Obsidian Reaper',rarity:3,rN:'Legendary',cost:12500,color:'#18181b',element:'obsidian',en:'Obsidian reaper leaves razor-sharp dark crystal edges.',id2:'Reaper obsidian meninggalkan tepi kristal gelap yang tajam.'},
+    {id:'new22',name:'Star Forge',rarity:5,rN:'Cosmic',cost:55000,color:'#fde68a',element:'starforge',en:'Star forge ignition creates celestial particle supernovas.',id2:'Pengapian star forge menciptakan supernova partikel surgawi.'},
+    {id:'new23',name:'Echo Specter',rarity:2,rN:'Epic',cost:4800,color:'#67e8f9',element:'echo',en:'Spectral echo field reverbs player movement in ghost form.',id2:'Medan gema spektral reverb pergerakan pemain dalam bentuk hantu.'},
+    {id:'new24',name:'Soul Binder',rarity:4,rN:'Mythical',cost:25000,color:'#6d28d9',element:'soul',en:'Soul binding chains trail behind in ethereal violet.',id2:'Rantai pengikat jiwa mengalir di belakang dalam violet eteris.'},
+    {id:'new25',name:'Absolute Zero',rarity:5,rN:'Cosmic',cost:80000,color:'#e0f2fe',element:'zero',en:'Absolute zero temperature collapse freezes all nearby particles.',id2:'Keruntuhan suhu nol absolut membekukan semua partikel sekitar.'}
+];
+
+// ============================================================================
+// SPRITE MATRIX
+// ============================================================================
+const SpriteMatrix = [
+    [0,0,0,1,1,1,1,1,1,0,0,0],
+    [0,0,1,2,2,2,2,2,2,1,0,0],
+    [0,1,2,2,2,2,2,2,2,2,1,0],
+    [1,2,2,2,2,2,2,2,2,2,2,1],
+    [1,2,3,3,2,2,2,2,3,3,2,1],
+    [1,2,3,3,2,2,2,2,3,3,2,1],
+    [1,2,2,2,4,2,2,4,2,2,2,1],
+    [1,2,2,1,1,1,1,1,1,2,2,1],
+    [1,2,2,2,2,2,2,2,2,2,2,1],
+    [1,2,2,2,2,2,2,2,2,2,2,1],
+    [0,1,2,2,2,2,2,2,2,2,1,0],
+    [0,1,2,2,2,2,2,2,2,2,1,0],
+    [1,2,2,1,2,2,2,2,1,2,2,1],
+    [1,1,1,0,1,1,1,1,0,1,1,1],
+    [0,0,0,0,1,0,0,1,0,0,0,0]
+];
+
+// 8-bit heart shape pixels
+const HeartMatrix = [
+    [0,1,1,0,0,1,1,0],
+    [1,2,2,1,1,2,2,1],
+    [1,2,2,2,2,2,2,1],
+    [1,2,2,2,2,2,2,1],
+    [0,1,2,2,2,2,1,0],
+    [0,0,1,2,2,1,0,0],
+    [0,0,0,1,1,0,0,0],
+];
+
+function adjustLuminanceHex(hex, f) {
+    try {
+        let r=parseInt(hex.substring(1,3),16), g=parseInt(hex.substring(3,5),16), b=parseInt(hex.substring(5,7),16);
+        if(f>0){r=Math.min(255,Math.floor(r+(255-r)*f));g=Math.min(255,Math.floor(g+(255-g)*f));b=Math.min(255,Math.floor(b+(255-b)*f));}
+        else{r=Math.max(0,Math.floor(r+r*f));g=Math.max(0,Math.floor(g+g*f));b=Math.max(0,Math.floor(b+b*f));}
+        return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+    }catch(e){return hex;}
+}
+
+function renderSprite(ctx, skinId, x, y, w, h, flip) {
+    try {
+        const skin = SkinDB.find(s=>s.id===skinId)||SkinDB[0];
+        const pw=w/12, ph=h/15, now=Date.now();
+        const base=skin.color;
+        const isGlitch=(skin.rarity===2);
+        const isSine=(skin.rarity===4);
+        const isCosmic=(skin.rarity===5);
+        ctx.save();
+        if(skin.rarity>=1){ctx.shadowBlur=14;ctx.shadowColor=skin.color;}
+        for(let row=0;row<15;row++){
+            let rowOff=0;
+            if(isGlitch&&Math.random()<0.07) rowOff=(Math.random()*10)-5;
+            for(let col=0;col<12;col++){
+                let ec=flip?(11-col):col;
+                let cv=SpriteMatrix[row][ec];
+                if(cv===0)continue;
+                let px=x+(col*pw)+rowOff, py=y+(row*ph);
+                if(cv===1){ctx.fillStyle='#010204';}
+                else if(cv===3){ctx.fillStyle='#ef4444';}
+                else if(cv===4){ctx.fillStyle='rgba(255,255,255,0.4)';}
+                else{
+                    ctx.fillStyle=base;
+                    if(isSine){let f=(Math.sin(now/150)+1)/2;ctx.fillStyle=adjustLuminanceHex(base,f*0.4-0.2);}
+                    if(isCosmic){let h2=((now/12)+(col*8)+(row*4))%360;ctx.fillStyle=skin.id==='cosmic2'?`hsl(${h2},95%,15%)`:`hsl(${h2},90%,55%)`;}
                 }
-            },
-
-            startAmbientDrone() {
-                if (!this.ctx || !ParadoxEngine.music || this.droneOsc) return;
-                try {
-                    this.droneOsc = this.ctx.createOscillator();
-                    this.droneGain = this.ctx.createGain();
-                    
-                    this.droneOsc.type = 'sawtooth';
-                    this.droneOsc.frequency.setValueAtTime(45, this.ctx.currentTime);
-                    
-                    // Filter out high harsh frequencies for a deep dark ambient horror drone
-                    let filter = this.ctx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(120, this.ctx.currentTime);
-                    
-                    this.droneGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-                    
-                    this.droneOsc.connect(filter);
-                    filter.connect(this.droneGain);
-                    this.droneGain.connect(this.ctx.destination);
-                    
-                    this.droneOsc.start();
-                } catch(e) {}
-            },
-
-            stopAmbientDrone() {
-                try {
-                    if (this.droneOsc) {
-                        this.droneOsc.stop();
-                        this.droneOsc.disconnect();
-                        this.droneOsc = null;
-                    }
-                    if (this.droneGain) {
-                        this.droneGain.disconnect();
-                        this.droneGain = null;
-                    }
-                } catch(e){}
-            },
-
-            playClick() {
-                if (!ParadoxEngine.sfx || !this.ctx) return;
-                try {
-                    let osc = this.ctx.createOscillator();
-                    let gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.05);
-                } catch(e){}
-            },
-
-            playBump() {
-                if (!ParadoxEngine.sfx || !this.ctx) return;
-                try {
-                    let osc = this.ctx.createOscillator();
-                    let gain = this.ctx.createGain();
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(110, this.ctx.currentTime);
-                    osc.frequency.setValueAtTime(90, this.ctx.currentTime + 0.08);
-                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.18);
-                } catch(e){}
-            },
-
-            playParadoxBlast() {
-                if (!ParadoxEngine.sfx || !this.ctx) return;
-                try {
-                    let osc = this.ctx.createOscillator();
-                    let gain = this.ctx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.6);
-                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.6);
-                } catch(e){}
-            },
-
-            playVictory() {
-                if (!ParadoxEngine.sfx || !this.ctx) return;
-                try {
-                    let now = this.ctx.currentTime;
-                    let notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 Major Triad Arpeggio
-                    notes.forEach((freq, idx) => {
-                        let osc = this.ctx.createOscillator();
-                        let gain = this.ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
-                        gain.gain.setValueAtTime(0.12, now + idx * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.4);
-                        osc.connect(gain);
-                        gain.connect(this.ctx.destination);
-                        osc.start(now + idx * 0.1);
-                        osc.stop(now + idx * 0.1 + 0.4);
-                    });
-                } catch(e){}
-            }
-        };
-
-        // ============================================================================
-        // 30 MASTER SKIN REGISTRY DATABASE (FULLY IMPLEMENTED TIERS)
-        // ============================================================================
-        const SkinRegistryDatabase = [
-            // --- TIER 1: COMMON (Natural Elements) ---
-            {
-                id: 'common1', name: 'Forest Whisperer', rarity: 0, rarityName: 'Common', cost: 0, color: '#22c55e', element: 'earth',
-                desc_en: 'Channels natural emerald leaves and earth particle streams.',
-                desc_id: 'Menyalurkan daun zamrud alami dan aliran partikel tanah.'
-            },
-            {
-                id: 'common2', name: 'Rust & Iron', rarity: 0, rarityName: 'Common', cost: 100, color: '#b45309', element: 'spark',
-                desc_en: 'Discharges jagged metallic sparks and industrial flakes.',
-                desc_id: 'Mengeluarkan percikan logam bergerigi dan serpihan industri.'
-            },
-            {
-                id: 'common3', name: 'River Pebble', rarity: 0, rarityName: 'Common', cost: 200, color: '#64748b', element: 'pebble',
-                desc_en: 'Features a smooth blue-gray flowing gradient stone palette.',
-                desc_id: 'Menampilkan palet batu gradien mengalir abu-abu biru yang halus.'
-            },
-            {
-                id: 'common4', name: 'Desert Nomad', rarity: 0, rarityName: 'Common', cost: 300, color: '#d97706', element: 'sand',
-                desc_en: 'Generates sweeping sand storm and dry dust trail micro-particles.',
-                desc_id: 'Menghasikan sapuan badai pasir dan mikro-partikel jejak debu kering.'
-            },
-            {
-                id: 'common5', name: 'Breeze Wanderer', rarity: 0, rarityName: 'Common', cost: 400, color: '#06b6d4', element: 'wind',
-                desc_en: 'Summons cyan wind gust lines cutting through grid space.',
-                desc_id: 'Memanggil garis hembusan angin sian yang memotong ruang kisi.'
-            },
-
-            // --- TIER 2: RARE (Runic & Mechanical) ---
-            {
-                id: 'rare1', name: 'Frostbitten Guard', rarity: 1, rarityName: 'Rare', cost: 1000, color: '#38bdf8', element: 'ice',
-                desc_en: 'Emits a sub-zero icicle protective aura with outer shadow glow.',
-                desc_id: 'Memancarkan aura pelindung es di bawah nol dengan pendaran luar.'
-            },
-            {
-                id: 'rare2', name: 'Runic Scholar', rarity: 1, rarityName: 'Rare', cost: 1250, color: '#6366f1', element: 'glyph',
-                desc_en: 'Manifests glowing neon aqua ancient runic script symbols.',
-                desc_id: 'Dimanifestasikan oleh simbol skrip kuno aqua neon yang menyala.'
-            },
-            {
-                id: 'rare3', name: 'Copper Steam', rarity: 1, rarityName: 'Rare', cost: 1500, color: '#ca8a04', element: 'steam',
-                desc_en: 'Expels automated clockwork brass cloud steam smoke puffs.',
-                desc_id: 'Mengeluarkan embusan asap uap kuningan mekanis otomatis.'
-            },
-            {
-                id: 'rare4', name: 'Abalone Shell', rarity: 1, rarityName: 'Rare', cost: 1750, color: '#fda4af', element: 'pearl',
-                desc_en: 'Refracts a pearlescent shifting neon aqua dimensional prism.',
-                desc_id: 'Membiaskan prisma dimensi aqua neon mutiara yang bergeser.'
-            },
-            {
-                id: 'rare5', name: 'Cavern Geomancer', rarity: 1, rarityName: 'Rare', cost: 2000, color: '#c084fc', element: 'amethyst',
-                desc_en: 'Deposits rich purple amethyst crystalline matrix trails.',
-                desc_id: 'Meninggalkan jejak matriks kristal batu kecubung ungu yang kaya.'
-            },
-
-            // --- TIER 3: EPIC (Anomalies & Mutation) ---
-            {
-                id: 'epic1', name: 'Shadow Stalker', rarity: 2, rarityName: 'Epic', cost: 3000, color: '#312e81', element: 'void',
-                desc_en: 'Projects unstable shadow void trails with row glitch displacement.',
-                desc_id: 'Memproyeksikan jejak kosong bayangan dengan pergeseran gangguan baris.'
-            },
-            {
-                id: 'epic2', name: 'Solar Templar', rarity: 2, rarityName: 'Epic', cost: 3500, color: '#f59e0b', element: 'solar',
-                desc_en: 'Radiates solar flare bright yellow sparks with high glitch rate.',
-                desc_id: 'Memancarkan percikan kuning cerah suar surya dengan gangguan baris acak.'
-            },
-            {
-                id: 'epic3', name: 'Bio-Luminescent', rarity: 2, rarityName: 'Epic', cost: 4000, color: '#22d3ee', element: 'neonjelly',
-                desc_en: 'Pulses organic deep-sea radioactive neon glow displacements.',
-                desc_id: 'Berdenyut efek gangguan organik bercahaya neon radioaktif laut dalam.'
-            },
-            {
-                id: 'epic4', name: 'Volcanic Core', rarity: 2, rarityName: 'Epic', cost: 4500, color: '#ea580c', element: 'magma',
-                desc_en: 'Maintains a flowing magma internal heat engine matrix distortion.',
-                desc_id: 'Mempertahankan distorsi mesin internal magma panas yang mengalir.'
-            },
-            {
-                id: 'epic5', name: 'Aether Alchemist', rarity: 2, rarityName: 'Epic', cost: 5000, color: '#16a34a', element: 'mercury',
-                desc_en: 'Bubbles volatile green acidic chemical rows onto canvas layers.',
-                desc_id: 'Gelembung baris kimia asam hijau yang mudah menguap pada lapisan kanvas.'
-            },
-
-            // --- TIER 4: LEGENDARY (Mythological Beings) ---
-            {
-                id: 'legendary1', name: 'Dragon Lord', rarity: 3, rarityName: 'Legendary', cost: 7000, color: '#dc2626', element: 'dragon',
-                desc_en: 'Unleashes fiery dragon scale amber dust particles floating upwards.',
-                desc_id: 'Melepaskan partikel debu ambar sisik naga api yang melayang ke atas.'
-            },
-            {
-                id: 'legendary2', name: 'Phoenix Rebirth', rarity: 3, rarityName: 'Legendary', cost: 7750, color: '#f97316', element: 'phoenix',
-                desc_en: 'Sheds gold ancestral feathers that float up and die smoothly.',
-                desc_id: 'Meluruhkan bulu emas leluhur yang melayang ke atas dan memudar halus.'
-            },
-            {
-                id: 'legendary3', name: 'Cyber Shogun', rarity: 3, rarityName: 'Legendary', cost: 8500, color: '#a855f7', element: 'glitch',
-                desc_en: 'Projects high-tech data gold particle streams behind movement paths.',
-                desc_id: 'Memproyeksikan aliran partikel emas data teknologi tinggi di belakang jalur.'
-            },
-            {
-                id: 'legendary4', name: 'Celestial Monarch', rarity: 3, rarityName: 'Legendary', cost: 9250, color: '#fcd34d', element: 'holy',
-                desc_en: 'Beams continuous divine rays of structural light and gold dust.',
-                desc_id: 'Memancarkan sinar suci ilahi dari cahaya struktural dan debu emas.'
-            },
-            {
-                id: 'legendary5', name: 'Abyssal Kraken', rarity: 3, rarityName: 'Legendary', cost: 10000, color: '#2563eb', element: 'kraken',
-                desc_en: 'Spawns deep blue fluid aquatic fading trace elements behind.',
-                desc_id: 'Menghasilkan jejak elemen air memudar biru tua mengalir di belakang.'
-            },
-
-            // --- TIER 5: MYTHICAL (Temporal Alteration) ---
-            {
-                id: 'mythical1', name: 'Blood Moon Deity', rarity: 4, rarityName: 'Mythical', cost: 15000, color: '#991b1b', element: 'blood',
-                desc_en: 'Cycles pixel brightness via sine-wave mapping. Crimson aura fields.',
-                desc_id: 'Siklus kecerahan piksel via pemetaan gelombang sinus. Medan aura merah.'
-            },
-            {
-                id: 'mythical2', name: 'Chronos Weaver', rarity: 4, rarityName: 'Mythical', cost: 16250, color: '#1d4ed8', element: 'clock',
-                desc_en: 'Pulsates spatial temporal colors using automatic sine intensity.',
-                desc_id: 'Berdenyut warna temporal spasial menggunakan intensitas sinus otomatis.'
-            },
-            {
-                id: 'mythical3', name: 'Asura Wrath', rarity: 4, rarityName: 'Mythical', cost: 17500, color: '#c2410c', element: 'asura',
-                desc_en: 'Maintains blinding orange combat aura cycling brightness dynamically.',
-                desc_id: 'Mempertahankan aura tempur oranye dengan kecerahan siklus dinamis.'
-            },
-            {
-                id: 'mythical4', name: 'Jade Emperor', rarity: 4, rarityName: 'Mythical', cost: 18750, color: '#047857', element: 'jade',
-                desc_en: 'Erects imperial green jade fields that cycle luminance over time.',
-                desc_id: 'Mendirikan medan giok hijau kekaisaran dengan siklus pencahayaan waktu.'
-            },
-            {
-                id: 'mythical5', name: 'Plague Harbinger', rarity: 4, rarityName: 'Mythical', cost: 20000, color: '#14532d', element: 'swarm',
-                desc_en: 'Breeds toxic swarm matrix particles with synchronized sine pulses.',
-                desc_id: 'Membiakkan partikel matriks hama beracun dengan pulsa sinus sinkron.'
-            },
-
-            // --- TIER 6: COSMIC (Universal Paradox Gods) ---
-            {
-                id: 'cosmic1', name: 'Supernova Sovereign', rarity: 5, rarityName: 'Cosmic', cost: 30000, color: '#f43f5e', element: 'pulsar',
-                desc_en: 'Rainbow HSL gradient loops mixed with hyper starry twinkle flashes.',
-                desc_id: 'Gradien pelangi HSL bercampur dengan kilatan kedipan bintang kosmik.'
-            },
-            {
-                id: 'cosmic2', name: 'Void Singularity', rarity: 5, rarityName: 'Cosmic', cost: 35000, color: '#000000', element: 'blackhole',
-                desc_en: 'Absolute horizon black hole matrix shifting hues with star sparkles.',
-                desc_id: 'Matriks lubang hitam horison absolut pergeseran rona dan kilau bintang.'
-            },
-            {
-                id: 'cosmic3', name: 'Nebula Weaver', rarity: 5, rarityName: 'Cosmic', cost: 40000, color: '#4f46e5', element: 'nebula',
-                desc_en: 'Weaves cosmic dust cloud gas nodes shifting rainbow configurations.',
-                desc_id: 'Menenun simpul gas awan debu kosmik pergeseran konfigurasi pelangi.'
-            },
-            {
-                id: 'cosmic4', name: 'Quasar Overlord', rarity: 5, rarityName: 'Cosmic', cost: 50000, color: '#7c3aed', element: 'quasar',
-                desc_en: 'Ejects violet-shifting active galactic nuclei spectral rainbow bands.',
-                desc_id: 'Mengeluarkan pita pelangi spektral inti galaksi aktif pergeseran violet.'
-            },
-            {
-                id: 'cosmic5', name: 'Multiverse Anomaly', rarity: 5, rarityName: 'Cosmic', cost: 99999, color: '#dc2626', element: 'multiverse',
-                desc_en: 'The absolute pinnacle. Infinite rainbow spectrum overlay & total anomaly flashes.',
-                desc_id: 'Puncak absolut. Lapisan spektrum pelangi tak terbatas & kilatan anomali total.'
-            }
-        ];
-
-        // ============================================================================
-        // HUMAN-PHANTOM MASTER 12x15 SPRITE MATRIX TEMPLATE
-        // ============================================================================
-        const MasterSpriteMatrix = [
-            [0,0,0,0,1,1,1,1,0,0,0,0],
-            [0,0,1,1,2,2,2,2,1,1,0,0],
-            [0,1,2,2,2,2,2,2,2,2,1,0],
-            [1,2,2,2,2,2,2,2,2,2,2,1],
-            [1,2,3,3,2,2,2,2,3,3,2,1], // Eyes line row indices 4
-            [1,2,3,3,2,2,2,2,3,3,2,1],
-            [1,2,2,2,2,2,2,2,2,2,2,1],
-            [1,2,2,1,1,1,1,1,1,2,2,1],
-            [1,2,2,2,2,2,2,2,2,2,2,1],
-            [1,2,2,2,2,2,2,2,2,2,2,1],
-            [1,2,2,2,2,2,2,2,2,2,2,1],
-            [0,1,2,2,2,2,2,2,2,2,1,0],
-            [0,1,2,2,2,2,2,2,2,2,1,0],
-            [1,2,2,1,2,2,1,2,2,1,2,1],
-            [1,1,1,0,1,1,0,1,1,0,1,1]
-        ];
-
-        // ============================================================================
-        // ADVANCED MATRIX CANVAS DRAWER
-        // ============================================================================
-        function renderMatrixSprite(targetCtx, skinId, targetX, targetY, renderWidth, renderHeight, isFacingLeft) {
-            try {
-                const skin = SkinRegistryDatabase.find(s => s.id === skinId) || SkinRegistryDatabase[0];
-                const pixelWidth = renderWidth / 12;
-                const pixelHeight = renderHeight / 15;
-                const nowTimestamp = Date.now();
-
-                // Core Rarity-based Shader Properties Pre-evaluation
-                let baseColor = skin.color;
-                let isGlitchActive = (skin.rarity === 2);
-                let isSineActive = (skin.rarity === 4);
-                let isCosmicActive = (skin.rarity === 5);
-
-                targetCtx.save();
-
-                // Apply Outer Shadow Canvas Glow Filters for Rare Tier and higher
-                if (skin.rarity >= 1) {
-                    targetCtx.shadowBlur = 12;
-                    targetCtx.shadowColor = skin.color;
-                }
-
-                for (let row = 0; row < 15; row++) {
-                    // Epic Tier Row Offset Glitch Displacement Matrix Evaluation
-                    let rowOffsetOffset = 0;
-                    if (isGlitchActive && Math.random() < 0.08) {
-                        rowOffsetOffset = (Math.random() * 8) - 4;
-                    }
-
-                    for (let col = 0; col < 12; col++) {
-                        // Structural Column Inversion Logic for handling horizontal flipping
-                        let evaluationColumn = isFacingLeft ? (11 - col) : col;
-                        let cellValue = MasterSpriteMatrix[row][evaluationColumn];
-                        if (cellValue === 0) continue;
-
-                        let pixelRenderPositionX = targetX + (col * pixelWidth) + rowOffsetOffset;
-                        let pixelRenderPositionY = targetY + (row * pixelHeight);
-
-                        // Color Parsing based on matrix codes (1: Border, 2: Fill, 3: Eyes)
-                        if (cellValue === 1) {
-                            targetCtx.fillStyle = '#010204';
-                        } else if (cellValue === 3) {
-                            targetCtx.fillStyle = '#ef4444'; // Red Eyes for horror elements
-                        } else if (cellValue === 2) {
-                            // Default Fill
-                            targetCtx.fillStyle = baseColor;
-
-                            // Mythical Tier: Smooth Sine Wave Brightness Mapping Cycles
-                            if (isSineActive) {
-                                let cycleFactor = (Math.sin(nowTimestamp / 150) + 1) / 2; // Normalize to 0 -> 1
-                                targetCtx.fillStyle = adjustLuminanceHex(baseColor, cycleFactor * 0.4 - 0.2);
-                            }
-
-                            // Cosmic Tier: Dynamic Horizontal Shifting HSL Rainbow Shader Loop
-                            if (isCosmicActive) {
-                                let hueCycle = ((nowTimestamp / 12) + (col * 8) + (row * 4)) % 360;
-                                if (skin.id === 'cosmic2') { // Void Singularity special darker blend
-                                    targetCtx.fillStyle = `hsl(${hueCycle}, 95%, 15%)`;
-                                } else {
-                                    targetCtx.fillStyle = `hsl(${hueCycle}, 90%, 55%)`;
-                                }
-                            }
-                        }
-
-                        targetCtx.fillRect(
-                            Math.floor(pixelRenderPositionX), 
-                            Math.floor(pixelRenderPositionY), 
-                            Math.ceil(pixelWidth), 
-                            Math.ceil(pixelHeight)
-                        );
-
-                        // Cosmic Starry Twinkle Flashes Overlay
-                        if (isCosmicActive && cellValue === 2 && Math.random() < 0.003) {
-                            targetCtx.fillStyle = '#ffffff';
-                            targetCtx.fillRect(
-                                Math.floor(pixelRenderPositionX), 
-                                Math.floor(pixelRenderPositionY), 
-                                Math.ceil(pixelWidth), 
-                                Math.ceil(pixelHeight)
-                            );
-                        }
-                    }
-                }
-
-                targetCtx.restore();
-            } catch (error) {
-                console.error("Critical Runtime Error inside renderMatrixSprite layout system:", error);
+                ctx.fillRect(Math.floor(px),Math.floor(py),Math.ceil(pw),Math.ceil(ph));
+                if(isCosmic&&cv===2&&Math.random()<0.003){ctx.fillStyle='#fff';ctx.fillRect(Math.floor(px),Math.floor(py),Math.ceil(pw),Math.ceil(ph));}
             }
         }
+        ctx.restore();
+    }catch(e){}
+}
 
-        function adjustLuminanceHex(hexCode, factor) {
-            try {
-                let r = parseInt(hexCode.substring(1, 3), 16);
-                let g = parseInt(hexCode.substring(3, 5), 16);
-                let b = parseInt(hexCode.substring(5, 7), 16);
-
-                if (factor > 0) {
-                    r = Math.min(255, Math.floor(r + (255 - r) * factor));
-                    g = Math.min(255, Math.floor(g + (255 - g) * factor));
-                    b = Math.min(255, Math.floor(b + (255 - b) * factor));
-                } else {
-                    r = Math.max(0, Math.floor(r + r * factor));
-                    g = Math.max(0, Math.floor(g + g * factor));
-                    b = Math.max(0, Math.floor(b + b * factor));
-                }
-
-                let rs = r.toString(16).padStart(2, '0');
-                let gs = g.toString(16).padStart(2, '0');
-                let bs = b.toString(16).padStart(2, '0');
-                return `#${rs}${gs}${bs}`;
-            } catch (e) {
-                return hexCode;
-            }
+// Monster sprite (simple skull-like)
+function renderMonsterSprite(ctx, x, y, w, h, mType) {
+    const colors = ['#ef4444','#f59e0b','#8b5cf6','#ec4899','#06b6d4'];
+    const c = colors[mType%colors.length];
+    const pw=w/8, ph=h/10;
+    const mMatrix=[
+        [0,1,1,1,1,1,1,0],
+        [1,2,2,2,2,2,2,1],
+        [1,2,3,2,2,3,2,1],
+        [1,2,3,2,2,3,2,1],
+        [1,2,2,2,2,2,2,1],
+        [1,2,1,2,2,1,2,1],
+        [0,1,2,2,2,2,1,0],
+        [0,0,1,2,2,1,0,0],
+        [0,0,1,2,2,1,0,0],
+        [0,0,0,1,1,0,0,0]
+    ];
+    ctx.save();
+    ctx.shadowBlur=12;ctx.shadowColor=c;
+    for(let r=0;r<10;r++){
+        for(let cl=0;cl<8;cl++){
+            let v=mMatrix[r][cl];
+            if(!v)continue;
+            if(v===1)ctx.fillStyle='#010204';
+            else if(v===2)ctx.fillStyle=c;
+            else if(v===3)ctx.fillStyle='#ffffff';
+            ctx.fillRect(Math.floor(x+cl*pw),Math.floor(y+r*ph),Math.ceil(pw),Math.ceil(ph));
         }
+    }
+    ctx.restore();
+}
 
-        // ============================================================================
-        // HIGH PERFORMANCE MEMORY BALANCED PARTICLE GENERATOR POOL
-        // ============================================================================
-        class BalancedParticleEnginePool {
-            constructor(maxCapacity = 1500) {
-                this.capacity = maxCapacity;
-                this.pool = new Array(maxCapacity);
-                this.headIndex = 0;
-                for (let i = 0; i < maxCapacity; i++) {
-                    this.pool[i] = { active: false, x: 0, y: 0, vx: 0, vy: 0, color: '#fff', life: 0, maxLife: 1, size: 2 };
-                }
-            }
-
-            emit(x, y, vx, vy, color, lifeSpan, particleSize) {
-                try {
-                    let particle = this.pool[this.headIndex];
-                    particle.active = true;
-                    particle.x = x;
-                    particle.y = y;
-                    particle.vx = vx;
-                    particle.vy = vy;
-                    particle.color = color;
-                    particle.life = lifeSpan;
-                    particle.maxLife = lifeSpan;
-                    particle.size = particleSize;
-                    this.headIndex = (this.headIndex + 1) % this.capacity;
-                } catch (e) {}
-            }
-
-            update(deltaTime) {
-                for (let i = 0; i < this.capacity; i++) {
-                    let p = this.pool[i];
-                    if (!p.active) continue;
-                    p.life -= deltaTime;
-                    if (p.life <= 0) {
-                        p.active = false;
-                        continue;
-                    }
-                    p.x += p.vx * deltaTime;
-                    p.y += p.vy * deltaTime;
-                }
-            }
-
-            draw(targetCtx) {
-                targetCtx.save();
-                for (let i = 0; i < this.capacity; i++) {
-                    let p = this.pool[i];
-                    if (!p.active) continue;
-                    let alphaRatio = Math.max(0, Math.min(1, p.life / p.maxLife));
-                    targetCtx.globalAlpha = alphaRatio;
-                    targetCtx.fillStyle = p.color;
-                    targetCtx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
-                }
-                targetCtx.restore();
-            }
+// ============================================================================
+// PARTICLE POOL
+// ============================================================================
+class ParticlePool {
+    constructor(cap=2000){
+        this.cap=cap; this.pool=new Array(cap); this.head=0;
+        for(let i=0;i<cap;i++) this.pool[i]={active:false,x:0,y:0,vx:0,vy:0,color:'#fff',life:0,maxLife:1,size:2,rot:0,vr:0};
+    }
+    emit(x,y,vx,vy,color,life,size){
+        let p=this.pool[this.head];
+        p.active=true;p.x=x;p.y=y;p.vx=vx;p.vy=vy;p.color=color;p.life=life;p.maxLife=life;p.size=size;p.rot=0;p.vr=(Math.random()-0.5)*5;
+        this.head=(this.head+1)%this.cap;
+    }
+    update(dt){
+        for(let i=0;i<this.cap;i++){
+            let p=this.pool[i];if(!p.active)continue;
+            p.life-=dt;if(p.life<=0){p.active=false;continue;}
+            p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=30*dt;p.rot+=p.vr*dt;
         }
+    }
+    draw(ctx){
+        ctx.save();
+        for(let i=0;i<this.cap;i++){
+            let p=this.pool[i];if(!p.active)continue;
+            let a=Math.max(0,Math.min(1,p.life/p.maxLife));
+            ctx.globalAlpha=a;ctx.fillStyle=p.color;
+            ctx.fillRect(p.x-p.size/2,p.y-p.size/2,p.size,p.size);
+        }
+        ctx.restore();
+    }
+}
+const Particles = new ParticlePool(2000);
 
-        const GlobalParticleSystem = new BalancedParticleEnginePool(1200);
+// ============================================================================
+// SOUND ENGINE (Web Audio Procedural Horror)
+// ============================================================================
+const SoundEngine = {
+    ctx:null, masterGain:null, droneOsc:null, droneGain:null,
+    creakInterval:null, heartbeatInterval:null,
 
-        // ============================================================================
-        // PERSISTENCE STORAGE CONTROLLER VIA DEEP JSON OPERATIONS
-        // ============================================================================
-        const PersistenceLocalStorageController = {
-            storageKeyName: "paradox_maze_v2026_production_data",
+    init(){
+        if(this.ctx)return;
+        try{
+            this.ctx=new(window.AudioContext||window.webkitAudioContext)();
+            this.masterGain=this.ctx.createGain();
+            this.masterGain.gain.value=ParadoxEngine.volume;
+            this.masterGain.connect(this.ctx.destination);
+            this.startAmbientDrone();
+            if(ParadoxEngine.horror) this.startHorrorLayer();
+        }catch(e){}
+    },
 
-            writeProgress() {
-                try {
-                    const compiledDataPayload = {
-                        lang: ParadoxEngine.lang,
-                        music: ParadoxEngine.music,
-                        sfx: ParadoxEngine.sfx,
-                        player: ParadoxEngine.player
-                    };
-                    localStorage.setItem(this.storageKeyName, JSON.stringify(compiledDataPayload));
-                } catch (error) {
-                    console.error("Local storage allocation writing transaction rejected:", error);
-                }
-            },
+    setVolume(v){
+        if(this.masterGain) this.masterGain.gain.setTargetAtTime(v,this.ctx.currentTime,0.1);
+    },
 
-            loadProgress() {
-                try {
-                    const localRawPayload = localStorage.getItem(this.storageKeyName);
-                    if (!localRawPayload) return;
-                    
-                    const structuralObject = JSON.parse(localRawPayload);
-                    if (structuralObject.lang) ParadoxEngine.lang = structuralObject.lang;
-                    if (structuralObject.music !== undefined) ParadoxEngine.music = structuralObject.music;
-                    if (structuralObject.sfx !== undefined) ParadoxEngine.sfx = structuralObject.sfx;
-                    if (structuralObject.player) {
-                        if (structuralObject.player.name) ParadoxEngine.player.name = structuralObject.player.name;
-                        if (structuralObject.player.coins !== undefined) ParadoxEngine.player.coins = structuralObject.player.coins;
-                        if (structuralObject.player.unlockedSkins) ParadoxEngine.player.unlockedSkins = structuralObject.player.unlockedSkins;
-                        if (structuralObject.player.equippedSkin) ParadoxEngine.player.equippedSkin = structuralObject.player.equippedSkin;
-                    }
-                } catch (error) {
-                    console.error("Local storage recovery payload execution fell back or corrupted:", error);
-                }
-            },
+    startAmbientDrone(){
+        if(!this.ctx||!ParadoxEngine.music||this.droneOsc)return;
+        try{
+            this.droneOsc=this.ctx.createOscillator();
+            this.droneGain=this.ctx.createGain();
+            let filter=this.ctx.createBiquadFilter();
+            this.droneOsc.type='sawtooth';
+            this.droneOsc.frequency.setValueAtTime(40,this.ctx.currentTime);
+            // Slow LFO for eerie drone movement
+            let lfo=this.ctx.createOscillator();
+            let lfoGain=this.ctx.createGain();
+            lfo.frequency.value=0.08;
+            lfoGain.gain.value=8;
+            lfo.connect(lfoGain);
+            lfoGain.connect(this.droneOsc.frequency);
+            lfo.start();
+            filter.type='lowpass';filter.frequency.value=150;filter.Q.value=2;
+            this.droneGain.gain.value=0.1;
+            this.droneOsc.connect(filter);
+            filter.connect(this.droneGain);
+            this.droneGain.connect(this.masterGain);
+            this.droneOsc.start();
+        }catch(e){}
+    },
 
-            truncateAllProgress() {
-                try {
-                    localStorage.removeItem(this.storageKeyName);
-                    window.location.reload();
-                } catch (e) {}
+    stopAmbientDrone(){
+        try{
+            if(this.droneOsc){this.droneOsc.stop();this.droneOsc.disconnect();this.droneOsc=null;}
+            if(this.droneGain){this.droneGain.disconnect();this.droneGain=null;}
+        }catch(e){}
+    },
+
+    startHorrorLayer(){
+        if(!this.ctx)return;
+        // Whisper-like noise burst at random intervals
+        this.creakInterval=setInterval(()=>{
+            if(!ParadoxEngine.horror||ParadoxEngine.scene!=='Gameplay')return;
+            this._playNoiseBurst();
+        },Math.random()*8000+5000);
+        // Heartbeat when sanity is low — handled in game loop
+    },
+
+    stopHorrorLayer(){
+        if(this.creakInterval){clearInterval(this.creakInterval);this.creakInterval=null;}
+        if(this.heartbeatInterval){clearInterval(this.heartbeatInterval);this.heartbeatInterval=null;}
+    },
+
+    _playNoiseBurst(){
+        if(!this.ctx)return;
+        try{
+            let buf=this.ctx.createBuffer(1,this.ctx.sampleRate*0.4,this.ctx.sampleRate);
+            let data=buf.getChannelData(0);
+            for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(this.ctx.sampleRate*0.1));
+            let src=this.ctx.createBufferSource();
+            let g=this.ctx.createGain();
+            let f=this.ctx.createBiquadFilter();
+            src.buffer=buf; f.type='bandpass'; f.frequency.value=800+Math.random()*400; f.Q.value=10;
+            g.gain.setValueAtTime(0.06,this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.4);
+            src.connect(f);f.connect(g);g.connect(this.masterGain);
+            src.start();src.stop(this.ctx.currentTime+0.4);
+        }catch(e){}
+    },
+
+    playHeartbeat(){
+        if(!this.ctx||!ParadoxEngine.horror)return;
+        try{
+            let now=this.ctx.currentTime;
+            [0,0.35].forEach(offset=>{
+                let o=this.ctx.createOscillator();
+                let g=this.ctx.createGain();
+                o.type='sine';o.frequency.value=60;
+                g.gain.setValueAtTime(0,now+offset);
+                g.gain.linearRampToValueAtTime(0.25,now+offset+0.02);
+                g.gain.exponentialRampToValueAtTime(0.001,now+offset+0.12);
+                o.connect(g);g.connect(this.masterGain);
+                o.start(now+offset);o.stop(now+offset+0.12);
+            });
+        }catch(e){}
+    },
+
+    playClick(){
+        if(!ParadoxEngine.sfx||!this.ctx)return;
+        try{let o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type='sine';o.frequency.value=660;g.gain.setValueAtTime(0.12,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.06);o.connect(g);g.connect(this.masterGain);o.start();o.stop(this.ctx.currentTime+0.06);}catch(e){}
+    },
+
+    playBump(){
+        if(!ParadoxEngine.sfx||!this.ctx)return;
+        try{
+            let o=this.ctx.createOscillator(),g=this.ctx.createGain();
+            o.type='square';o.frequency.setValueAtTime(120,this.ctx.currentTime);o.frequency.setValueAtTime(80,this.ctx.currentTime+0.08);
+            g.gain.setValueAtTime(0.18,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.2);
+            o.connect(g);g.connect(this.masterGain);o.start();o.stop(this.ctx.currentTime+0.2);
+            // Scream whisper layer
+            if(ParadoxEngine.horror) this._playNoiseBurst();
+        }catch(e){}
+    },
+
+    playParadoxBlast(){
+        if(!ParadoxEngine.sfx||!this.ctx)return;
+        try{
+            let o=this.ctx.createOscillator(),g=this.ctx.createGain();
+            o.type='sawtooth';o.frequency.setValueAtTime(350,this.ctx.currentTime);
+            o.frequency.linearRampToValueAtTime(20,this.ctx.currentTime+1.2);
+            g.gain.setValueAtTime(0.3,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+1.2);
+            o.connect(g);g.connect(this.masterGain);o.start();o.stop(this.ctx.currentTime+1.2);
+        }catch(e){}
+    },
+
+    playVictory(){
+        if(!ParadoxEngine.sfx||!this.ctx)return;
+        try{
+            let now=this.ctx.currentTime;
+            [523.25,659.25,783.99,1046.50].forEach((f,i)=>{
+                let o=this.ctx.createOscillator(),g=this.ctx.createGain();
+                o.type='sine';o.frequency.value=f;
+                g.gain.setValueAtTime(0.1,now+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,now+i*0.1+0.5);
+                o.connect(g);g.connect(this.masterGain);o.start(now+i*0.1);o.stop(now+i*0.1+0.5);
+            });
+        }catch(e){}
+    },
+
+    playMonsterSpawn(){
+        if(!ParadoxEngine.sfx||!this.ctx)return;
+        try{
+            let o=this.ctx.createOscillator(),g=this.ctx.createGain();
+            o.type='sawtooth';o.frequency.setValueAtTime(200,this.ctx.currentTime);
+            o.frequency.linearRampToValueAtTime(60,this.ctx.currentTime+0.5);
+            g.gain.setValueAtTime(0.2,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.5);
+            o.connect(g);g.connect(this.masterGain);o.start();o.stop(this.ctx.currentTime+0.5);
+        }catch(e){}
+    },
+
+    playCoinPickup(){
+        if(!ParadoxEngine.sfx||!this.ctx)return;
+        try{
+            let now=this.ctx.currentTime;
+            [880,1100].forEach((f,i)=>{
+                let o=this.ctx.createOscillator(),g=this.ctx.createGain();
+                o.type='sine';o.frequency.value=f;
+                g.gain.setValueAtTime(0.08,now+i*0.06);g.gain.exponentialRampToValueAtTime(0.001,now+i*0.06+0.12);
+                o.connect(g);g.connect(this.masterGain);o.start(now+i*0.06);o.stop(now+i*0.06+0.12);
+            });
+        }catch(e){}
+    }
+};
+
+// ============================================================================
+// PERSISTENCE
+// ============================================================================
+const Save = {
+    key:"paradox_maze_v2_2026",
+    write(){try{localStorage.setItem(this.key,JSON.stringify({lang:ParadoxEngine.lang,music:ParadoxEngine.music,sfx:ParadoxEngine.sfx,horror:ParadoxEngine.horror,volume:ParadoxEngine.volume,player:ParadoxEngine.player,daily:ParadoxEngine.daily}));}catch(e){}},
+    load(){
+        try{
+            let raw=localStorage.getItem(this.key);if(!raw)return;
+            let o=JSON.parse(raw);
+            if(o.lang)ParadoxEngine.lang=o.lang;
+            if(o.music!==undefined)ParadoxEngine.music=o.music;
+            if(o.sfx!==undefined)ParadoxEngine.sfx=o.sfx;
+            if(o.horror!==undefined)ParadoxEngine.horror=o.horror;
+            if(o.volume!==undefined)ParadoxEngine.volume=o.volume;
+            if(o.player){
+                Object.assign(ParadoxEngine.player,o.player);
+                if(!ParadoxEngine.player.level)ParadoxEngine.player.level=1;
             }
-        };
-
-        // ============================================================================
-        // DYNAMIC SHOP REGISTRY GRAPHICAL INTERFACE
-        // ============================================================================
-        const ShopUserInterface = {
-            activeFilter: 'all',
-
-            renderRegistryGrid() {
-                try {
-                    const gridContainer = document.getElementById('shop-items-grid-container');
-                    if (!gridContainer) return;
-                    gridContainer.innerHTML = '';
-
-                    const filteredCollection = SkinRegistryDatabase.filter(skin => {
-                        if (this.activeFilter === 'all') return true;
-                        return skin.rarity.toString() === this.activeFilter;
-                    });
-
-                    filteredCollection.forEach(skin => {
-                        const itemCardNode = document.createElement('div');
-                        itemCardNode.className = 'shop-item';
-                        
-                        const isUnlocked = ParadoxEngine.player.unlockedSkins.includes(skin.id);
-                        const isEquipped = ParadoxEngine.player.equippedSkin === skin.id;
-
-                        if (isEquipped) itemCardNode.classList.add('equipped');
-                        else if (isUnlocked) itemCardNode.classList.add('unlocked');
-
-                        // Build Rarity Label Styles Dynamically
-                        let rarityBg = 'var(--text-muted)';
-                        if (skin.rarity === 1) rarityBg = 'var(--neon-blue)';
-                        if (skin.rarity === 2) rarityBg = 'var(--neon-purple)';
-                        if (skin.rarity === 3) rarityBg = 'var(--neon-gold)';
-                        if (skin.rarity === 4) rarityBg = 'var(--neon-pink)';
-                        if (skin.rarity === 5) rarityBg = 'var(--neon-red)';
-
-                        itemCardNode.innerHTML = `
-                            <span class="rarity-tag" style="background:${rarityBg}">${skin.rarityName}</span>
-                            <canvas class="shop-item-canvas" id="canvas-preview-${skin.id}" width="48" height="60"></canvas>
-                            <div class="shop-item-name">${skin.name}</div>
-                            <div class="shop-item-cost">${isEquipped ? 'EQUIPPED' : (isUnlocked ? 'EQUIP' : skin.cost + ' CHIPS')}</div>
-                        `;
-
-                        // Attach Event Bindings directly
-                        itemCardNode.addEventListener('click', () => {
-                            SoundEngine.playClick();
-                            this.handleSelectionSequence(skin);
-                        });
-
-                        gridContainer.appendChild(itemCardNode);
-
-                        // Trigger programmatic vector icon drawing onto the isolated preview canvas
-                        setTimeout(() => {
-                            const previewCanvas = document.getElementById(`canvas-preview-${skin.id}`);
-                            if (previewCanvas) {
-                                const pCtx = previewCanvas.getContext('2d');
-                                pCtx.clearRect(0,0,48,60);
-                                renderMatrixSprite(pCtx, skin.id, 0, 0, 48, 60, false);
-                            }
-                        }, 5);
-                    });
-
-                    document.getElementById('shop-balance-value').innerText = ParadoxEngine.player.coins + " CHIPS";
-                } catch (err) {
-                    console.error("Critical error running shop render matrix pipeline:", err);
-                }
-            },
-
-            handleSelectionSequence(skin) {
-                const detailsNode = document.getElementById('skin-details-description');
-                const isUnlocked = ParadoxEngine.player.unlockedSkins.includes(skin.id);
-                const descText = ParadoxEngine.lang === 'id' ? skin.desc_id : skin.desc_en;
-
-                if (ParadoxEngine.player.equippedSkin === skin.id) {
-                    detailsNode.innerText = `[${skin.name}] - ${descText}`;
-                    return;
-                }
-
-                if (isUnlocked) {
-                    ParadoxEngine.player.equippedSkin = skin.id;
-                    detailsNode.innerText = ParadoxEngine.lang === 'id' ? 
-                        `Berhasil melengkapi skin: ${skin.name}` : `Successfully equipped skin: ${skin.name}`;
-                    PersistenceLocalStorageController.writeProgress();
-                    this.renderRegistryGrid();
-                } else {
-                    // Check purchasing capabilities
-                    if (ParadoxEngine.player.coins >= skin.cost) {
-                        ParadoxEngine.player.coins -= skin.cost;
-                        ParadoxEngine.player.unlockedSkins.push(skin.id);
-                        ParadoxEngine.player.equippedSkin = skin.id;
-                        detailsNode.innerText = ParadoxEngine.lang === 'id' ? 
-                            `Berhasil membeli dan melengkapi: ${skin.name}` : `Purchased and equipped: ${skin.name}`;
-                        PersistenceLocalStorageController.writeProgress();
-                        this.renderRegistryGrid();
-                    } else {
-                        detailsNode.innerText = ParadoxEngine.lang === 'id' ? 
-                            `Saldo hancur! Chips Anda tidak cukup untuk: ${skin.name}` : `Quantum rejection! Insufficient chips for: ${skin.name}`;
-                    }
-                }
-            }
-        };
-
-        // ============================================================================
-        // GAMEPLAY SYSTEM: STRUCTURAL LABYRINTH & TEMPORAL MATRIX
-        // ============================================================================
-        const GameCoreEnvironment = {
-            canvas: null,
-            ctx: null,
-            isLoopRunning: false,
-            tileSize: 40,
-            animationFrameRequestId: null,
-            lastFrameTime: 0,
-
-            // Hardcoded structural 16x12 execution grid map matrix (1: Wall, 0: Floor)
-            gridMap: [
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1],
-                [1,0,1,0,1,0,1,1,1,0,1,0,1,1,0,1],
-                [1,0,1,0,0,0,0,0,1,0,0,0,1,0,0,1],
-                [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1],
-                [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-                [1,1,1,1,0,0,1,1,1,1,1,0,1,1,0,1],
-                [1,0,0,1,0,0,0,0,0,0,1,0,1,0,0,1],
-                [1,0,0,1,1,1,1,1,0,0,1,0,1,1,1,1],
-                [1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1],
-                [1,1,1,0,1,1,0,0,0,0,1,1,1,1,0,1],
-                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-            ],
-
-            // Core Interactive Entities Tracking State Structures
-            player: {
-                gridX: 1, gridY: 1,
-                renderX: 40, renderY: 40,
-                targetRenderX: 40, targetRenderY: 40,
-                facing: 'right',
-                sanity: 100
-            },
-
-            targetCore: { gridX: 14, gridY: 10, anglePulse: 0 },
-            
-            shadowClone: {
-                active: false,
-                gridX: -1, gridY: -1,
-                renderX: -100, renderY: -100
-            },
-
-            ghostNpc: {
-                active: false,
-                gridX: -1, gridY: -1,
-                renderX: -100, renderY: -100,
-                displayMessage: "",
-                lifeTimer: 0
-            },
-
-            playerPathHistory: [], // Master structural array frame log storage for cloning playback
-            elapsedTimelineTicks: 0,
-            cameraShakeStrength: 0,
-
-            init() {
-                this.canvas = document.getElementById('main-game-canvas');
-                this.ctx = this.canvas.getContext('2d');
-            },
-
-            startSession() {
-                // Initialize default positioning states
-                this.player.gridX = 1;
-                this.player.gridY = 1;
-                this.player.renderX = 40;
-                this.player.renderY = 40;
-                this.player.targetRenderX = 40;
-                this.player.targetRenderY = 40;
-                this.player.sanity = 100;
-                this.player.facing = 'right';
-
-                this.shadowClone.active = false;
-                this.ghostNpc.active = false;
-                this.playerPathHistory = [];
-                this.elapsedTimelineTicks = 0;
-                this.cameraShakeStrength = 0;
-
-                // Configure randomized placement for Target Core Item inside structural floors
-                let validFloorCoordinates = [];
-                for (let r = 0; r < 12; r++) {
-                    for (let c = 0; c < 16; c++) {
-                        if (this.gridMap[r][c] === 0 && !(r === 1 && c === 1)) {
-                            validFloorCoordinates.push({x: c, y: r});
-                        }
-                    }
-                }
-                let pickedPair = validFloorCoordinates[Math.floor(Math.random() * validFloorCoordinates.length)];
-                this.targetCore.gridX = pickedPair.x;
-                this.targetCore.gridY = pickedPair.y;
-
-                document.getElementById('game-hud').style.display = 'flex';
-                this.updateHudMetrics();
-
-                this.isLoopRunning = true;
-                this.lastFrameTime = performance.now();
-                if (this.animationFrameRequestId) cancelAnimationFrame(this.animationFrameRequestId);
-                this.animationFrameRequestId = requestAnimationFrame((ts) => this.lifecycleFrame(ts));
-            },
-
-            stopSession() {
-                this.isLoopRunning = false;
-                if (this.animationFrameRequestId) cancelAnimationFrame(this.animationFrameRequestId);
-                document.getElementById('game-hud').style.display = 'none';
-            },
-
-            updateHudMetrics() {
-                document.getElementById('hud-value-name').innerText = ParadoxEngine.player.name;
-                document.getElementById('hud-value-coins').innerText = ParadoxEngine.player.coins;
-                const sanityFill = document.getElementById('sanity-bar-fill');
-                if (sanityFill) {
-                    sanityFill.style.width = `${this.player.sanity}%`;
-                }
-            },
-
-            executeDirectMoveCommand(deltaX, deltaY) {
-                if (!this.isLoopRunning) return;
-                
-                // Prevent queue-stack overlapping if linear interpolation hasn't met target metrics
-                if (this.player.renderX !== this.player.targetRenderX || this.player.renderY !== this.player.targetRenderY) {
-                    return; 
-                }
-
-                let plannedGridX = this.player.gridX + deltaX;
-                let plannedGridY = this.player.gridY + deltaY;
-
-                if (deltaX < 0) this.player.facing = 'left';
-                if (deltaX > 0) this.player.facing = 'right';
-
-                // Robust Spatial Collision Pre-checks Validation Function
-                if (this.gridMap[plannedGridY][plannedGridX] !== 1) {
-                    this.player.gridX = plannedGridX;
-                    this.player.gridY = plannedGridY;
-                    this.player.targetRenderX = plannedGridX * this.tileSize;
-                    this.player.targetRenderY = plannedGridY * this.tileSize;
-                } else {
-                    // Wall Collision Bump Event Reached
-                    SoundEngine.playBump();
-                    this.player.sanity = Math.max(0, this.player.sanity - 3);
-                    this.cameraShakeStrength = Math.min(10, this.cameraShakeStrength + 3);
-                    this.spawnWallImpactParticles(plannedGridX, plannedGridY, deltaX, deltaY);
-                    this.triggerGaslightingGhostManifestation();
-                    this.updateHudMetrics();
-                    this.evaluateSurvivalConstraints();
-                }
-            },
-
-            spawnWallImpactParticles(wgX, wgY, dx, dy) {
-                let px = (wgX * this.tileSize) + (this.tileSize / 2) - (dx * (this.tileSize / 2));
-                let py = (wgY * this.tileSize) + (this.tileSize / 2) - (dy * (this.tileSize / 2));
-                const skinColor = SkinRegistryDatabase.find(s => s.id === ParadoxEngine.player.equippedSkin)?.color || "#8b5cf6";
-                for (let i = 0; i < 15; i++) {
-                    let vx = (Math.random() * 80 - 40) - (dx * 30);
-                    let vy = (Math.random() * 80 - 40) - (dy * 30);
-                    GlobalParticleSystem.emit(px, py, vx, vy, skinColor, 0.4 + Math.random()*0.3, 2 + Math.random()*2);
-                }
-            },
-
-            triggerGaslightingGhostManifestation() {
-                // Find empty spot adjacent to player to draw phantom overlay
-                let offsets = [{x:0, y:1}, {x:0, y:-1}, {x:1, y:0}, {x:-1, y:0}];
-                for (let offset of offsets) {
-                    let gx = this.player.gridX + offset.x;
-                    let gy = this.player.gridY + offset.y;
-                    if (this.gridMap[gy][gx] === 0) {
-                        this.ghostNpc.active = true;
-                        this.ghostNpc.gridX = gx;
-                        this.ghostNpc.gridY = gy;
-                        this.ghostNpc.renderX = gx * this.tileSize;
-                        this.ghostNpc.renderY = gy * this.tileSize;
-                        this.ghostNpc.lifeTimer = 2.5; // visible on field canvas for 2.5 seconds max
-
-                        let selectedQuotes = GaslightingQuotes[ParadoxEngine.lang];
-                        let quote = selectedQuotes[Math.floor(Math.random() * selectedQuotes.length)];
-                        this.ghostNpc.displayMessage = quote.replace("[NAME]", ParadoxEngine.player.name);
-                        break;
-                    }
-                }
-            },
-
-            evaluateSurvivalConstraints() {
-                if (this.player.sanity <= 0) {
-                    this.stopSession();
-                    SoundEngine.playParadoxBlast();
-                    SceneOverlayManager.transitionToScene('GameOver');
-                }
-            },
-
-            evaluateVictoryCondition() {
-                this.stopSession();
-                SoundEngine.playVictory();
-                
-                // Reward token distribution calculation
-                ParadoxEngine.player.coins += 1250;
-                PersistenceLocalStorageController.writeProgress();
-                
-                SceneOverlayManager.transitionToScene('Victory');
-            },
-
-            // ============================================================================
-            // HIGH-FIDELITY GAMEPLAY FRAME LIFECYCLE MECHANICS
-            // ============================================================================
-            lifecycleFrame(currentHighResTimestamp) {
-                if (!this.isLoopRunning) return;
-
-                let deltaSeconds = (currentHighResTimestamp - this.lastFrameTime) / 1000;
-                if (deltaSeconds > 0.1) deltaSeconds = 0.1; // Cap extreme lag spikes
-                this.lastFrameTime = currentHighResTimestamp;
-
-                this.elapsedTimelineTicks++;
-
-                // --- 1. COMPUTATIONAL UPDATE OPERATIONS ---
-                // Continuous Linear Interpolation (Lerp) for ultra smooth player mesh traversal
-                const interpolationSpeed = 16.0; 
-                this.player.renderX += (this.player.targetRenderX - this.player.renderX) * interpolationSpeed * deltaSeconds;
-                this.player.renderY += (this.player.targetRenderY - this.player.renderY) * interpolationSpeed * deltaSeconds;
-
-                // Precision convergence thresholds check
-                if (Math.abs(this.player.renderX - this.player.targetRenderX) < 0.2) this.player.renderX = this.player.targetRenderX;
-                if (Math.abs(this.player.renderY - this.player.targetRenderY) < 0.2) this.player.renderY = this.player.targetRenderY;
-
-                // Historical trace coordinate log tracking allocation
-                if (this.elapsedTimelineTicks % 3 === 0) {
-                    this.playerPathHistory.push({
-                        x: this.player.renderX,
-                        y: this.player.renderY,
-                        facing: this.player.facing
-                    });
-                    if (this.playerPathHistory.length > 220) {
-                        this.playerPathHistory.shift();
-                    }
-                }
-
-                // Echo-cloning timeline offset playback calculations
-                const totalTracesCount = this.playerPathHistory.length;
-                const timelinePlaybackOffsetDelay = 55; // Frames behind main identity
-                if (totalTracesCount > timelinePlaybackOffsetDelay) {
-                    let historicalFrameData = this.playerPathHistory[totalTracesCount - timelinePlaybackOffsetDelay];
-                    this.shadowClone.active = true;
-                    this.shadowClone.renderX = historicalFrameData.x;
-                    this.shadowClone.renderY = historicalFrameData.y;
-                } else {
-                    this.shadowClone.active = false;
-                }
-
-                // Proximity shadow clone intersection damage evaluations
-                if (this.shadowClone.active) {
-                    let distanceToClone = Math.hypot(this.player.renderX - this.shadowClone.renderX, this.player.renderY - this.shadowClone.renderY);
-                    if (distanceToClone < 24) {
-                        this.player.sanity = Math.max(0, this.player.sanity - (22 * deltaSeconds));
-                        this.cameraShakeStrength = Math.min(6, this.cameraShakeStrength + 0.6);
-                        this.updateHudMetrics();
-                        this.evaluateSurvivalConstraints();
-                    }
-                }
-
-                // Gaslighting Ghost NPC lifecycle depletion tracking
-                if (this.ghostNpc.active) {
-                    this.ghostNpc.lifeTimer -= deltaSeconds;
-                    if (this.ghostNpc.lifeTimer <= 0) {
-                        this.ghostNpc.active = false;
-                    }
-                }
-
-                // Passive dynamic baseline sanity degradation over time
-                this.player.sanity = Math.max(0, this.player.sanity - (1.1 * deltaSeconds));
-                if (this.elapsedTimelineTicks % 30 === 0) {
-                    this.updateHudMetrics();
-                    this.evaluateSurvivalConstraints();
-                }
-
-                // Check goal destination intersection criteria
-                if (this.player.gridX === this.targetCore.gridX && this.player.gridY === this.targetCore.gridY) {
-                    if (this.player.renderX === this.player.targetRenderX && this.player.renderY === this.player.targetRenderY) {
-                        this.evaluateVictoryCondition();
-                        return;
-                    }
-                }
-
-                // Structural Particle Emission Patterns based on equipped tier element behaviors
-                this.emitSkinAmbientProceduralParticles();
-                GlobalParticleSystem.update(deltaSeconds);
-
-                // Decay structural camera frame vibration intensity matrix
-                if (this.cameraShakeStrength > 0) {
-                    this.cameraShakeStrength -= deltaSeconds * 12;
-                    if (this.cameraShakeStrength < 0) this.cameraShakeStrength = 0;
-                }
-
-                this.targetCore.anglePulse += deltaSeconds * 3;
-
-                // --- 2. CANVAS DRAW LAYERING STACK ---
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                this.ctx.save();
-                // Apply spatial matrix screen vibration coordinate shifts
-                if (this.cameraShakeStrength > 0) {
-                    let dx = (Math.random() - 0.5) * this.cameraShakeStrength;
-                    let dy = (Math.random() - 0.5) * this.cameraShakeStrength;
-                    this.ctx.translate(dx, dy);
-                }
-
-                this.drawLabyrinthWallsGrid();
-                this.drawTargetCoreGoalNode();
-
-                // Draw historical particle cloud elements
-                GlobalParticleSystem.draw(this.ctx);
-
-                // Draw Timeline Echo Shadow Clone Entity
-                if (this.shadowClone.active) {
-                    this.ctx.save();
-                    this.ctx.globalAlpha = 0.42;
-                    renderMatrixSprite(this.ctx, 'epic1', this.shadowClone.renderX + 6, this.shadowClone.renderY + 2, 28, 36, false);
-                    this.ctx.restore();
-                }
-
-                // Draw Phantom Gaslighting Spirit Overlay text fields
-                if (this.ghostNpc.active) {
-                    this.ctx.save();
-                    this.ctx.globalAlpha = 0.35 + (Math.sin(this.elapsedTimelineTicks / 5) * 0.15);
-                    renderMatrixSprite(this.ctx, 'mythical5', this.ghostNpc.renderX + 4, this.ghostNpc.renderY + 2, 32, 36, false);
-                    this.ctx.restore();
-
-                    // Render spatial atmospheric horror bubble text above specter mesh coordinates
-                    this.ctx.fillStyle = "rgba(239, 68, 68, 0.85)";
-                    this.ctx.font = "bold 9px monospace";
-                    this.ctx.textAlign = "center";
-                    this.ctx.fillText(this.ghostNpc.displayMessage, this.ghostNpc.renderX + 20, this.ghostNpc.renderY - 8);
-                }
-
-                // Draw Master Player Entity Model
-                renderMatrixSprite(
-                    this.ctx, 
-                    ParadoxEngine.player.equippedSkin, 
-                    this.player.renderX + 4, 
-                    this.player.renderY + 2, 
-                    32, 36, 
-                    (this.player.facing === 'left')
-                );
-
-                this.ctx.restore();
-
-                this.animationFrameRequestId = requestAnimationFrame((ts) => this.lifecycleFrame(ts));
-            },
-
-            emitSkinAmbientProceduralParticles() {
-                try {
-                    const skin = SkinRegistryDatabase.find(s => s.id === ParadoxEngine.player.equippedSkin) || SkinRegistryDatabase[0];
-                    const px = this.player.renderX + 20;
-                    const py = this.player.renderY + 20;
-
-                    // Common Tier Particle Mechanics
-                    if (skin.rarity === 0 && Math.random() < 0.15) {
-                        GlobalParticleSystem.emit(px, py, (Math.random()*20-10), (Math.random()*10-5), skin.color, 0.6, 2);
-                    }
-                    // Rare Tier Aura Fields Mechanics
-                    else if (skin.rarity === 1 && Math.random() < 0.35) {
-                        GlobalParticleSystem.emit(px + (Math.random()*16-8), py + (Math.random()*16-8), (Math.random()*10-5), (Math.random()*-20), skin.color, 0.8, 3);
-                    }
-                    // Epic Tier Heavy Structural Micro Displacements
-                    else if (skin.rarity === 2 && Math.random() < 0.55) {
-                        GlobalParticleSystem.emit(px + (Math.random()*24-12), py + (Math.random()*24-12), (Math.random()*40-20), (Math.random()*40-20), '#ffffff', 0.2, 1);
-                    }
-                    // Legendary High Velocity Trail Emissions
-                    else if (skin.rarity === 3 && Math.random() < 0.75) {
-                        GlobalParticleSystem.emit(px, py, (Math.random()*60-30), (Math.random()*60-30), skin.color, 0.5, 3);
-                    }
-                    // Mythical & Cosmic Space Distortion Tail Streams
-                    else if (skin.rarity >= 4) {
-                        for (let k = 0; k < 3; k++) {
-                            let hue = (skin.rarity === 5) ? (Date.now() / 8) % 360 : (skin.id === 'mythical1' ? 0 : 220);
-                            let colorStr = (skin.rarity === 5) ? `hsl(${hue}, 90%, 60%)` : skin.color;
-                            GlobalParticleSystem.emit(px + (Math.random()*10-5), py + (Math.random()*10-5), (Math.random()*80-40), (Math.random()*80-40), colorStr, 0.7, 2 + Math.random()*2);
-                        }
-                    }
-                } catch (e) {}
-            },
-
-            drawLabyrinthWallsGrid() {
-                this.ctx.fillStyle = '#0f111a';
-                this.ctx.strokeStyle = '#1e2235';
-                this.ctx.lineWidth = 1;
-
-                for (let r = 0; r < 12; r++) {
-                    for (let c = 0; c < 16; c++) {
-                        if (this.gridMap[r][c] === 1) {
-                            // Draw block wall geometry
-                            this.ctx.fillStyle = '#0b0c10';
-                            this.ctx.fillRect(c * this.tileSize, r * this.tileSize, this.tileSize, this.tileSize);
-                            
-                            // High-tech circuit trim lines styling overlay
-                            this.ctx.strokeStyle = 'rgba(139, 92, 246, 0.15)';
-                            this.ctx.strokeRect(c * this.tileSize + 2, r * this.tileSize + 2, this.tileSize - 4, this.tileSize - 4);
-                        } else {
-                            // Floor pathways lines grid mapping rendering trace blocks
-                            this.ctx.strokeStyle = 'rgba(255,255,255,0.015)';
-                            this.ctx.strokeRect(c * this.tileSize, r * this.tileSize, this.tileSize, this.tileSize);
-                        }
-                    }
-                }
-            },
-
-            drawTargetCoreGoalNode() {
-                let cx = (this.targetCore.gridX * this.tileSize) + (this.tileSize / 2);
-                let cy = (this.targetCore.gridY * this.tileSize) + (this.tileSize / 2);
-                let pulseRadius = 8 + Math.sin(this.targetCore.anglePulse) * 3;
-
-                this.ctx.save();
-                this.ctx.shadowBlur = 16;
-                this.ctx.shadowColor = 'var(--neon-gold)';
-
-                // Draw outer rotational structural diamond vector paths
-                this.ctx.translate(cx, cy);
-                this.ctx.rotate(this.targetCore.anglePulse / 2);
-                this.ctx.fillStyle = 'rgba(234, 179, 8, 0.2)';
-                this.ctx.strokeStyle = 'var(--neon-gold)';
-                this.ctx.lineWidth = 2;
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, -pulseRadius - 4);
-                this.ctx.lineTo(pulseRadius + 4, 0);
-                this.ctx.lineTo(0, pulseRadius + 4);
-                this.ctx.lineTo(-pulseRadius - 4, 0);
-                this.ctx.closePath();
-                this.ctx.fill();
-                this.ctx.stroke();
-
-                this.ctx.restore();
-            }
-        };
-
-        // ============================================================================
-        // SCENE OVERLAY WINDOW MANAGER NAVIGATION LAYER
-        // ============================================================================
-        const SceneOverlayManager = {
-            transitionToScene(targetSceneName) {
-                ParadoxEngine.scene = targetSceneName;
-
-                // Deactivate all modal layout screens uniformly
-                document.getElementById('screen-lobby').classList.remove('active');
-                document.getElementById('screen-shop').classList.remove('active');
-                document.getElementById('screen-config').classList.remove('active');
-                document.getElementById('screen-gameover').classList.remove('active');
-                document.getElementById('screen-victory').classList.remove('active');
-
-                if (targetSceneName === 'Lobby') {
-                    document.getElementById('screen-lobby').classList.add('active');
-                } else if (targetSceneName === 'Shop') {
-                    document.getElementById('screen-shop').classList.add('active');
-                    ShopUserInterface.renderRegistryGrid();
-                } else if (targetSceneName === 'Config') {
-                    document.getElementById('screen-config').classList.add('active');
-                } else if (targetSceneName === 'GameOver') {
-                    document.getElementById('screen-gameover').classList.add('active');
-                } else if (targetSceneName === 'Victory') {
-                    document.getElementById('screen-victory').classList.add('active');
-                } else if (targetSceneName === 'Gameplay') {
-                    // Internal running layout state handles canvas focus automatically
-                    GameCoreEnvironment.startSession();
-                }
-            },
-
-            applyLocalizationStrings() {
-                const currentPack = LocalizationEngine[ParadoxEngine.lang];
-                
-                document.getElementById('lobby-tagline').innerText = currentPack.tagline;
-                document.getElementById('btn-lobby-start').innerText = currentPack.start;
-                document.getElementById('btn-lobby-shop').innerText = currentPack.shop;
-                document.getElementById('btn-lobby-config').innerText = currentPack.config;
-
-                document.getElementById('shop-title-header').innerText = currentPack.shopTitle;
-                document.getElementById('shop-label-balance').innerText = currentPack.balance;
-                document.getElementById('btn-shop-back').innerText = currentPack.returnLobby;
-
-                document.getElementById('config-title-header').innerText = currentPack.sysConfig;
-                document.getElementById('config-sub').innerText = currentPack.configSub;
-                document.getElementById('config-label-music').innerText = currentPack.bgMusic;
-                document.getElementById('config-label-sfx').innerText = currentPack.opSfx;
-                document.getElementById('btn-config-reset').innerText = currentPack.resetProg;
-                document.getElementById('btn-config-back').innerText = currentPack.saveReturn;
-
-                document.getElementById('go-title').innerText = currentPack.failedTitle;
-                document.getElementById('go-subtitle').innerText = currentPack.failedSub;
-                document.getElementById('btn-go-retry').innerText = currentPack.reenter;
-                document.getElementById('btn-go-menu').innerText = currentPack.abandon;
-
-                document.getElementById('vic-title').innerText = currentPack.coreReached;
-                document.getElementById('vic-subtitle').innerText = currentPack.loopBreaks;
-                document.getElementById('btn-vic-continue').innerText = currentPack.proceedNext;
-
-                // Adjust active class tokens on top language nodes
-                if (ParadoxEngine.lang === 'en') {
-                    document.getElementById('lang-en').className = 'active';
-                    document.getElementById('lang-id').className = '';
-                } else {
-                    document.getElementById('lang-en').className = '';
-                    document.getElementById('lang-id').className = 'active';
-                }
-            }
-        };
-
-        // ============================================================================
-        // FULL ARCHITECTURE ENGINE INITIALIZATION ON DOM CONTENT LOADED
-        // ============================================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            // Restore structural tracking parameters from previous hardware session
-            PersistenceLocalStorageController.loadProgress();
-
-            GameCoreEnvironment.init();
-            SceneOverlayManager.applyLocalizationStrings();
-
-            // Synch config interface input nodes to live variable data mappings
-            document.getElementById('cfg-check-music').checked = ParadoxEngine.music;
-            document.getElementById('cfg-check-sfx').checked = ParadoxEngine.sfx;
-
-            // --- ATTACH EXPLICIT RECT WEB INTERACTIVE USER INPUT CLICK EVENT BINDINGS ---
-            document.getElementById('lang-node-toggle').addEventListener('click', () => {
-                ParadoxEngine.lang = (ParadoxEngine.lang === 'en') ? 'id' : 'en';
-                SoundEngine.playClick();
-                PersistenceLocalStorageController.writeProgress();
-                SceneOverlayManager.applyLocalizationStrings();
-                if (ParadoxEngine.scene === 'Shop') ShopUserInterface.renderRegistryGrid();
-            });
-
-            document.getElementById('btn-lobby-start').addEventListener('click', () => {
-                SoundEngine.init();
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Gameplay');
-            });
-
-            document.getElementById('btn-lobby-shop').addEventListener('click', () => {
-                SoundEngine.init();
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Shop');
-            });
-
-            document.getElementById('btn-lobby-config').addEventListener('click', () => {
-                SoundEngine.init();
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Config');
-            });
-
-            document.getElementById('btn-shop-back').addEventListener('click', () => {
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Lobby');
-            });
-
-            document.getElementById('btn-config-back').addEventListener('click', () => {
-                SoundEngine.playClick();
-                ParadoxEngine.music = document.getElementById('cfg-check-music').checked;
-                ParadoxEngine.sfx = document.getElementById('cfg-check-sfx').checked;
-                
-                if (ParadoxEngine.music) SoundEngine.startAmbientDrone();
-                else SoundEngine.stopAmbientDrone();
-
-                PersistenceLocalStorageController.writeProgress();
-                SceneOverlayManager.transitionToScene('Lobby');
-            });
-
-            document.getElementById('btn-config-reset').addEventListener('click', () => {
-                if (confirm("WARNING: Irreversible reality distortion imminent. Reset all local matrix progress data?")) {
-                    PersistenceLocalStorageController.truncateAllProgress();
-                }
-            });
-
-            document.getElementById('btn-go-retry').addEventListener('click', () => {
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Gameplay');
-            });
-
-            document.getElementById('btn-go-menu').addEventListener('click', () => {
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Lobby');
-            });
-
-            document.getElementById('btn-vic-continue').addEventListener('click', () => {
-                SoundEngine.playClick();
-                SceneOverlayManager.transitionToScene('Gameplay');
-            });
-
-            // Attach Shop Tab Filters Selection Routing
-            const tabButtonsList = document.querySelectorAll('#shop-tab-container .tab-btn');
-            tabButtonsList.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    tabButtonsList.forEach(t => t.classList.remove('active'));
-                    e.target.classList.add('active');
-                    ShopUserInterface.activeFilter = e.target.getAttribute('data-filter');
-                    ShopUserInterface.renderRegistryGrid();
+            if(o.daily)Object.assign(ParadoxEngine.daily,o.daily);
+        }catch(e){}
+    },
+    reset(){try{localStorage.removeItem(this.key);window.location.reload();}catch(e){}}
+};
+
+// ============================================================================
+// DAILY REWARD SYSTEM
+// ============================================================================
+const DailySystem = {
+    getSundayStart(){
+        let now=new Date();
+        let day=now.getDay();// 0=Sun
+        let sunday=new Date(now);
+        sunday.setDate(now.getDate()-day);
+        sunday.setHours(0,0,0,0);
+        return sunday.getTime();
+    },
+
+    getCurrentDayIndex(){
+        let weekStart=this.getSundayStart();
+        let now=Date.now();
+        return Math.floor((now-weekStart)/(1000*60*60*24));
+    },
+
+    isNewWeek(){
+        return this.getSundayStart()!==ParadoxEngine.daily.weekStart;
+    },
+
+    resetIfNewWeek(){
+        if(this.isNewWeek()){
+            ParadoxEngine.daily.weekStart=this.getSundayStart();
+            ParadoxEngine.daily.claimedDays=[];
+            ParadoxEngine.daily.lastClaimed=-1;
+            Save.write();
+        }
+    },
+
+    canClaimToday(){
+        this.resetIfNewWeek();
+        let dayIdx=this.getCurrentDayIndex();
+        return !ParadoxEngine.daily.claimedDays.includes(dayIdx);
+    },
+
+    claimToday(){
+        this.resetIfNewWeek();
+        let dayIdx=this.getCurrentDayIndex();
+        if(this.canClaimToday()){
+            ParadoxEngine.daily.claimedDays.push(dayIdx);
+            ParadoxEngine.daily.lastClaimed=dayIdx;
+            let reward=DailyRewards[Math.min(dayIdx,6)];
+            ParadoxEngine.player.coins+=reward.amount;
+            Save.write();
+            return reward;
+        }
+        return null;
+    },
+
+    renderGrid(){
+        this.resetIfNewWeek();
+        let grid=document.getElementById('daily-reward-grid');
+        if(!grid)return;
+        grid.innerHTML='';
+        let dayIdx=this.getCurrentDayIndex();
+        for(let i=0;i<7;i++){
+            let r=DailyRewards[i];
+            let claimed=ParadoxEngine.daily.claimedDays.includes(i);
+            let isToday=(i===dayIdx);
+            let locked=(i>dayIdx);
+            let card=document.createElement('div');
+            card.className='daily-card'+(claimed?' claimed':isToday?' today':locked?' locked':'');
+            card.innerHTML=`<div class="daily-day">DAY ${r.day}</div><div class="daily-icon">${r.icon}</div><div class="daily-amount">+${r.amount}</div>${claimed?'<div class="daily-check">✓</div>':''}`;
+            grid.appendChild(card);
+        }
+        // Countdown to next day
+        let msToNextDay=86400000-((Date.now()-this.getSundayStart())%86400000);
+        let h=Math.floor(msToNextDay/3600000),m=Math.floor((msToNextDay%3600000)/60000);
+        let cd=document.getElementById('daily-countdown');
+        if(cd)cd.innerText=`${h}h ${m}m`;
+    }
+};
+
+// ============================================================================
+// SHOP UI
+// ============================================================================
+const Shop = {
+    filter:'all',
+    render(){
+        try{
+            let grid=document.getElementById('shop-items-grid-container');
+            if(!grid)return;
+            grid.innerHTML='';
+            let list=SkinDB.filter(s=>this.filter==='all'||s.rarity.toString()===this.filter);
+            list.forEach(skin=>{
+                let unlocked=ParadoxEngine.player.unlockedSkins.includes(skin.id);
+                let equipped=ParadoxEngine.player.equippedSkin===skin.id;
+                let rarityColors=['var(--text-muted)','var(--neon-blue)','var(--neon-purple)','var(--neon-gold)','var(--neon-pink)','var(--neon-red)'];
+                let div=document.createElement('div');
+                div.className='shop-item'+(equipped?' equipped':unlocked?' unlocked':'');
+                div.innerHTML=`<span class="rarity-tag" style="background:${rarityColors[skin.rarity]}">${skin.rN}</span><canvas class="shop-item-canvas" id="sp-${skin.id}" width="48" height="60"></canvas><div class="shop-item-name">${skin.name}</div><div class="shop-item-cost">${equipped?'EQUIPPED':unlocked?'EQUIP':skin.cost+' ❖'}</div>`;
+                div.addEventListener('click',()=>{SoundEngine.playClick();this.select(skin);});
+                grid.appendChild(div);
+                requestAnimationFrame(()=>{
+                    let c=document.getElementById(`sp-${skin.id}`);
+                    if(c){let cx=c.getContext('2d');cx.clearRect(0,0,48,60);renderSprite(cx,skin.id,0,0,48,60,false);}
                 });
             });
+            document.getElementById('shop-balance-value').innerText=ParadoxEngine.player.coins+' ❖';
+        }catch(e){}
+    },
+    select(skin){
+        let desc=document.getElementById('skin-details-description');
+        let txt=ParadoxEngine.lang==='id'?skin.id2:skin.en;
+        let unlocked=ParadoxEngine.player.unlockedSkins.includes(skin.id);
+        let equipped=ParadoxEngine.player.equippedSkin===skin.id;
+        if(equipped){desc.innerText=`[${skin.name}] — ${txt}`;return;}
+        if(unlocked){
+            ParadoxEngine.player.equippedSkin=skin.id;
+            desc.innerText=ParadoxEngine.lang==='id'?`Skin terpasang: ${skin.name}`:`Equipped: ${skin.name}`;
+            Save.write();this.render();return;
+        }
+        if(ParadoxEngine.player.coins>=skin.cost){
+            ParadoxEngine.player.coins-=skin.cost;
+            ParadoxEngine.player.unlockedSkins.push(skin.id);
+            ParadoxEngine.player.equippedSkin=skin.id;
+            desc.innerText=ParadoxEngine.lang==='id'?`Dibeli & dipasang: ${skin.name}`:`Purchased & equipped: ${skin.name}`;
+            Save.write();this.render();
+        }else{
+            desc.innerText=ParadoxEngine.lang==='id'?`Chips tidak cukup untuk: ${skin.name}`:`Insufficient chips for: ${skin.name}`;
+        }
+    }
+};
 
-            // --- KEYBOARD HARDWARE DESKTOP INPUT INTERFACE MAP BINDINGS ---
-            window.addEventListener('keydown', (event) => {
-                if (ParadoxEngine.scene !== 'Gameplay') return;
-                
-                const code = event.code;
-                if (code === 'ArrowUp' || code === 'KeyW') GameCoreEnvironment.executeDirectMoveCommand(0, -1);
-                else if (code === 'ArrowDown' || code === 'KeyS') GameCoreEnvironment.executeDirectMoveCommand(0, 1);
-                else if (code === 'ArrowLeft' || code === 'KeyA') GameCoreEnvironment.executeDirectMoveCommand(-1, 0);
-                else if (code === 'ArrowRight' || code === 'KeyD') GameCoreEnvironment.executeDirectMoveCommand(1, 0);
-            });
+// ============================================================================
+// MAZE MAP (20x15 grid — much larger than before)
+// ============================================================================
+// 0=floor, 1=wall, 2=coin_spawn
+const MAP_W=20, MAP_H=15;
+const GridMap = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,1,0,0,0,0,0,1,0,0,2,0,1,0,0,0,1],
+    [1,0,1,0,1,0,1,1,1,0,1,0,1,1,0,1,0,1,0,1],
+    [1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1],
+    [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,0,1],
+    [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,1],
+    [1,1,1,1,0,0,1,1,1,1,1,0,1,0,0,1,1,1,0,1],
+    [1,0,0,1,0,0,0,2,0,0,1,0,1,0,0,0,0,1,0,1],
+    [1,0,0,1,1,1,1,1,0,0,1,0,1,1,1,1,0,1,0,1],
+    [1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,1],
+    [1,1,1,0,1,1,0,0,0,0,1,1,1,1,0,1,0,1,0,1],
+    [1,0,0,0,1,0,0,1,1,0,0,0,0,1,0,0,0,1,0,1],
+    [1,0,1,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,1],
+    [1,0,1,0,1,2,0,0,0,0,1,0,1,0,0,0,0,1,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
 
-            // --- VIRTUAL JOYSTICK ACCESSIBILITY CONTROLS FOR MOBILE VIEWPORTS ---
-            const joystickZoneNode = document.getElementById('joystick-zone');
-            const joystickHandleNode = document.getElementById('joystick-handle');
-            
-            if (window.matchMedia("(max-width: 1024px)").matches || 'ontouchstart' in window) {
-                joystickZoneNode.style.display = 'flex';
+// ============================================================================
+// GAME CORE
+// ============================================================================
+const Game = {
+    canvas:null, ctx:null, running:false, tileW:40, tileH:40,
+    rafId:null, lastTime:0, ticks:0, heartbeatTimer:0,
+
+    player:{
+        gx:1,gy:1,rx:40,ry:40,tx:40,ty:40,
+        facing:'right',sanity:100,
+        walkFrame:0,walkTimer:0,isMoving:false,
+        stepX:0,stepY:0 // smooth walk progress
+    },
+
+    core:{gx:18,gy:13,pulse:0},
+
+    clone:{active:false,rx:-200,ry:-200},
+    ghost:{active:false,gx:0,gy:0,rx:0,ry:0,msg:'',timer:0},
+    history:[],
+
+    monsters:[],
+    coins:[], // collectible coins on map
+    shake:0,
+    level:1,
+    floatingTexts:[],
+
+    // Moving player smoothly — tile-based with lerp
+    SPEED:8, // tiles per second feel
+
+    init(){
+        this.canvas=document.getElementById('main-game-canvas');
+        this.ctx=this.canvas.getContext('2d');
+        this.updateCanvasSize();
+        window.addEventListener('resize',()=>this.updateCanvasSize());
+    },
+
+    updateCanvasSize(){
+        let maxW=window.innerWidth, maxH=window.innerHeight;
+        let scaleW=maxW/(MAP_W*40), scaleH=maxH/(MAP_H*40);
+        let scale=Math.min(scaleW,scaleH,1.5);
+        this.canvas.style.width=(MAP_W*40*scale)+'px';
+        this.canvas.style.height=(MAP_H*40*scale)+'px';
+        this.tileW=40;this.tileH=40;
+    },
+
+    startSession(){
+        this.level=ParadoxEngine.player.level;
+        this.player.gx=1;this.player.gy=1;
+        this.player.rx=40;this.player.ry=40;
+        this.player.tx=40;this.player.ty=40;
+        this.player.sanity=100;this.player.facing='right';
+        this.player.isMoving=false;this.player.walkFrame=0;
+        this.clone.active=false;
+        this.ghost.active=false;
+        this.history=[];
+        this.monsters=[];
+        this.floatingTexts=[];
+        this.shake=0;this.ticks=0;this.heartbeatTimer=0;
+
+        // Place core on random valid floor far from start
+        let floors=[];
+        for(let r=0;r<MAP_H;r++)for(let c=0;c<MAP_W;c++)
+            if(GridMap[r][c]!==1&&!(r<3&&c<3)) floors.push({x:c,y:r});
+        let p=floors[Math.floor(Math.random()*floors.length)];
+        this.core.gx=p.x;this.core.gy=p.y;this.core.pulse=0;
+
+        // Place coins
+        this.coins=[];
+        for(let r=0;r<MAP_H;r++) for(let c=0;c<MAP_W;c++)
+            if(GridMap[r][c]===2) this.coins.push({gx:c,gy:r,collected:false,pulse:Math.random()*Math.PI*2});
+
+        document.getElementById('game-hud').style.display='flex';
+        document.getElementById('compass-hud').style.display='flex';
+        this.updateHUD();
+        this.running=true;
+        this.lastTime=performance.now();
+        if(this.rafId)cancelAnimationFrame(this.rafId);
+        this.rafId=requestAnimationFrame(ts=>this.frame(ts));
+    },
+
+    stopSession(){
+        this.running=false;
+        if(this.rafId)cancelAnimationFrame(this.rafId);
+        document.getElementById('game-hud').style.display='none';
+        document.getElementById('compass-hud').style.display='none';
+    },
+
+    updateHUD(){
+        document.getElementById('hud-value-name').innerText=ParadoxEngine.player.name.toUpperCase();
+        document.getElementById('hud-value-coins').innerText=ParadoxEngine.player.coins;
+        document.getElementById('hud-value-level').innerText=this.level;
+        let s=Math.max(0,Math.min(100,this.player.sanity));
+        document.getElementById('sanity-bar-fill').style.width=s+'%';
+        document.getElementById('sanity-num').innerText=Math.floor(s);
+        // Color sanity bar based on level
+        let fill=document.getElementById('sanity-bar-fill');
+        if(s>60) fill.style.background='linear-gradient(90deg,#22c55e,#16a34a)';
+        else if(s>30) fill.style.background='linear-gradient(90deg,#f59e0b,#d97706)';
+        else fill.style.background='linear-gradient(90deg,var(--neon-red),#b91c1c)';
+    },
+
+    move(dx,dy){
+        if(!this.running)return;
+        // Allow move only when fully arrived at tile
+        let atTile=Math.abs(this.player.rx-this.player.tx)<1&&Math.abs(this.player.ry-this.player.ty)<1;
+        if(!atTile)return;
+
+        if(dx<0)this.player.facing='left';
+        if(dx>0)this.player.facing='right';
+
+        let nx=this.player.gx+dx, ny=this.player.gy+dy;
+        if(nx<0||nx>=MAP_W||ny<0||ny>=MAP_H)return;
+
+        if(GridMap[ny][nx]!==1){
+            this.player.gx=nx;this.player.gy=ny;
+            this.player.tx=nx*this.tileW;this.player.ty=ny*this.tileH;
+            this.player.isMoving=true;
+        }else{
+            SoundEngine.playBump();
+            this.player.sanity=Math.max(0,this.player.sanity-4);
+            this.shake=Math.min(10,this.shake+4);
+            this.spawnImpactParticles(nx,ny,dx,dy);
+            this.spawnGhost();
+            this.updateHUD();
+            this.checkDeath();
+            // Spawn monster on repeated wall bumps
+            if(Math.random()<0.3) this.spawnMonster();
+        }
+    },
+
+    spawnImpactParticles(wgx,wgy,dx,dy){
+        let skin=SkinDB.find(s=>s.id===ParadoxEngine.player.equippedSkin)||SkinDB[0];
+        let px=(wgx*this.tileW)+20-(dx*20), py=(wgy*this.tileH)+20-(dy*20);
+        for(let i=0;i<20;i++){
+            let vx=(Math.random()*100-50)-(dx*40);
+            let vy=(Math.random()*100-50)-(dy*40);
+            Particles.emit(px,py,vx,vy,skin.color,0.5+Math.random()*0.4,2+Math.random()*3);
+        }
+    },
+
+    spawnGhost(){
+        let offs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}];
+        for(let o of offs){
+            let gx=this.player.gx+o.x, gy=this.player.gy+o.y;
+            if(gy>=0&&gy<MAP_H&&gx>=0&&gx<MAP_W&&GridMap[gy][gx]!==1){
+                this.ghost.active=true;this.ghost.gx=gx;this.ghost.gy=gy;
+                this.ghost.rx=gx*this.tileW;this.ghost.ry=gy*this.tileH;
+                this.ghost.timer=3;
+                let q=GaslightingQuotes[ParadoxEngine.lang];
+                this.ghost.msg=q[Math.floor(Math.random()*q.length)].replace('[NAME]',ParadoxEngine.player.name);
+                break;
+            }
+        }
+    },
+
+    spawnMonster(){
+        if(this.monsters.length>=5)return;
+        let floors=[];
+        for(let r=0;r<MAP_H;r++)for(let c=0;c<MAP_W;c++){
+            let dist=Math.hypot(c-this.player.gx,r-this.player.gy);
+            if(GridMap[r][c]!==1&&dist>4) floors.push({x:c,y:r});
+        }
+        if(!floors.length)return;
+        let p=floors[Math.floor(Math.random()*floors.length)];
+        let mType=Math.floor(Math.random()*5);
+        this.monsters.push({gx:p.x,gy:p.y,rx:p.x*this.tileW,ry:p.y*this.tileH,tx:p.x*this.tileW,ty:p.y*this.tileH,type:mType,moveTimer:1.5+Math.random(),life:100});
+        SoundEngine.playMonsterSpawn();
+        let alert=document.getElementById('monster-alert');
+        if(alert){alert.classList.add('show');setTimeout(()=>alert.classList.remove('show'),2000);}
+    },
+
+    updateMonsters(dt){
+        for(let m of this.monsters){
+            // Lerp monster position
+            m.rx+=(m.tx-m.rx)*8*dt;
+            m.ry+=(m.ty-m.ry)*8*dt;
+            if(Math.abs(m.rx-m.tx)<0.5)m.rx=m.tx;
+            if(Math.abs(m.ry-m.ty)<0.5)m.ry=m.ty;
+
+            m.moveTimer-=dt;
+            if(m.moveTimer<=0){
+                m.moveTimer=1.2+Math.random()*0.8;
+                // Pathfind toward player simply
+                let dirs=[{dx:0,dy:-1},{dx:0,dy:1},{dx:-1,dy:0},{dx:1,dy:0}];
+                dirs.sort(()=>Math.random()-0.5);// shuffle for variety
+                // Try to move toward player
+                let bestDx=0,bestDy=0,bestDist=Infinity;
+                for(let d of dirs){
+                    let nx=m.gx+d.dx,ny=m.gy+d.dy;
+                    if(nx<0||nx>=MAP_W||ny<0||ny>=MAP_H)continue;
+                    if(GridMap[ny][nx]===1)continue;
+                    let dist=Math.hypot(nx-this.player.gx,ny-this.player.gy);
+                    if(dist<bestDist){bestDist=dist;bestDx=d.dx;bestDy=d.dy;}
+                }
+                if(bestDist<Infinity){
+                    m.gx+=bestDx;m.gy+=bestDy;
+                    m.tx=m.gx*this.tileW;m.ty=m.gy*this.tileH;
+                }
             }
 
-            let joystickActiveState = false;
-            let joystickOriginCoordinateX = 0;
-            let joystickOriginCoordinateY = 0;
+            // Check collision with player
+            let dist=Math.hypot(m.rx-(this.player.rx+16),m.ry-(this.player.ry+20));
+            if(dist<30){
+                this.player.sanity=Math.max(0,this.player.sanity-15*dt);
+                this.shake=Math.min(8,this.shake+0.5);
+                this.updateHUD();
+                this.checkDeath();
+            }
+        }
+    },
 
-            joystickZoneNode.addEventListener('touchstart', (e) => {
-                joystickActiveState = true;
-                SoundEngine.init();
-                let touch = e.touches[0];
-                let boundingBox = joystickZoneNode.getBoundingClientRect();
-                joystickOriginCoordinateX = boundingBox.left + (boundingBox.width / 2);
-                joystickOriginCoordinateY = boundingBox.top + (boundingBox.height / 2);
-            });
+    checkDeath(){
+        if(this.player.sanity<=0){
+            this.stopSession();
+            SoundEngine.playParadoxBlast();
+            SceneMgr.go('GameOver');
+        }
+    },
 
-            joystickZoneNode.addEventListener('touchmove', (e) => {
-                if (!joystickActiveState) return;
-                e.preventDefault();
-                let touch = e.touches[0];
-                
-                let deltaMoveX = touch.clientX - joystickOriginCoordinateX;
-                let deltaMoveY = touch.clientY - joystickOriginCoordinateY;
-                let totalDistance = Math.hypot(deltaMoveX, deltaMoveY);
-                
-                // Keep visual node bounded within css track constraints limit parameters
-                const maxLimitingRadius = 40;
-                if (totalDistance > maxLimitingRadius) {
-                    deltaMoveX = (deltaMoveX / totalDistance) * maxLimitingRadius;
-                    deltaMoveY = (deltaMoveY / totalDistance) * maxLimitingRadius;
-                }
+    checkCoins(){
+        for(let coin of this.coins){
+            if(coin.collected)continue;
+            if(coin.gx===this.player.gx&&coin.gy===this.player.gy){
+                coin.collected=true;
+                let reward=50+this.level*10;
+                ParadoxEngine.player.coins+=reward;
+                SoundEngine.playCoinPickup();
+                this.floatingTexts.push({x:this.player.rx+20,y:this.player.ry,text:'+'+reward,color:'#eab308',life:1.5,maxLife:1.5});
+                Save.write();this.updateHUD();
+            }
+        }
+    },
 
-                joystickHandleNode.style.transform = `translate(${deltaMoveX}px, ${deltaMoveY}px)`;
+    emitSkinParticles(){
+        let skin=SkinDB.find(s=>s.id===ParadoxEngine.player.equippedSkin)||SkinDB[0];
+        let px=this.player.rx+20, py=this.player.ry+30;
+        if(skin.rarity===0&&Math.random()<0.12) Particles.emit(px,py,(Math.random()*20-10),(Math.random()*-15),skin.color,0.7,2);
+        else if(skin.rarity===1&&Math.random()<0.3) Particles.emit(px+(Math.random()*16-8),py+(Math.random()*10-5),(Math.random()*8-4),(Math.random()*-25),skin.color,0.9,3);
+        else if(skin.rarity===2&&Math.random()<0.5) Particles.emit(px+(Math.random()*24-12),py+(Math.random()*20-10),(Math.random()*40-20),(Math.random()*40-20),'#ffffff',0.2,1);
+        else if(skin.rarity===3&&Math.random()<0.7) Particles.emit(px,py,(Math.random()*60-30),(Math.random()*-40),skin.color,0.6,3);
+        else if(skin.rarity>=4){
+            for(let k=0;k<3;k++){
+                let h=(skin.rarity===5)?(Date.now()/8)%360:(skin.id.includes('mythical1')?0:220);
+                let col=(skin.rarity===5)?`hsl(${h},90%,60%)`:skin.color;
+                Particles.emit(px+(Math.random()*10-5),py+(Math.random()*10-5),(Math.random()*80-40),(Math.random()*-60),col,0.8,2+Math.random()*2);
+            }
+        }
+    },
 
-                // Threshold cross detection to fire movement matrix pulses discrete commands
-                if (totalDistance > 22) {
-                    if (Math.abs(deltaMoveX) > Math.abs(deltaMoveY)) {
-                        if (deltaMoveX > 0) GameCoreEnvironment.executeDirectMoveCommand(1, 0);
-                        else GameCoreEnvironment.executeDirectMoveCommand(-1, 0);
-                    } else {
-                        if (deltaMoveY > 0) GameCoreEnvironment.executeDirectMoveCommand(0, 1);
-                        else GameCoreEnvironment.executeDirectMoveCommand(0, -1);
+    drawHeart(ctx){
+        let cx=(this.core.gx*this.tileW)+20, cy=(this.core.gy*this.tileH)+20;
+        let scale=2.4+Math.sin(this.core.pulse)*0.3;
+        let pw=scale, ph=scale;
+        let ox=cx-(HeartMatrix[0].length*pw/2), oy=cy-(HeartMatrix.length*ph/2);
+        ctx.save();
+        ctx.shadowBlur=20;ctx.shadowColor='#ef4444';
+        for(let r=0;r<HeartMatrix.length;r++){
+            for(let c=0;c<HeartMatrix[r].length;c++){
+                let v=HeartMatrix[r][c];if(!v)continue;
+                if(v===1)ctx.fillStyle='#7f1d1d';
+                else ctx.fillStyle=`hsl(${(this.ticks*2+r*10)%360},90%,55%)`;
+                ctx.fillRect(Math.floor(ox+c*pw),Math.floor(oy+r*ph),Math.ceil(pw),Math.ceil(ph));
+            }
+        }
+        ctx.restore();
+    },
+
+    drawCompass(){
+        let c=document.getElementById('compass-canvas');
+        if(!c)return;
+        let cx2=c.getContext('2d');
+        cx2.clearRect(0,0,70,70);
+        cx2.fillStyle='rgba(0,0,0,0.7)';cx2.beginPath();cx2.arc(35,35,34,0,Math.PI*2);cx2.fill();
+        cx2.strokeStyle='rgba(139,92,246,0.3)';cx2.lineWidth=1;cx2.stroke();
+        // Draw core direction
+        let dx=this.core.gx-this.player.gx, dy=this.core.gy-this.player.gy;
+        let ang=Math.atan2(dy,dx);
+        cx2.save();cx2.translate(35,35);cx2.rotate(ang);
+        cx2.fillStyle='#eab308';cx2.beginPath();cx2.moveTo(22,0);cx2.lineTo(16,-5);cx2.lineTo(16,5);cx2.closePath();cx2.fill();
+        cx2.restore();
+        // Player dot
+        cx2.fillStyle=SkinDB.find(s=>s.id===ParadoxEngine.player.equippedSkin)?.color||'#22c55e';
+        cx2.beginPath();cx2.arc(35,35,5,0,Math.PI*2);cx2.fill();
+    },
+
+    frame(ts){
+        if(!this.running)return;
+        let dt=Math.min((ts-this.lastTime)/1000,0.12);
+        this.lastTime=ts;this.ticks++;
+
+        // === UPDATE ===
+        // Smooth lerp movement
+        const lerpSpd=12;
+        this.player.rx+=(this.player.tx-this.player.rx)*lerpSpd*dt;
+        this.player.ry+=(this.player.ty-this.player.ry)*lerpSpd*dt;
+        if(Math.abs(this.player.rx-this.player.tx)<0.3){this.player.rx=this.player.tx;this.player.isMoving=false;}
+        if(Math.abs(this.player.ry-this.player.ty)<0.3)this.player.ry=this.player.ty;
+
+        // Walk frame animation
+        if(this.player.isMoving){
+            this.player.walkTimer+=dt;
+            if(this.player.walkTimer>0.12){this.player.walkTimer=0;this.player.walkFrame=(this.player.walkFrame+1)%4;}
+        }
+
+        // History for clone
+        if(this.ticks%3===0){
+            this.history.push({x:this.player.rx,y:this.player.ry,facing:this.player.facing});
+            if(this.history.length>300)this.history.shift();
+        }
+        let cloneDelay=Math.max(40,70-this.level*5);
+        if(this.history.length>cloneDelay){
+            let h=this.history[this.history.length-cloneDelay];
+            this.clone.active=true;this.clone.rx=h.x;this.clone.ry=h.y;
+        }else this.clone.active=false;
+
+        // Clone damage
+        if(this.clone.active){
+            let dist=Math.hypot(this.player.rx-this.clone.rx,this.player.ry-this.clone.ry);
+            if(dist<26){this.player.sanity=Math.max(0,this.player.sanity-(20*dt));this.shake=Math.min(6,this.shake+0.5);this.updateHUD();this.checkDeath();}
+        }
+
+        // Ghost timer
+        if(this.ghost.active){this.ghost.timer-=dt;if(this.ghost.timer<=0)this.ghost.active=false;}
+
+        // Monsters
+        this.updateMonsters(dt);
+
+        // Passive sanity drain — scales with level
+        this.player.sanity=Math.max(0,this.player.sanity-(0.8+this.level*0.15)*dt);
+        if(this.ticks%20===0){this.updateHUD();this.checkDeath();}
+
+        // Heartbeat when sanity is critical
+        if(this.player.sanity<30&&ParadoxEngine.horror){
+            this.heartbeatTimer-=dt;
+            if(this.heartbeatTimer<=0){
+                SoundEngine.playHeartbeat();
+                this.heartbeatTimer=1.5-(this.player.sanity/100);
+            }
+        }
+
+        // Check coins
+        this.checkCoins();
+
+        // Check core
+        if(this.player.gx===this.core.gx&&this.player.gy===this.core.gy&&!this.player.isMoving){
+            this.stopSession();
+            SoundEngine.playVictory();
+            ParadoxEngine.player.coins+=1250;
+            ParadoxEngine.player.level=Math.min(10,ParadoxEngine.player.level+1);
+            Save.write();
+            SceneMgr.go('Victory');return;
+        }
+
+        this.emitSkinParticles();
+        Particles.update(dt);
+
+        // Floating texts
+        for(let ft of this.floatingTexts){ft.life-=dt;ft.y-=30*dt;}
+        this.floatingTexts=this.floatingTexts.filter(ft=>ft.life>0);
+
+        this.shake=Math.max(0,this.shake-dt*15);
+        this.core.pulse+=dt*3;
+
+        // === DRAW ===
+        let ctx=this.ctx;
+        ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+        ctx.save();
+
+        if(this.shake>0){ctx.translate((Math.random()-0.5)*this.shake,(Math.random()-0.5)*this.shake);}
+
+        this.drawGrid(ctx);
+        this.drawCoins(ctx);
+        this.drawHeart(ctx);
+
+        Particles.draw(ctx);
+
+        // Clone
+        if(this.clone.active){
+            ctx.save();ctx.globalAlpha=0.38;
+            renderSprite(ctx,'epic1',this.clone.rx+4,this.clone.ry,32,40,false);
+            ctx.restore();
+        }
+
+        // Ghost
+        if(this.ghost.active){
+            ctx.save();
+            ctx.globalAlpha=0.3+Math.sin(this.ticks/4)*0.15;
+            renderSprite(ctx,'mythical5',this.ghost.rx+4,this.ghost.ry,32,40,false);
+            ctx.restore();
+            ctx.fillStyle='rgba(239,68,68,0.9)';
+            ctx.font='bold 8px monospace';ctx.textAlign='center';
+            ctx.fillText(this.ghost.msg,this.ghost.rx+20,this.ghost.ry-6);
+        }
+
+        // Monsters
+        for(let m of this.monsters){
+            let bobY=Math.sin(this.ticks*0.1+m.gx)*3;
+            renderMonsterSprite(ctx,m.rx+4,m.ry+bobY,32,40,m.type);
+            // Monster name
+            let names=['GHOUL','SPECTER','WRAITH','SHADE','HORROR'];
+            ctx.fillStyle='rgba(239,68,68,0.8)';
+            ctx.font='6px monospace';ctx.textAlign='center';
+            ctx.fillText(names[m.type],m.rx+20,m.ry-4);
+        }
+
+        // Player — with subtle walk bob
+        let bobY=this.player.isMoving?Math.sin(this.player.walkFrame*Math.PI)*2:0;
+        renderSprite(ctx,ParadoxEngine.player.equippedSkin,this.player.rx+4,this.player.ry+bobY,32,40,(this.player.facing==='left'));
+
+        // Player name tag
+        ctx.fillStyle='rgba(34,197,94,0.9)';
+        ctx.font='bold 7px monospace';ctx.textAlign='center';
+        ctx.fillText(ParadoxEngine.player.name.toUpperCase(),this.player.rx+20,this.player.ry-4);
+
+        // Floating texts
+        for(let ft of this.floatingTexts){
+            let a=ft.life/ft.maxLife;
+            ctx.globalAlpha=a;ctx.fillStyle=ft.color;ctx.font='bold 10px monospace';ctx.textAlign='center';
+            ctx.fillText(ft.text,ft.x,ft.y);
+        }
+        ctx.globalAlpha=1;
+
+        ctx.restore();
+        this.drawCompass();
+
+        this.rafId=requestAnimationFrame(ts=>this.frame(ts));
+    },
+
+    drawGrid(ctx){
+        for(let r=0;r<MAP_H;r++){
+            for(let c=0;c<MAP_W;c++){
+                let x=c*this.tileW, y=r*this.tileH;
+                if(GridMap[r][c]===1){
+                    ctx.fillStyle='#0b0c12';
+                    ctx.fillRect(x,y,this.tileW,this.tileH);
+                    ctx.strokeStyle='rgba(139,92,246,0.12)';ctx.lineWidth=1;
+                    ctx.strokeRect(x+1,y+1,this.tileW-2,this.tileH-2);
+                    // Circuit pattern
+                    if((r+c)%4===0){
+                        ctx.strokeStyle='rgba(139,92,246,0.06)';
+                        ctx.beginPath();ctx.moveTo(x+8,y+8);ctx.lineTo(x+this.tileW-8,y+this.tileH-8);ctx.stroke();
                     }
+                }else{
+                    ctx.fillStyle='#03040a';
+                    ctx.fillRect(x,y,this.tileW,this.tileH);
+                    ctx.strokeStyle='rgba(255,255,255,0.012)';ctx.lineWidth=1;
+                    ctx.strokeRect(x,y,this.tileW,this.tileH);
                 }
-            });
+            }
+        }
+    },
 
-            const resetJoystickHandleVisualCoordinates = () => {
-                joystickActiveState = false;
-                joystickHandleNode.style.transform = 'translate(0px, 0px)';
-            };
+    drawCoins(ctx){
+        for(let coin of this.coins){
+            if(coin.collected)continue;
+            coin.pulse+=0.05;
+            let cx2=coin.gx*this.tileW+20, cy2=coin.gy*this.tileH+20;
+            let r2=4+Math.sin(coin.pulse)*1.5;
+            ctx.save();
+            ctx.shadowBlur=12;ctx.shadowColor='#eab308';
+            ctx.fillStyle='#eab308';
+            ctx.beginPath();ctx.arc(cx2,cy2,r2,0,Math.PI*2);ctx.fill();
+            ctx.fillStyle='#fde68a';ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.fillText('❖',cx2,cy2+3);
+            ctx.restore();
+        }
+    }
+};
 
-            joystickZoneNode.addEventListener('touchend', resetJoystickHandleVisualCoordinates);
-            joystickZoneNode.addEventListener('touchcancel', resetJoystickHandleVisualCoordinates);
+// ============================================================================
+// SCENE MANAGER
+// ============================================================================
+const SceneMgr = {
+    screens:['screen-lobby','screen-daily','screen-shop','screen-config','screen-gameover','screen-victory'],
+    go(name){
+        ParadoxEngine.scene=name;
+        this.screens.forEach(id=>document.getElementById(id)?.classList.remove('active'));
+        if(name==='Lobby') document.getElementById('screen-lobby').classList.add('active');
+        else if(name==='Daily'){document.getElementById('screen-daily').classList.add('active');DailySystem.renderGrid();}
+        else if(name==='Shop'){document.getElementById('screen-shop').classList.add('active');Shop.render();}
+        else if(name==='Config') document.getElementById('screen-config').classList.add('active');
+        else if(name==='GameOver') document.getElementById('screen-gameover').classList.add('active');
+        else if(name==='Victory'){
+            document.getElementById('screen-victory').classList.add('active');
+            document.getElementById('vic-reward-text').innerText=`+1250 CHIPS — LEVEL ${ParadoxEngine.player.level}`;
+        }
+        else if(name==='Gameplay') Game.startSession();
+    },
+
+    applyL10n(){
+        let L=L10n[ParadoxEngine.lang];
+        let set=(id,txt)=>{let el=document.getElementById(id);if(el)el.innerText=txt;};
+        set('lobby-tagline',L.tagline);
+        set('btn-lobby-start',L.start);set('btn-lobby-daily',L.daily);
+        set('btn-lobby-shop',L.shop);set('btn-lobby-config',L.config);
+        set('shop-title-header',L.shopTitle);set('shop-label-balance',L.balance);
+        set('btn-shop-back',L.returnLobby);
+        set('config-title-header',L.sysConfig);
+        set('config-label-music',L.bgMusic);set('config-label-sfx',L.opSfx);
+        set('config-label-horror',L.horror);set('config-label-vol',L.vol);
+        set('btn-config-reset',L.resetProg);set('btn-config-back',L.saveReturn);
+        set('go-title',L.failedTitle);set('go-subtitle',L.failedSub);
+        set('btn-go-retry',L.reenter);set('btn-go-menu',L.abandon);
+        set('vic-title',L.coreReached);set('vic-subtitle',L.loopBreaks);
+        set('btn-vic-continue',L.proceedNext);set('btn-vic-menu',L.vicMenu);
+        set('daily-title',L.dailyTitle);set('daily-sub',L.dailySub);
+        set('btn-daily-claim',L.dailyClaim);set('btn-daily-back',L.dailyBack);
+        set('compass-label',L.compass);set('hud-level-label',L.levelLabel);
+        set('lobby-name-label',L.lobbyName);
+        let enEl=document.getElementById('lang-en');let idEl=document.getElementById('lang-id');
+        if(enEl)enEl.className=ParadoxEngine.lang==='en'?'active':'';
+        if(idEl)idEl.className=ParadoxEngine.lang==='id'?'active':'';
+    }
+};
+
+// ============================================================================
+// INPUT & INIT
+// ============================================================================
+document.addEventListener('DOMContentLoaded',()=>{
+    Save.load();
+    Game.init();
+    SceneMgr.applyL10n();
+
+    // Player name input
+    let nameInput=document.getElementById('player-name-input');
+    if(nameInput){
+        nameInput.value=ParadoxEngine.player.name;
+        nameInput.style.touchAction='auto';
+        nameInput.addEventListener('input',()=>{
+            let v=nameInput.value.trim().toUpperCase()||'PLAYER';
+            ParadoxEngine.player.name=v.substring(0,12);
+            Save.write();
         });
-    </script>
+        nameInput.addEventListener('keydown',e=>e.stopPropagation());
+    }
+
+    // Sync config
+    document.getElementById('cfg-check-music').checked=ParadoxEngine.music;
+    document.getElementById('cfg-check-sfx').checked=ParadoxEngine.sfx;
+    document.getElementById('cfg-check-horror').checked=ParadoxEngine.horror;
+    document.getElementById('cfg-volume').value=Math.round(ParadoxEngine.volume*100);
+
+    // Lang toggle
+    document.getElementById('lang-node-toggle').addEventListener('click',()=>{
+        ParadoxEngine.lang=ParadoxEngine.lang==='en'?'id':'en';
+        SoundEngine.playClick();Save.write();SceneMgr.applyL10n();
+        if(ParadoxEngine.scene==='Shop')Shop.render();
+        if(ParadoxEngine.scene==='Daily')DailySystem.renderGrid();
+    });
+
+    // Lobby buttons
+    document.getElementById('btn-lobby-start').addEventListener('click',()=>{
+        ParadoxEngine.player.name=(nameInput?.value.trim().toUpperCase()||'PLAYER').substring(0,12);
+        SoundEngine.init();SoundEngine.playClick();SceneMgr.go('Gameplay');
+    });
+    document.getElementById('btn-lobby-daily').addEventListener('click',()=>{SoundEngine.init();SoundEngine.playClick();SceneMgr.go('Daily');});
+    document.getElementById('btn-lobby-shop').addEventListener('click',()=>{SoundEngine.init();SoundEngine.playClick();SceneMgr.go('Shop');});
+    document.getElementById('btn-lobby-config').addEventListener('click',()=>{SoundEngine.init();SoundEngine.playClick();SceneMgr.go('Config');});
+    document.getElementById('btn-shop-back').addEventListener('click',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
+    document.getElementById('btn-config-back').addEventListener('click',()=>{
+        SoundEngine.playClick();
+        ParadoxEngine.music=document.getElementById('cfg-check-music').checked;
+        ParadoxEngine.sfx=document.getElementById('cfg-check-sfx').checked;
+        ParadoxEngine.horror=document.getElementById('cfg-check-horror').checked;
+        ParadoxEngine.volume=parseInt(document.getElementById('cfg-volume').value)/100;
+        if(ParadoxEngine.music)SoundEngine.startAmbientDrone();else SoundEngine.stopAmbientDrone();
+        if(ParadoxEngine.horror)SoundEngine.startHorrorLayer();else SoundEngine.stopHorrorLayer();
+        SoundEngine.setVolume(ParadoxEngine.volume);
+        Save.write();SceneMgr.go('Lobby');
+    });
+    document.getElementById('btn-config-reset').addEventListener('click',()=>{
+        if(confirm('WARNING: Irreversible reality distortion imminent. Reset all data?'))Save.reset();
+    });
+    document.getElementById('btn-go-retry').addEventListener('click',()=>{SoundEngine.playClick();SceneMgr.go('Gameplay');});
+    document.getElementById('btn-go-menu').addEventListener('click',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
+    document.getElementById('btn-vic-continue').addEventListener('click',()=>{SoundEngine.playClick();SceneMgr.go('Gameplay');});
+    document.getElementById('btn-vic-menu').addEventListener('click',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
+
+    // Daily
+    document.getElementById('btn-daily-claim').addEventListener('click',()=>{
+        SoundEngine.playClick();
+        let reward=DailySystem.claimToday();
+        if(reward){
+            SoundEngine.playCoinPickup();
+            let btn=document.getElementById('btn-daily-claim');
+            btn.innerText=`✓ CLAIMED: ${reward.icon} +${reward.amount}`;
+            btn.style.borderColor='var(--neon-green)';
+            DailySystem.renderGrid();
+            Game.updateHUD();
+        }else{
+            let btn=document.getElementById('btn-daily-claim');
+            btn.innerText=ParadoxEngine.lang==='id'?'SUDAH DIKLAIM HARI INI':'ALREADY CLAIMED TODAY';
+        }
+    });
+    document.getElementById('btn-daily-back').addEventListener('click',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
+
+    // Shop tabs
+    document.querySelectorAll('#shop-tab-container .tab-btn').forEach(btn=>{
+        btn.addEventListener('click',e=>{
+            document.querySelectorAll('#shop-tab-container .tab-btn').forEach(t=>t.classList.remove('active'));
+            btn.classList.add('active');
+            Shop.filter=btn.getAttribute('data-filter');
+            Shop.render();
+        });
+    });
+
+    // Keyboard
+    window.addEventListener('keydown',e=>{
+        if(ParadoxEngine.scene!=='Gameplay')return;
+        e.preventDefault();
+        if(e.code==='ArrowUp'||e.code==='KeyW') Game.move(0,-1);
+        else if(e.code==='ArrowDown'||e.code==='KeyS') Game.move(0,1);
+        else if(e.code==='ArrowLeft'||e.code==='KeyA') Game.move(-1,0);
+        else if(e.code==='ArrowRight'||e.code==='KeyD') Game.move(1,0);
+    });
+
+    // Mobile detection & controls
+    let isMobile='ontouchstart' in window||window.matchMedia('(max-width:1024px)').matches;
+    if(isMobile){
+        document.getElementById('joystick-zone').style.display='flex';
+        document.getElementById('dpad-zone').style.display='block';
+        document.getElementById('compass-hud').style.bottom='200px';
+    }
+
+    // Joystick
+    let jz=document.getElementById('joystick-zone');
+    let jh=document.getElementById('joystick-handle');
+    let jActive=false,jOx=0,jOy=0;
+    jz.addEventListener('touchstart',e=>{
+        if(ParadoxEngine.scene!=='Gameplay')return;
+        jActive=true;SoundEngine.init();
+        let bb=jz.getBoundingClientRect();
+        jOx=bb.left+bb.width/2;jOy=bb.top+bb.height/2;
+    },{passive:true});
+    jz.addEventListener('touchmove',e=>{
+        if(!jActive||ParadoxEngine.scene!=='Gameplay')return;
+        e.preventDefault();
+        let t=e.touches[0];
+        let dx=t.clientX-jOx, dy=t.clientY-jOy;
+        let dist=Math.hypot(dx,dy);
+        let maxR=42;
+        if(dist>maxR){dx=(dx/dist)*maxR;dy=(dy/dist)*maxR;}
+        jh.style.transform=`translate(${dx}px,${dy}px)`;
+        if(dist>18){
+            if(Math.abs(dx)>Math.abs(dy)){dx>0?Game.move(1,0):Game.move(-1,0);}
+            else{dy>0?Game.move(0,1):Game.move(0,-1);}
+        }
+    },{passive:false});
+    let jReset=()=>{jActive=false;jh.style.transform='translate(0px,0px)';};
+    jz.addEventListener('touchend',jReset,{passive:true});
+    jz.addEventListener('touchcancel',jReset,{passive:true});
+
+    // D-PAD
+    let dpadSetup=(id,dx,dy)=>{
+        let el=document.getElementById(id);
+        if(!el)return;
+        el.addEventListener('touchstart',e=>{e.preventDefault();if(ParadoxEngine.scene==='Gameplay'){SoundEngine.init();Game.move(dx,dy);}},{passive:false});
+        el.addEventListener('click',()=>{if(ParadoxEngine.scene==='Gameplay')Game.move(dx,dy);});
+    };
+    dpadSetup('dpad-up',0,-1);dpadSetup('dpad-down',0,1);dpadSetup('dpad-left',-1,0);dpadSetup('dpad-right',1,0);
+});
+</script>
 </body>
 </html>
