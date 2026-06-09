@@ -84,12 +84,9 @@ body::before{content:" ";display:block;position:fixed;top:0;left:0;bottom:0;righ
 .auth-divider{text-align:center;color:var(--text-muted);font-size:0.6rem;margin:4px 0;}
 .cloud-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;
   font-family:'Orbitron',monospace;font-size:0.55rem;color:var(--text-muted);letter-spacing:1px;}
-
-/* ===== GUEST WARNING BANNER ===== */
 .guest-warning-banner{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.3);border-radius:6px;
-  padding:10px 14px;margin-bottom:10px;font-family:'Orbitron',monospace;font-size:0.55rem;color:var(--neon-gold);
-  letter-spacing:1px;text-align:center;line-height:1.6;display:none;}
-.guest-warning-banner.show{display:block;}
+  padding:10px 14px;margin-top:6px;font-family:'Orbitron',monospace;font-size:0.55rem;color:var(--neon-gold);
+  letter-spacing:1px;text-align:center;line-height:1.6;}
 
 /* ===== TYPOGRAPHY ===== */
 h1,h2,h3{font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:4px;text-align:center;}
@@ -102,8 +99,7 @@ h1,h2,h3{font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:4
 
 /* ===== FORM ELEMENTS ===== */
 .lobby-name-container{display:flex;align-items:center;gap:10px;margin-bottom:28px;background:rgba(255,255,255,0.02);
-  border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:10px 16px;width:300px;
-  transition:border-color 0.2s;}
+  border:1px solid rgba(139,92,246,0.3);border-radius:6px;padding:10px 16px;width:300px;transition:border-color 0.2s;}
 .lobby-name-container:focus-within{border-color:var(--neon-purple);box-shadow:0 0 12px rgba(139,92,246,0.2);}
 .lobby-name-label{font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--text-muted);white-space:nowrap;}
 .lobby-name-input{background:transparent;border:none;outline:none;color:var(--neon-green);font-family:'Orbitron',monospace;
@@ -261,7 +257,7 @@ canvas#main-game-canvas{background-color:#020204;max-width:100%;max-height:100%;
 .lore-body{font-size:0.78rem;color:#94a3b8;line-height:1.7;}
 .lore-close-hint{font-size:0.6rem;color:var(--text-muted);margin-top:10px;text-align:right;font-family:monospace;}
 
-/* ===== CLOUD SYNC INDICATOR ===== */
+/* ===== CLOUD SYNC STATUS ===== */
 #cloud-sync-hud{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:55;pointer-events:none;
   display:flex;align-items:center;gap:6px;background:rgba(7,7,12,0.85);border:1px solid rgba(255,255,255,0.06);
   border-radius:20px;padding:4px 12px;}
@@ -290,7 +286,6 @@ canvas#main-game-canvas{background-color:#020204;max-width:100%;max-height:100%;
 .tut-step{text-align:center;max-width:440px;}
 .tut-progress-bar{width:300px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin:16px auto 0;}
 .tut-progress-fill{height:100%;background:var(--neon-purple);border-radius:2px;transition:width 0.4s ease;}
-.tut-key{display:inline-block;background:rgba(139,92,246,0.15);border:1px solid var(--neon-purple);border-radius:4px;padding:3px 10px;font-family:'Orbitron',monospace;font-size:0.8rem;margin:2px;}
 
 /* ===== QUESTS ===== */
 .quest-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);}
@@ -335,7 +330,7 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
   opacity:0;transition:opacity 0.4s;z-index:60;pointer-events:none;}
 #autosave-indicator.show{opacity:1;}
 
-/* ===== SCORE SHARE ===== */
+/* ===== SCORE ===== */
 .score-display{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--neon-gold);margin:8px 0;letter-spacing:2px;font-weight:900;}
 
 /* ===== ENRAGE ===== */
@@ -379,7 +374,7 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
 <!-- AUTOSAVE -->
 <div id="autosave-indicator">💾 AUTO-SAVED</div>
 
-<!-- CLOUD SYNC STATUS — Always visible during gameplay -->
+<!-- CLOUD SYNC STATUS -->
 <div id="cloud-sync-hud">
   <div class="cloud-sync-dot" id="cloud-sync-dot"></div>
   <span id="cloud-sync-text">LOCAL</span>
@@ -446,7 +441,6 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
         <button class="auth-tab-btn active" id="tab-login-btn">🔑 SIGN IN</button>
         <button class="auth-tab-btn" id="tab-register-btn">⚡ REGISTER</button>
       </div>
-
       <!-- LOGIN FORM -->
       <div class="auth-form active" id="form-login">
         <input class="auth-input" id="login-email" type="email" placeholder="Email address" autocomplete="email">
@@ -455,13 +449,11 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
         <button class="btn btn-success" id="btn-login" style="width:100%;margin:0;">▶ ACCESS REALITY</button>
         <div class="auth-divider">— or —</div>
         <button class="btn btn-cyan" id="btn-guest" style="width:100%;margin:0;font-size:0.75rem;">👾 CONTINUE AS GUEST</button>
-        <!-- Guest warning -->
-        <div class="guest-warning-banner show" id="guest-warning">
+        <div class="guest-warning-banner" id="guest-warning">
           ⚠ GUEST MODE: Data disimpan di browser lokal saja.<br>
-          Daftarkan akun untuk menyimpan progres secara permanen ☁
+          Daftarkan akun untuk cloud save permanen ☁
         </div>
       </div>
-
       <!-- REGISTER FORM -->
       <div class="auth-form" id="form-register">
         <input class="auth-input" id="reg-username" type="text" placeholder="Username (max 12 chars)" maxlength="12" autocomplete="username">
@@ -470,10 +462,7 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
         <div class="auth-status" id="register-status"></div>
         <button class="btn btn-success" id="btn-register" style="width:100%;margin:0;">⚡ CREATE IDENTITY</button>
       </div>
-
-      <div class="cloud-badge">
-        <span>☁</span><span>CLOUD SYNC VIA SUPABASE</span>
-      </div>
+      <div class="cloud-badge"><span>☁</span><span>CLOUD SYNC VIA SUPABASE</span></div>
     </div>
   </div>
 </div>
@@ -487,18 +476,16 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
     <div class="version-badge">v5.1 · DELTA ENGINE · PROCEDURAL MAZE · CLOUD SYNC</div>
     <div class="lobby-name-container">
       <span class="lobby-name-label" id="lobby-name-label">IDENTITY:</span>
-      <input class="lobby-name-input" id="player-name-input" type="text" maxlength="12" value="Name..." placeholder="ENTER NAME" autocomplete="off" spellcheck="false">
+      <input class="lobby-name-input" id="player-name-input" type="text" maxlength="12" value="AL FAN" placeholder="ENTER NAME" autocomplete="off" spellcheck="false">
     </div>
     <div id="lobby-cloud-info">
       <div class="cloud-dot" id="lobby-cloud-dot"></div>
       <span id="lobby-cloud-text">LOCAL MODE</span>
     </div>
-    <!-- Guest banner inside lobby -->
     <div id="lobby-guest-banner" style="display:none;margin-bottom:10px;font-family:'Orbitron',monospace;font-size:0.55rem;
       color:var(--neon-gold);background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.25);border-radius:6px;
       padding:8px 16px;text-align:center;line-height:1.7;max-width:300px;">
-      ⚠ GUEST MODE AKTIF<br>
-      Data hanya tersimpan di browser ini.<br>
+      ⚠ GUEST MODE AKTIF<br>Data hanya di browser ini.<br>
       <span style="color:var(--neon-cyan);">Register akun untuk cloud save permanen!</span>
     </div>
     <button class="btn" id="btn-lobby-start">▶ START MANIFESTATION</button>
@@ -585,7 +572,6 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
 <div id="screen-lb" class="screen-overlay">
   <div class="panel-container" style="max-width:520px;">
     <h2 id="lb-title" style="font-size:1.2rem;margin-bottom:12px;">⬡ LEADERBOARD</h2>
-    <!-- Tabs: Global vs Local -->
     <div class="lb-tabs">
       <button class="tab-btn active" id="lb-tab-global">🌐 GLOBAL</button>
       <button class="tab-btn" id="lb-tab-local">💻 LOCAL</button>
@@ -611,36 +597,19 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
     <h2 id="config-title-header" style="font-size:1.2rem;margin-bottom:20px;">⚙ SYSTEM CONFIG</h2>
     <div class="settings-group">
       <div class="settings-group-title" id="cfg-audio-label">🔊 AUDIO SYSTEMS</div>
-      <div class="settings-row">
-        <span class="settings-label" id="config-label-music">AMBIENT MUSIC</span>
-        <input type="checkbox" id="cfg-check-music" class="settings-input" checked>
-      </div>
-      <div class="settings-row">
-        <span class="settings-label" id="config-label-sfx">SFX FEEDBACK</span>
-        <input type="checkbox" id="cfg-check-sfx" class="settings-input" checked>
-      </div>
-      <div class="settings-row">
-        <span class="settings-label" id="config-label-horror">HORROR AMBIENCE</span>
-        <input type="checkbox" id="cfg-check-horror" class="settings-input" checked>
-      </div>
-      <div class="settings-row">
-        <span class="settings-label" id="config-label-vol">MASTER VOLUME</span>
-        <input type="range" id="cfg-volume" min="0" max="100" value="70" class="settings-input" touch-action="auto">
-      </div>
+      <div class="settings-row"><span class="settings-label" id="config-label-music">AMBIENT MUSIC</span><input type="checkbox" id="cfg-check-music" class="settings-input" checked></div>
+      <div class="settings-row"><span class="settings-label" id="config-label-sfx">SFX FEEDBACK</span><input type="checkbox" id="cfg-check-sfx" class="settings-input" checked></div>
+      <div class="settings-row"><span class="settings-label" id="config-label-horror">HORROR AMBIENCE</span><input type="checkbox" id="cfg-check-horror" class="settings-input" checked></div>
+      <div class="settings-row"><span class="settings-label" id="config-label-vol">MASTER VOLUME</span><input type="range" id="cfg-volume" min="0" max="100" value="70" class="settings-input" touch-action="auto"></div>
     </div>
     <div class="settings-group">
       <div class="settings-group-title" id="cfg-gameplay-label">🎮 GAMEPLAY OPTIONS</div>
-      <div class="settings-row">
-        <span class="settings-label" id="config-label-fov">LIMITED FOV MODE</span>
-        <input type="checkbox" id="cfg-check-fov" class="settings-input">
-      </div>
+      <div class="settings-row"><span class="settings-label" id="config-label-fov">LIMITED FOV MODE</span><input type="checkbox" id="cfg-check-fov" class="settings-input"></div>
       <div class="settings-row">
         <span class="settings-label" id="config-label-diff">DIFFICULTY</span>
         <select id="cfg-difficulty" class="difficulty-select">
-          <option value="easy">EASY</option>
-          <option value="normal" selected>NORMAL</option>
-          <option value="hard">HARD</option>
-          <option value="nightmare">NIGHTMARE</option>
+          <option value="easy">EASY</option><option value="normal" selected>NORMAL</option>
+          <option value="hard">HARD</option><option value="nightmare">NIGHTMARE</option>
         </select>
       </div>
     </div>
@@ -656,9 +625,7 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
     </div>
     <div class="settings-group">
       <div class="settings-group-title">☁ CLOUD BACKUP</div>
-      <div style="font-family:'Orbitron',monospace;font-size:0.55rem;color:var(--text-muted);margin-bottom:10px;text-align:center;" id="cfg-cloud-status-text">
-        — Checking cloud status... —
-      </div>
+      <div style="font-family:'Orbitron',monospace;font-size:0.55rem;color:var(--text-muted);margin-bottom:10px;text-align:center;" id="cfg-cloud-status-text">— Checking cloud status... —</div>
       <button class="btn btn-cyan" id="btn-manual-sync" style="width:100%;margin-bottom:6px;font-size:0.7rem;padding:10px;margin-left:0;">☁ FORCE CLOUD SYNC</button>
       <button class="btn btn-cyan" id="btn-export-save" style="width:100%;margin-bottom:6px;font-size:0.7rem;padding:10px;margin-left:0;">📤 EXPORT SAVE CODE</button>
       <button class="btn" id="btn-import-save" style="width:100%;font-size:0.7rem;padding:10px;border-color:var(--neon-cyan);margin-left:0;">📥 IMPORT SAVE CODE</button>
@@ -721,8 +688,9 @@ input[type="range"].settings-input{width:110px;touch-action:auto;}
 
 <script type="module">
 "use strict";
+
 // ================================================================
-// SUPABASE INIT
+// [00] SUPABASE INIT
 // ================================================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -733,37 +701,39 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true }
 });
 
-let currentUser   = null;
-let cloudProfile  = null;
-let isGuestMode   = false;
-let lbMode        = 'global'; // 'global' | 'local'
+let currentUser  = null;
+let cloudProfile = null;
+let isGuestMode  = false;
+let lbMode       = 'global';
+
+// Runtime sanity tracker (updated from game loop each save)
+let _lastKnownSanity = 100;
 
 // ================================================================
 // [01] CONFIG & CONSTANTS
 // ================================================================
 const DEBUG_MODE        = false;
-const SAVE_VERSION      = "5.1";
-// KEY now INCLUDES user ID so different accounts never share localStorage
-function getSaveKey(uid){ return uid ? `paradox_maze_v5_${uid}` : `paradox_maze_v5_guest`; }
-const LB_KEY            = "paradox_maze_lb_v5_2025";
+const SAVE_VERSION      = '5.1';
+const LB_KEY            = 'paradox_maze_lb_v5_2025';
 const AUTOSAVE_INTERVAL = 30;
-const MAP_COLS          = 20;
-const MAP_ROWS          = 15;
-const TILE_W            = 40;
-const TILE_H            = 40;
-const CANVAS_W          = MAP_COLS * TILE_W;
-const CANVAS_H          = MAP_ROWS * TILE_H;
+const MAP_COLS = 20, MAP_ROWS = 15;
+const TILE_W = 40,   TILE_H = 40;
+const CANVAS_W = MAP_COLS * TILE_W;
+const CANVAS_H = MAP_ROWS * TILE_H;
+
+// Per-user localStorage key — isolates saves between accounts
+function getSaveKey(uid){ return uid ? `paradox_maze_v5_${uid}` : 'paradox_maze_v5_guest'; }
 
 const DIFFICULTY_SETTINGS = {
-  easy:      { sanityDrainMult:0.5, monsterSpeedMult:0.7, monsterCountMax:3, chipBonus:1.2 },
-  normal:    { sanityDrainMult:1.0, monsterSpeedMult:1.0, monsterCountMax:5, chipBonus:1.0 },
-  hard:      { sanityDrainMult:1.5, monsterSpeedMult:1.4, monsterCountMax:7, chipBonus:0.9 },
-  nightmare: { sanityDrainMult:2.2, monsterSpeedMult:2.0, monsterCountMax:8, chipBonus:0.75 },
+  easy:      { sanityDrainMult:0.5, monsterSpeedMult:0.7,  monsterCountMax:3, chipBonus:1.2 },
+  normal:    { sanityDrainMult:1.0, monsterSpeedMult:1.0,  monsterCountMax:5, chipBonus:1.0 },
+  hard:      { sanityDrainMult:1.5, monsterSpeedMult:1.4,  monsterCountMax:7, chipBonus:0.9 },
+  nightmare: { sanityDrainMult:2.2, monsterSpeedMult:2.0,  monsterCountMax:8, chipBonus:0.75 },
 };
 
 const GASLIGHT_QUOTES = {
-  en:["You are trapped in your own delusion, [NAME].","Did you really believe there was an escape, [NAME]?","Every turn has already been written by you.","The core is just another loop layer, [NAME].","Your shadow moves faster than your reality.","Stop running from what you built, [NAME].","They've been watching you since the beginning, [NAME].","The walls remember your every step, [NAME].","You're not escaping. You're just delaying, [NAME].","Even your heartbeat belongs to the maze, [NAME]."],
-  id:["Kamu terjebak dalam delusimu sendiri, [NAME].","Apakah kamu benar-benar percaya ada jalan keluar, [NAME]?","Setiap belokan sudah kamu tulis sendiri.","Inti itu hanyalah lapisan loop lainnya, [NAME].","Bayanganmu bergerak lebih cepat dari realitasmu.","Berhentilah lari dari apa yang telah kamu bangun, [NAME].","Mereka sudah mengawasimu sejak awal, [NAME].","Dinding-dinding ini mengingat setiap langkahmu, [NAME].","Kamu tidak kabur. Kamu hanya menunda, [NAME].","Bahkan detak jantungmu milik labirin ini, [NAME]."]
+  en:['You are trapped in your own delusion, [NAME].','Did you really believe there was an escape, [NAME]?','Every turn has already been written by you.','The core is just another loop layer, [NAME].','Your shadow moves faster than your reality.','Stop running from what you built, [NAME].','They\'ve been watching you since the beginning, [NAME].','The walls remember your every step, [NAME].','You\'re not escaping. You\'re just delaying, [NAME].','Even your heartbeat belongs to the maze, [NAME].'],
+  id:['Kamu terjebak dalam delusimu sendiri, [NAME].','Apakah kamu benar-benar percaya ada jalan keluar, [NAME]?','Setiap belokan sudah kamu tulis sendiri.','Inti itu hanyalah lapisan loop lainnya, [NAME].','Bayanganmu bergerak lebih cepat dari realitasmu.','Berhentilah lari dari apa yang telah kamu bangun, [NAME].','Mereka sudah mengawasimu sejak awal, [NAME].','Dinding-dinding ini mengingat setiap langkahmu, [NAME].','Kamu tidak kabur. Kamu hanya menunda, [NAME].','Bahkan detak jantungmu milik labirin ini, [NAME].']
 };
 
 const LORE_DB = [
@@ -791,58 +761,30 @@ const QUEST_TEMPLATES = [
 ];
 
 const ACHIEVEMENT_DB = [
-  {id:'first_win',   name:'FIRST LOOP BREAK',    desc:'Win your first game',        descId:'Menangkan game pertamamu',           reward:500,  icon:'🏆'},
-  {id:'chips_1k',    name:'CHIP HOARDER',         desc:'Collect 1,000 total chips',  descId:'Kumpulkan total 1,000 chips',        reward:300,  icon:'❖'},
-  {id:'chips_10k',   name:'QUANTUM WHALE',        desc:'Collect 10,000 total chips', descId:'Kumpulkan total 10,000 chips',       reward:1500, icon:'💎'},
-  {id:'dash_10',     name:'GLITCH RUNNER',        desc:'Use Glitch Dash 10 times',   descId:'Gunakan Glitch Dash 10 kali',        reward:400,  icon:'⚡'},
-  {id:'dash_100',    name:'PHASE WALKER',         desc:'Use Glitch Dash 100 times',  descId:'Gunakan Glitch Dash 100 kali',       reward:2000, icon:'🌀'},
-  {id:'box_lucky',   name:'SCHRODINGER BLESSED',  desc:"Open a Schrodinger's Box",   descId:'Buka Kotak Schrodinger',             reward:200,  icon:'📦'},
-  {id:'survive_5',   name:'PARADOX VETERAN',      desc:'Play 5 games',               descId:'Mainkan 5 game',                     reward:600,  icon:'🎮'},
-  {id:'lvl5',        name:'REALITY BENDER',       desc:'Reach level 5',              descId:'Capai level 5',                      reward:1000, icon:'🔮'},
-  {id:'cosmic_buyer',name:'COSMIC ASCENDANT',     desc:'Purchase any Cosmic skin',   descId:'Beli skin Cosmic',                   reward:3000, icon:'✦'},
-  {id:'score_5k',    name:'LOOP MASTER',          desc:'Score 5,000 in one run',     descId:'Raih skor 5,000 dalam satu run',     reward:800,  icon:'📈'},
-  {id:'portal_use',  name:'QUANTUM LEAPER',       desc:'Use a portal',               descId:'Gunakan portal',                     reward:250,  icon:'🌀'},
-  {id:'lore_all',    name:'ARCHIVIST',            desc:'Unlock all lore logs',       descId:'Buka semua lore log',                reward:2500, icon:'📖'},
-  {id:'no_dash_win', name:'PHANTOM RUNNER',       desc:'Win a game without dashing', descId:'Menang tanpa menggunakan dash',      reward:1200, icon:'👻'},
-  {id:'level10',     name:'PARADOX GOD',          desc:'Reach level 10',             descId:'Capai level 10',                     reward:5000, icon:'👑'},
-  {id:'hard_win',    name:'IRON MIND',            desc:'Win on Hard or above',       descId:'Menang di Hard atau lebih tinggi',   reward:2000, icon:'🔩'},
-  {id:'nightmare_win',name:'VOID ASCENDED',       desc:'Win on Nightmare',           descId:'Menang di Nightmare',               reward:8000, icon:'☠'},
+  {id:'first_win',   name:'FIRST LOOP BREAK',   desc:'Win your first game',        descId:'Menangkan game pertamamu',          reward:500,  icon:'🏆'},
+  {id:'chips_1k',    name:'CHIP HOARDER',        desc:'Collect 1,000 total chips',  descId:'Kumpulkan total 1,000 chips',       reward:300,  icon:'❖'},
+  {id:'chips_10k',   name:'QUANTUM WHALE',       desc:'Collect 10,000 total chips', descId:'Kumpulkan total 10,000 chips',      reward:1500, icon:'💎'},
+  {id:'dash_10',     name:'GLITCH RUNNER',       desc:'Use Glitch Dash 10 times',   descId:'Gunakan Glitch Dash 10 kali',       reward:400,  icon:'⚡'},
+  {id:'dash_100',    name:'PHASE WALKER',        desc:'Use Glitch Dash 100 times',  descId:'Gunakan Glitch Dash 100 kali',      reward:2000, icon:'🌀'},
+  {id:'box_lucky',   name:'SCHRODINGER BLESSED', desc:"Open a Schrodinger's Box",   descId:'Buka Kotak Schrodinger',            reward:200,  icon:'📦'},
+  {id:'survive_5',   name:'PARADOX VETERAN',     desc:'Play 5 games',               descId:'Mainkan 5 game',                    reward:600,  icon:'🎮'},
+  {id:'lvl5',        name:'REALITY BENDER',      desc:'Reach level 5',              descId:'Capai level 5',                     reward:1000, icon:'🔮'},
+  {id:'cosmic_buyer',name:'COSMIC ASCENDANT',    desc:'Purchase any Cosmic skin',   descId:'Beli skin Cosmic',                  reward:3000, icon:'✦'},
+  {id:'score_5k',    name:'LOOP MASTER',         desc:'Score 5,000 in one run',     descId:'Raih skor 5,000 dalam satu run',    reward:800,  icon:'📈'},
+  {id:'portal_use',  name:'QUANTUM LEAPER',      desc:'Use a portal',               descId:'Gunakan portal',                    reward:250,  icon:'🌀'},
+  {id:'lore_all',    name:'ARCHIVIST',           desc:'Unlock all lore logs',       descId:'Buka semua lore log',               reward:2500, icon:'📖'},
+  {id:'no_dash_win', name:'PHANTOM RUNNER',      desc:'Win a game without dashing', descId:'Menang tanpa menggunakan dash',     reward:1200, icon:'👻'},
+  {id:'level10',     name:'PARADOX GOD',         desc:'Reach level 10',             descId:'Capai level 10',                    reward:5000, icon:'👑'},
+  {id:'hard_win',    name:'IRON MIND',           desc:'Win on Hard or above',       descId:'Menang di Hard atau lebih tinggi',  reward:2000, icon:'🔩'},
+  {id:'nightmare_win',name:'VOID ASCENDED',      desc:'Win on Nightmare',           descId:'Menang di Nightmare',               reward:8000, icon:'☠'},
 ];
 
 // ================================================================
 // [02] LOCALIZATION
 // ================================================================
 const L10N = {
-  en:{
-    tagline:"Quantum Distortion Engine v5.1",start:"▶ START MANIFESTATION",daily:"☀ DAILY REWARD",
-    quests:"📋 DAILY QUESTS",shop:"◈ SKIN REGISTRIES",config:"⚙ CONFIG SCHEMATICS",
-    lb:"⬡ LEADERBOARD",ach:"★ ACHIEVEMENTS",lore:"📖 LORE DATABASE",shopTitle:"SKIN REGISTRIES",
-    balance:"NET VALUE",returnLobby:"↩ RETURN TO CORE LOBBY",sysConfig:"⚙ SYSTEM CONFIG",
-    bgMusic:"AMBIENT MUSIC",opSfx:"SFX FEEDBACK",horror:"HORROR AMBIENCE",fov:"LIMITED FOV MODE",
-    vol:"MASTER VOLUME",resetProg:"⚠ RESET ALL PROGRESS",saveReturn:"✓ SAVE & RETURN",
-    failedTitle:"MANIFESTATION FAILED",failedSub:"Your sanity dissolved into the loop matrix",
-    reenter:"↺ RE-ENTER PARADOX",abandon:"⏏ ABANDON TO LOBBY",coreReached:"CORE REACHED",
-    loopBreaks:"The reality loop breaks... temporarily",proceedNext:"▶ NEXT CYCLE",
-    lobbyName:"IDENTITY:",dailyTitle:"DAILY NEXUS REWARD",dailySub:"WEEKLY RESET EVERY SUNDAY",
-    dailyClaim:"CLAIM TODAY'S REWARD",dailyBack:"RETURN TO LOBBY",compass:"RADAR",levelLabel:"LVL:",
-    vicReward:"+1250 CHIPS REWARDED",vicMenu:"⏏ LOBBY",diff:"DIFFICULTY",audioLabel:"🔊 AUDIO SYSTEMS",
-    guestWarning:"⚠ GUEST MODE: Data saved locally only.\nRegister an account for permanent cloud save ☁"
-  },
-  id:{
-    tagline:"Mesin Distorsi Kuantum v5.1",start:"▶ MULAI MANIFESTASI",daily:"☀ HADIAH HARIAN",
-    quests:"📋 MISI HARIAN",shop:"◈ REGISTRI SKIN",config:"⚙ SKEMATIK KONFIG",
-    lb:"⬡ PAPAN SKOR",ach:"★ PENCAPAIAN",lore:"📖 DATABASE LORE",shopTitle:"REGISTRI SKIN",
-    balance:"SALDO BERSIH",returnLobby:"↩ KEMBALI KE LOBBY",sysConfig:"⚙ KONFIGURASI SISTEM",
-    bgMusic:"MUSIK AMBIENT",opSfx:"UMPAN BALIK SFX",horror:"AMBIENS HORROR",fov:"MODE FOV TERBATAS",
-    vol:"VOLUME MASTER",resetProg:"⚠ RESET SEMUA PROGRESS",saveReturn:"✓ SIMPAN & KEMBALI",
-    failedTitle:"MANIFESTASI GAGAL",failedSub:"Sanitas Anda larut ke dalam matriks loop",
-    reenter:"↺ MASUK ULANG PARADOKS",abandon:"⏏ TINGGALKAN KE LOBBY",coreReached:"INTI DIJANGKAU",
-    loopBreaks:"Loop realitas terputus... untuk sementara",proceedNext:"▶ SIKLUS BERIKUTNYA",
-    lobbyName:"IDENTITAS:",dailyTitle:"HADIAH NEXUS HARIAN",dailySub:"RESET MINGGUAN SETIAP MINGGU",
-    dailyClaim:"KLAIM HADIAH HARI INI",dailyBack:"KEMBALI KE LOBBY",compass:"RADAR",levelLabel:"LVL:",
-    vicReward:"+1250 CHIPS DIBERIKAN",vicMenu:"⏏ LOBBY",diff:"KESULITAN",audioLabel:"🔊 SISTEM AUDIO",
-    guestWarning:"⚠ GUEST MODE: Data hanya tersimpan di browser lokal.\nDaftar akun untuk cloud save permanen ☁"
-  }
+  en:{tagline:'Quantum Distortion Engine v5.1',start:'▶ START MANIFESTATION',daily:'☀ DAILY REWARD',quests:'📋 DAILY QUESTS',shop:'◈ SKIN REGISTRIES',config:'⚙ CONFIG SCHEMATICS',lb:'⬡ LEADERBOARD',ach:'★ ACHIEVEMENTS',lore:'📖 LORE DATABASE',shopTitle:'SKIN REGISTRIES',balance:'NET VALUE',returnLobby:'↩ RETURN TO CORE LOBBY',sysConfig:'⚙ SYSTEM CONFIG',bgMusic:'AMBIENT MUSIC',opSfx:'SFX FEEDBACK',horror:'HORROR AMBIENCE',fov:'LIMITED FOV MODE',vol:'MASTER VOLUME',resetProg:'⚠ RESET ALL PROGRESS',saveReturn:'✓ SAVE & RETURN',failedTitle:'MANIFESTATION FAILED',failedSub:'Your sanity dissolved into the loop matrix',reenter:'↺ RE-ENTER PARADOX',abandon:'⏏ ABANDON TO LOBBY',coreReached:'CORE REACHED',loopBreaks:'The reality loop breaks... temporarily',proceedNext:'▶ NEXT CYCLE',lobbyName:'IDENTITY:',dailyTitle:'DAILY NEXUS REWARD',dailySub:'WEEKLY RESET EVERY SUNDAY',dailyClaim:"CLAIM TODAY'S REWARD",dailyBack:'RETURN TO LOBBY',compass:'RADAR',levelLabel:'LVL:',vicReward:'+1250 CHIPS REWARDED',vicMenu:'⏏ LOBBY',diff:'DIFFICULTY',audioLabel:'🔊 AUDIO SYSTEMS'},
+  id:{tagline:'Mesin Distorsi Kuantum v5.1',start:'▶ MULAI MANIFESTASI',daily:'☀ HADIAH HARIAN',quests:'📋 MISI HARIAN',shop:'◈ REGISTRI SKIN',config:'⚙ SKEMATIK KONFIG',lb:'⬡ PAPAN SKOR',ach:'★ PENCAPAIAN',lore:'📖 DATABASE LORE',shopTitle:'REGISTRI SKIN',balance:'SALDO BERSIH',returnLobby:'↩ KEMBALI KE LOBBY',sysConfig:'⚙ KONFIGURASI SISTEM',bgMusic:'MUSIK AMBIENT',opSfx:'UMPAN BALIK SFX',horror:'AMBIENS HORROR',fov:'MODE FOV TERBATAS',vol:'VOLUME MASTER',resetProg:'⚠ RESET SEMUA PROGRESS',saveReturn:'✓ SIMPAN & KEMBALI',failedTitle:'MANIFESTASI GAGAL',failedSub:'Sanitas Anda larut ke dalam matriks loop',reenter:'↺ MASUK ULANG PARADOKS',abandon:'⏏ TINGGALKAN KE LOBBY',coreReached:'INTI DIJANGKAU',loopBreaks:'Loop realitas terputus... untuk sementara',proceedNext:'▶ SIKLUS BERIKUTNYA',lobbyName:'IDENTITAS:',dailyTitle:'HADIAH NEXUS HARIAN',dailySub:'RESET MINGGUAN SETIAP MINGGU',dailyClaim:'KLAIM HADIAH HARI INI',dailyBack:'KEMBALI KE LOBBY',compass:'RADAR',levelLabel:'LVL:',vicReward:'+1250 CHIPS DIBERIKAN',vicMenu:'⏏ LOBBY',diff:'KESULITAN',audioLabel:'🔊 SISTEM AUDIO'}
 };
 
 // ================================================================
@@ -855,20 +797,20 @@ const Cipher = {
 };
 
 function generateChecksum(dataStr){
-  const SALT='PARADOX_SALT_7734',combined=dataStr+SALT;let hash=0;
+  const combined=dataStr+'PARADOX_SALT_7734';let hash=0;
   for(let i=0;i<combined.length;i++)hash=((hash<<5)-hash+combined.charCodeAt(i))|0;
   return Math.abs(hash).toString(36);
 }
 
 // ================================================================
-// [04] GAME STATE  — isolated per user ID
+// [04] GAME STATE
 // ================================================================
-const defaultGameState = () => ({
+const defaultGameState=()=>({
   lang:'id',music:true,sfx:true,horror:true,fovMode:false,volume:0.7,difficulty:'normal',
   player:{name:'AL FAN',coins:15000,level:1,unlockedSkins:['common1'],equippedSkin:'common1',
     totalScore:0,gamesPlayed:0,coinsEverCollected:0,dashesUsed:0,boxesOpened:0,
     monstersEscaped:0,portalUsed:0,xp:0},
-  daily:{lastClaimed:-1,weekStart:0,claimedDays:[]},
+  daily:{lastClaimed:-1,weekStart:0,claimedDays:[],lastClaimDateKey:''},
   quests:{date:'',progress:{}},
   achievements:{},loreUnlocked:[],tutorialDone:false
 });
@@ -882,20 +824,20 @@ const SKIN_DB = [
   {id:'common1',  name:'Forest Whisperer',rarity:0,rN:'Common',   cost:0,     color:'#22c55e',en:'Emerald leaf energy.',                  id2:'Energi daun zamrud.'},
   {id:'common2',  name:'Rust & Iron',     rarity:0,rN:'Common',   cost:100,   color:'#b45309',en:'Metallic sparks.',                       id2:'Percikan logam.'},
   {id:'common3',  name:'River Pebble',    rarity:0,rN:'Common',   cost:200,   color:'#64748b',en:'Blue-gray flowing gradient.',            id2:'Gradien abu-abu biru.'},
-  {id:'common4',  name:'Desert Nomad',    rarity:0,rN:'Common',   cost:300,   color:'#d97706',en:'Sand storm trail particles.',            id2:'Partikel debu pasir.'},
+  {id:'common4',  name:'Desert Nomad',    rarity:0,rN:'Common',   cost:300,   color:'#d97706',en:'Sand storm trail.',                      id2:'Debu pasir.'},
   {id:'common5',  name:'Breeze Wanderer', rarity:0,rN:'Common',   cost:400,   color:'#06b6d4',en:'Cyan wind gust lines.',                  id2:'Garis angin sian.'},
   {id:'rare1',    name:'Frostbitten Guard',rarity:1,rN:'Rare',    cost:1000,  color:'#38bdf8',en:'Sub-zero icicle aura.',                  id2:'Aura pelindung es.'},
-  {id:'rare2',    name:'Runic Scholar',   rarity:1,rN:'Rare',     cost:1250,  color:'#6366f1',en:'Neon runic script symbols.',             id2:'Simbol skrip rune neon.'},
+  {id:'rare2',    name:'Runic Scholar',   rarity:1,rN:'Rare',     cost:1250,  color:'#6366f1',en:'Neon runic script symbols.',             id2:'Simbol rune neon.'},
   {id:'rare3',    name:'Lightning Rod',   rarity:1,rN:'Rare',     cost:2250,  color:'#fbbf24',en:'Electric golden arcs.',                  id2:'Busur emas listrik.'},
   {id:'rare4',    name:'Neon Reaper',     rarity:1,rN:'Rare',     cost:2500,  color:'#a78bfa',en:'Neon violet haze.',                      id2:'Kabut violet neon.'},
-  {id:'epic1',    name:'Shadow Stalker',  rarity:2,rN:'Epic',     cost:3000,  color:'#312e81',en:'Shadow void trails with glitch.',        id2:'Jejak kosong bayangan.'},
+  {id:'epic1',    name:'Shadow Stalker',  rarity:2,rN:'Epic',     cost:3000,  color:'#312e81',en:'Shadow void trails with glitch.',        id2:'Jejak bayangan glitch.'},
   {id:'epic2',    name:'Solar Templar',   rarity:2,rN:'Epic',     cost:3500,  color:'#f59e0b',en:'Solar flare yellow sparks.',             id2:'Percikan kuning suar surya.'},
   {id:'epic3',    name:'Bio-Luminescent', rarity:2,rN:'Epic',     cost:4000,  color:'#22d3ee',en:'Deep-sea radioactive glow.',             id2:'Cahaya neon radioaktif.'},
   {id:'epic4',    name:'Volcanic Core',   rarity:2,rN:'Epic',     cost:4500,  color:'#ea580c',en:'Flowing magma distortion.',              id2:'Distorsi magma mengalir.'},
   {id:'legendary1',name:'Dragon Lord',    rarity:3,rN:'Legendary',cost:7000,  color:'#dc2626',en:'Fiery dragon scale particles.',          id2:'Partikel sisik naga api.'},
   {id:'legendary2',name:'Phoenix Rebirth',rarity:3,rN:'Legendary',cost:7750,  color:'#f97316',en:'Gold ancestral feathers.',              id2:'Bulu emas leluhur.'},
-  {id:'legendary3',name:'Cyber Shogun',   rarity:3,rN:'Legendary',cost:8500,  color:'#a855f7',en:'High-tech data streams.',               id2:'Aliran data teknologi tinggi.'},
-  {id:'legendary4',name:'Celestial Monarch',rarity:3,rN:'Legendary',cost:9250,color:'#fcd34d',en:'Divine rays of light and gold.',        id2:'Sinar suci cahaya emas.'},
+  {id:'legendary3',name:'Cyber Shogun',   rarity:3,rN:'Legendary',cost:8500,  color:'#a855f7',en:'High-tech data streams.',               id2:'Aliran data tinggi.'},
+  {id:'legendary4',name:'Celestial Monarch',rarity:3,rN:'Legendary',cost:9250,color:'#fcd34d',en:'Divine rays of light and gold.',        id2:'Sinar suci emas.'},
   {id:'mythical1',name:'Blood Moon Deity',rarity:4,rN:'Mythical', cost:15000, color:'#991b1b',passive:'ENRAGE IMMUNITY',passiveDesc:'+5s box freeze',en:'Crimson aura cycling.',id2:'Siklus aura merah.'},
   {id:'mythical2',name:'Chronos Weaver',  rarity:4,rN:'Mythical', cost:16250, color:'#1d4ed8',passive:'CLOCK MASTER',passiveDesc:'Dash cooldown -2s',en:'Temporal colors.',id2:'Warna temporal.'},
   {id:'mythical3',name:'Asura Wrath',     rarity:4,rN:'Mythical', cost:17500, color:'#c2410c',passive:'BERSERKER',passiveDesc:'+15% score',en:'Blinding orange aura.',id2:'Aura oranye menyilaukan.'},
@@ -903,35 +845,35 @@ const SKIN_DB = [
   {id:'mythical5',name:'Void Titan',      rarity:4,rN:'Mythical', cost:24000, color:'#1e1b4b',passive:'VOID WARD',passiveDesc:'+20 starting sanity',en:'Gravity-warped luminance.',id2:'Luminansi gravitasi.'},
   {id:'cosmic1',  name:'Supernova Sovereign',rarity:5,rN:'Cosmic',cost:30000, color:'#f43f5e',passive:'STELLAR AURA',passiveDesc:'+2s freeze',en:'Rainbow HSL loops.',id2:'Loop pelangi HSL.'},
   {id:'cosmic2',  name:'Void Singularity', rarity:5,rN:'Cosmic',  cost:35000, color:'#4f46e5',passive:'SINGULARITY',passiveDesc:'Portals pull coins',en:'Black hole matrix.',id2:'Matriks lubang hitam.'},
-  {id:'cosmic3',  name:'Nebula Weaver',    rarity:5,rN:'Cosmic',  cost:40000, color:'#7c3aed',passive:'NEBULA DUST',passiveDesc:'Damage trail for monsters',en:'Cosmic dust cloud.',id2:'Awan debu kosmik.'},
+  {id:'cosmic3',  name:'Nebula Weaver',    rarity:5,rN:'Cosmic',  cost:40000, color:'#7c3aed',passive:'NEBULA DUST',passiveDesc:'Damage trail',en:'Cosmic dust cloud.',id2:'Awan debu kosmik.'},
   {id:'cosmic4',  name:'Quasar Overlord',  rarity:5,rN:'Cosmic',  cost:50000, color:'#0ea5e9',passive:'QUASAR BEAM',passiveDesc:'Box freeze +1s',en:'Spectral rainbow bands.',id2:'Pita pelangi spektral.'},
-  {id:'cosmic5',  name:'Multiverse Anomaly',rarity:5,rN:'Cosmic', cost:99999, color:'#dc2626',passive:'OMNIPOTENT',passiveDesc:'All passives combined',en:'Infinite rainbow spectrum.',id2:'Spektrum pelangi tak terbatas.'},
-  {id:'new1',     name:'Gravity Well',     rarity:4,rN:'Mythical', cost:19000, color:'#0f172a',passive:'GRAVITY PULL',passiveDesc:'Pull nearby coins',en:'Gravitational lens warps.',id2:'Lensa gravitasi membelok.'},
-  {id:'new2',     name:'Time Fragment',    rarity:4,rN:'Mythical', cost:21000, color:'#5eead4',passive:'TIME WARP',passiveDesc:'Monsters freeze 1s on dash',en:'Time fragments crystallize.',id2:'Fragmen waktu mengkristal.'},
-  {id:'new3',     name:'Absolute Zero',    rarity:5,rN:'Cosmic',   cost:80000, color:'#e0f2fe',passive:'CRYO FIELD',passiveDesc:'Dash freezes 1 monster',en:'Zero temperature collapse.',id2:'Keruntuhan suhu nol absolut.'},
+  {id:'cosmic5',  name:'Multiverse Anomaly',rarity:5,rN:'Cosmic', cost:99999, color:'#dc2626',passive:'OMNIPOTENT',passiveDesc:'All passives',en:'Infinite rainbow spectrum.',id2:'Spektrum tak terbatas.'},
+  {id:'new1',     name:'Gravity Well',     rarity:4,rN:'Mythical', cost:19000, color:'#0f172a',passive:'GRAVITY PULL',passiveDesc:'Pull nearby coins',en:'Gravitational lens warps.',id2:'Lensa gravitasi.'},
+  {id:'new2',     name:'Time Fragment',    rarity:4,rN:'Mythical', cost:21000, color:'#5eead4',passive:'TIME WARP',passiveDesc:'Monsters freeze 1s on dash',en:'Time fragments crystallize.',id2:'Fragmen waktu.'},
+  {id:'new3',     name:'Absolute Zero',    rarity:5,rN:'Cosmic',   cost:80000, color:'#e0f2fe',passive:'CRYO FIELD',passiveDesc:'Dash freezes 1 monster',en:'Zero temperature collapse.',id2:'Keruntuhan suhu nol.'},
 ];
 
 // ================================================================
 // [06] SPRITE RENDERER
 // ================================================================
-const SPRITE_MATRIX = [
+const SPRITE_MATRIX=[
   [0,0,0,1,1,1,1,1,1,0,0,0],[0,0,1,2,2,2,2,2,2,1,0,0],[0,1,2,2,2,2,2,2,2,2,1,0],
   [1,2,2,2,2,2,2,2,2,2,2,1],[1,2,3,3,2,2,2,2,3,3,2,1],[1,2,3,3,2,2,2,2,3,3,2,1],
   [1,2,2,2,4,2,2,4,2,2,2,1],[1,2,2,1,1,1,1,1,1,2,2,1],[1,2,2,2,2,2,2,2,2,2,2,1],
   [1,2,2,2,2,2,2,2,2,2,2,1],[0,1,2,2,2,2,2,2,2,2,1,0],[0,1,2,2,2,2,2,2,2,2,1,0],
   [1,2,2,1,2,2,2,2,1,2,2,1],[1,1,1,0,1,1,1,1,0,1,1,1],[0,0,0,0,1,0,0,1,0,0,0,0]
 ];
-const HEART_MATRIX = [
+const HEART_MATRIX=[
   [0,1,1,0,0,1,1,0],[1,2,2,1,1,2,2,1],[1,2,2,2,2,2,2,1],[1,2,2,2,2,2,2,1],
   [0,1,2,2,2,2,1,0],[0,0,1,2,2,1,0,0],[0,0,0,1,1,0,0,0]
 ];
-const SpriteCache = new Map();
+const SpriteCache=new Map();
 
 function adjustLuminance(hex,factor){
   try{let r=parseInt(hex.substring(1,3),16),g=parseInt(hex.substring(3,5),16),b=parseInt(hex.substring(5,7),16);
   if(factor>0){r=Math.min(255,Math.floor(r+(255-r)*factor));g=Math.min(255,Math.floor(g+(255-g)*factor));b=Math.min(255,Math.floor(b+(255-b)*factor));}
   else{r=Math.max(0,Math.floor(r+r*factor));g=Math.max(0,Math.floor(g+g*factor));b=Math.max(0,Math.floor(b+b*factor));}
-  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;}catch(e){return hex;}
+  return`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;}catch(e){return hex;}
 }
 
 function getCachedSprite(skinId,w,h){
@@ -987,8 +929,7 @@ function renderMonsterSprite(ctx,x,y,w,h,mType,enraged,frozen){
 // [07] PARTICLE POOL
 // ================================================================
 class ParticlePool{
-  constructor(capacity=2500){this.cap=capacity;this.pool=new Array(capacity);this.head=0;
-    for(let i=0;i<capacity;i++)this.pool[i]={active:false,x:0,y:0,vx:0,vy:0,color:'#fff',life:0,maxLife:1,size:2,trail:false};}
+  constructor(cap=2500){this.cap=cap;this.pool=new Array(cap);this.head=0;for(let i=0;i<cap;i++)this.pool[i]={active:false,x:0,y:0,vx:0,vy:0,color:'#fff',life:0,maxLife:1,size:2,trail:false};}
   emit(x,y,vx,vy,color,life,size,isTrail=false){const p=this.pool[this.head];p.active=true;p.x=x;p.y=y;p.vx=vx;p.vy=vy;p.color=color;p.life=life;p.maxLife=life;p.size=size;p.trail=isTrail;this.head=(this.head+1)%this.cap;}
   update(dt){for(let i=0;i<this.cap;i++){const p=this.pool[i];if(!p.active)continue;p.life-=dt;if(p.life<=0){p.active=false;continue;}p.x+=p.vx*dt;p.y+=p.vy*dt;if(!p.trail)p.vy+=30*dt;}}
   draw(ctx){ctx.save();for(let i=0;i<this.cap;i++){const p=this.pool[i];if(!p.active)continue;const a=Math.max(0,Math.min(1,p.life/p.maxLife));ctx.globalAlpha=p.trail?a*0.6:a;ctx.fillStyle=p.color;ctx.fillRect(p.x-p.size/2,p.y-p.size/2,p.size,p.size);}ctx.restore();}
@@ -1001,8 +942,7 @@ const Particles=new ParticlePool(2500);
 // ================================================================
 const SoundEngine={
   ctx:null,masterGain:null,droneOsc:null,droneGain:null,creakInterval:null,
-  init(){if(this.ctx){if(this.ctx.state==='suspended')this.ctx.resume();return;}
-    try{this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.masterGain=this.ctx.createGain();this.masterGain.gain.value=G.volume;this.masterGain.connect(this.ctx.destination);if(G.music)this._startAmbientDrone();if(G.horror)this._startHorrorLayer();}catch(e){}},
+  init(){if(this.ctx){if(this.ctx.state==='suspended')this.ctx.resume();return;}try{this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.masterGain=this.ctx.createGain();this.masterGain.gain.value=G.volume;this.masterGain.connect(this.ctx.destination);if(G.music)this._startAmbientDrone();if(G.horror)this._startHorrorLayer();}catch(e){}},
   setVolume(v){if(this.masterGain)this.masterGain.gain.setTargetAtTime(v,this.ctx.currentTime,0.1);},
   setAmbientVolume(v){if(this.droneGain)this.droneGain.gain.setTargetAtTime(v*0.1,this.ctx.currentTime,0.5);},
   _startAmbientDrone(){if(!this.ctx||this.droneOsc)return;try{this.droneOsc=this.ctx.createOscillator();this.droneGain=this.ctx.createGain();const filter=this.ctx.createBiquadFilter();this.droneOsc.type='sawtooth';this.droneOsc.frequency.setValueAtTime(40,this.ctx.currentTime);const lfo=this.ctx.createOscillator(),lfoGain=this.ctx.createGain();lfo.frequency.value=0.08;lfoGain.gain.value=8;lfo.connect(lfoGain);lfoGain.connect(this.droneOsc.frequency);lfo.start();filter.type='lowpass';filter.frequency.value=150;filter.Q.value=2;this.droneGain.gain.value=0.1;this.droneOsc.connect(filter);filter.connect(this.droneGain);this.droneGain.connect(this.masterGain);this.droneOsc.start();}catch(e){}},
@@ -1027,11 +967,10 @@ const SoundEngine={
 };
 
 // ================================================================
-// [09] SAVE SYSTEM — Per-user isolation
+// [09] SAVE SYSTEM — Per-user localStorage isolation
 // ================================================================
 const SaveSystem={
-  _key(){ return getSaveKey(currentUser?.id || null); },
-
+  _key(){return getSaveKey(currentUser?.id||null);},
   write(){
     try{
       const data={version:SAVE_VERSION,timestamp:Date.now(),lang:G.lang,music:G.music,sfx:G.sfx,horror:G.horror,
@@ -1042,21 +981,17 @@ const SaveSystem={
       localStorage.setItem(this._key(),Cipher.encode(JSON.stringify(data)));
     }catch(e){}
   },
-
   load(){
     try{
       const encoded=localStorage.getItem(this._key());if(!encoded)return;
       const decoded=Cipher.decode(encoded);if(!decoded)return;
       const data=JSON.parse(decoded);
-      const storedChecksum=data.checksum;
-      const dataCopy={...data};delete dataCopy.checksum;
-      const expectedChecksum=generateChecksum(JSON.stringify(dataCopy));
-      if(storedChecksum&&storedChecksum!==expectedChecksum){document.getElementById('tamper-notice').classList.add('show');}
+      const storedChecksum=data.checksum;const dataCopy={...data};delete dataCopy.checksum;
+      if(storedChecksum&&storedChecksum!==generateChecksum(JSON.stringify(dataCopy)))document.getElementById('tamper-notice').classList.add('show');
       const p=data.player;if(p&&p.coins>10_000_000)return;
       this._applyState(data);
     }catch(e){}
   },
-
   _applyState(data){
     ['lang','music','sfx','horror','fovMode','volume','difficulty','tutorialDone'].forEach(k=>{if(data[k]!==undefined)G[k]=data[k];});
     if(data.player){Object.assign(G.player,data.player);if(!G.player.level)G.player.level=1;if(!G.player.xp)G.player.xp=0;}
@@ -1065,110 +1000,146 @@ const SaveSystem={
     if(data.achievements)G.achievements=data.achievements;
     if(data.loreUnlocked)G.loreUnlocked=data.loreUnlocked;
   },
-
-  // Full reset — clears this user's local key only
-  reset(){
-    try{localStorage.removeItem(this._key());localStorage.removeItem(LB_KEY);window.location.reload();}catch(e){}
-  },
-
+  reset(){try{localStorage.removeItem(this._key());localStorage.removeItem(LB_KEY);window.location.reload();}catch(e){}},
   exportCode(){
     try{const data={version:SAVE_VERSION,player:G.player,achievements:G.achievements,loreUnlocked:G.loreUnlocked,tutorialDone:G.tutorialDone};const raw=JSON.stringify(data);return Cipher.encode(JSON.stringify({data,checksum:generateChecksum(raw)}));}catch(e){return null;}
   },
-
   importCode(code){
     try{const decoded=Cipher.decode(code);if(!decoded)return false;const wrapper=JSON.parse(decoded);const raw=JSON.stringify(wrapper.data);if(generateChecksum(raw)!==wrapper.checksum){alert('Import failed: invalid checksum.');return false;}const d=wrapper.data;if(d.player)Object.assign(G.player,d.player);if(d.achievements)G.achievements=d.achievements;if(d.loreUnlocked)G.loreUnlocked=d.loreUnlocked;this.write();return true;}catch(e){return false;}
   },
-
-  getLocalLeaderboard(){
-    try{const raw=localStorage.getItem(LB_KEY);if(!raw)return[];return JSON.parse(Cipher.decode(raw)||'[]');}catch(e){return[];}
-  },
-
+  getLocalLeaderboard(){try{const raw=localStorage.getItem(LB_KEY);if(!raw)return[];return JSON.parse(Cipher.decode(raw)||'[]');}catch(e){return[];}},
   addLocalScore(name,score,level,diff){
     try{let lb=this.getLocalLeaderboard();lb.push({name,score,level,diff,date:new Date().toLocaleDateString()});lb.sort((a,b)=>b.score-a.score);lb=lb.slice(0,10);localStorage.setItem(LB_KEY,Cipher.encode(JSON.stringify(lb)));}catch(e){}
   }
 };
 
 // ================================================================
-// [10] CLOUD SYNC — Full bidirectional sync with settings
+// [10] CLOUD SYNC — Menggunakan tabel user_progress
 // ================================================================
 const CloudSync={
-  _setStatus(status, text){
+  _setStatus(status,text){
     const dot=document.getElementById('cloud-sync-dot');
     const txt=document.getElementById('cloud-sync-text');
     const lDot=document.getElementById('lobby-cloud-dot');
     const lTxt=document.getElementById('lobby-cloud-text');
     const cfgTxt=document.getElementById('cfg-cloud-status-text');
-    if(!dot) return;
-    dot.className='cloud-sync-dot '+status;
-    if(txt) txt.innerText=text;
-    if(lDot) lDot.className='cloud-dot '+(status==='online'?'online':status==='syncing'?'syncing':'');
-    if(lTxt) lTxt.innerText=status==='online'?`☁ ${currentUser?.email||'CLOUD'}`:(status==='guest'?'👾 GUEST MODE':'LOCAL MODE');
+    if(!dot)return;
+    dot.className='cloud-sync-dot'+( status?(' '+status):'');
+    if(txt)txt.innerText=text||'LOCAL';
+    if(lDot)lDot.className='cloud-dot'+(status==='online'?' online':status==='syncing'?' syncing':'');
+    if(lTxt)lTxt.innerText=status==='online'?`☁ ${currentUser?.email||'CLOUD'}`:(status==='guest'?'👾 GUEST MODE':'LOCAL MODE');
     if(cfgTxt){
-      if(status==='online') cfgTxt.innerText=`☁ Cloud connected: ${currentUser?.email||''}`;
-      else if(status==='guest') cfgTxt.innerText='👾 Guest mode — data local only';
+      if(status==='online')cfgTxt.innerText=`☁ Cloud connected: ${currentUser?.email||''}`;
+      else if(status==='guest')cfgTxt.innerText='👾 Guest mode — data local only';
       else cfgTxt.innerText='— Not connected to cloud —';
     }
   },
 
-  async pushAll(){
-    if(!currentUser||isGuestMode){ this._setStatus('guest','GUEST'); return; }
+  // ============================================================
+  // syncToCloud — kirim semua progress ke tabel user_progress
+  // Menggunakan upsert agar row dibuat otomatis jika belum ada
+  // ============================================================
+  async syncToCloud(){
+    if(!currentUser||isGuestMode){
+      this._setStatus('guest','GUEST');
+      return;
+    }
     try{
       this._setStatus('syncing','SYNCING...');
-      const payload={
-        coins: G.player.coins,
-        level: G.player.level,
-        xp: G.player.xp,
-        username: G.player.name,
-        unlocked_skins: JSON.stringify(G.player.unlockedSkins),
-        equipped_skin: G.player.equippedSkin,
-        games_played: G.player.gamesPlayed,
-        dashes_used: G.player.dashesUsed,
-        boxes_opened: G.player.boxesOpened,
-        portal_used: G.player.portalUsed,
-        coins_ever: G.player.coinsEverCollected,
-        achievements: JSON.stringify(G.achievements),
-        lore_unlocked: JSON.stringify(G.loreUnlocked),
-        // Settings sync — so they carry over to other devices
-        settings: JSON.stringify({lang:G.lang,music:G.music,sfx:G.sfx,horror:G.horror,fovMode:G.fovMode,volume:G.volume,difficulty:G.difficulty})
-      };
-      const {error}=await supabase.from('profiles').update(payload).eq('id',currentUser.id);
+
+      const { error } = await supabase
+        .from('user_progress')
+        .upsert({
+          user_id:        currentUser.id,
+          // Kolom utama sesuai permintaan
+          sanity:         Math.round(_lastKnownSanity),
+          chips:          G.player.coins,
+          score:          G.player.totalScore,
+          level:          G.player.level,
+          // Kolom tambahan untuk kelengkapan data
+          username:       G.player.name,
+          xp:             G.player.xp,
+          games_played:   G.player.gamesPlayed,
+          dashes_used:    G.player.dashesUsed,
+          boxes_opened:   G.player.boxesOpened,
+          portal_used:    G.player.portalUsed,
+          coins_ever:     G.player.coinsEverCollected,
+          unlocked_skins: JSON.stringify(G.player.unlockedSkins),
+          equipped_skin:  G.player.equippedSkin,
+          achievements:   JSON.stringify(G.achievements),
+          lore_unlocked:  JSON.stringify(G.loreUnlocked),
+          settings:       JSON.stringify({
+            lang:G.lang, music:G.music, sfx:G.sfx, horror:G.horror,
+            fovMode:G.fovMode, volume:G.volume, difficulty:G.difficulty
+          }),
+          updated_at:     new Date().toISOString()
+        },
+        // Konflik pada user_id akan di-UPDATE bukan INSERT duplikat
+        { onConflict: 'user_id' }
+        );
+
       if(error) throw error;
+
       this._setStatus('online','☁ SYNCED');
+      // Kembalikan ke CLOUD setelah 3 detik
       setTimeout(()=>this._setStatus('online','CLOUD'),3000);
-    }catch(e){
-      if(DEBUG_MODE) console.warn('CloudSync.pushAll error:',e);
+
+    }catch(err){
+      if(DEBUG_MODE) console.warn('[CloudSync] syncToCloud error:',err);
+      // Jangan crash — tetap tampil online agar tidak confuse user
       this._setStatus('online','CLOUD');
     }
   },
 
+  // Alias untuk backwards compat dengan panggilan di seluruh kode
+  async pushAll(){ return this.syncToCloud(); },
   async pushCoins(){
     if(!currentUser||isGuestMode) return;
     try{
       this._setStatus('syncing','SYNCING...');
-      await supabase.from('profiles').update({coins:G.player.coins,level:G.player.level,xp:G.player.xp}).eq('id',currentUser.id);
+      await supabase.from('user_progress')
+        .upsert({ user_id:currentUser.id, chips:G.player.coins, level:G.player.level, xp:G.player.xp, updated_at:new Date().toISOString() },
+          { onConflict:'user_id' });
       this._setStatus('online','CLOUD');
     }catch(e){ this._setStatus('online','CLOUD'); }
   },
 
-  // Push score to global leaderboard table
+  // Kirim skor ke tabel user_progress (update score jika lebih tinggi)
   async pushScore(name,score,level,diff){
     if(!currentUser||isGuestMode) return;
     try{
-      await supabase.from('leaderboard').insert({
-        user_id: currentUser.id,
-        username: name,
-        score,
-        level,
-        difficulty: diff,
-        created_at: new Date().toISOString()
-      });
-    }catch(e){ if(DEBUG_MODE) console.warn('pushScore error:',e); }
+      // Cek score saat ini dulu
+      const { data:existing } = await supabase
+        .from('user_progress')
+        .select('score')
+        .eq('user_id', currentUser.id)
+        .single();
+
+      const currentBestScore = existing?.score || 0;
+      const newBestScore = Math.max(currentBestScore, score);
+
+      await supabase.from('user_progress')
+        .upsert({
+          user_id:        currentUser.id,
+          username:       name,
+          score:          newBestScore,
+          level:          level,
+          chips:          G.player.coins,
+          sanity:         Math.round(_lastKnownSanity),
+          xp:             G.player.xp,
+          games_played:   G.player.gamesPlayed,
+          updated_at:     new Date().toISOString()
+        },
+        { onConflict:'user_id' });
+    }catch(e){ if(DEBUG_MODE) console.warn('[CloudSync] pushScore error:',e); }
   },
 
+  // Ambil leaderboard global dari user_progress
   async fetchGlobalLeaderboard(){
     try{
-      const{data,error}=await supabase.from('leaderboard')
-        .select('username,score,level,difficulty,created_at')
+      const { data,error } = await supabase
+        .from('user_progress')
+        .select('username,score,level,updated_at')
         .order('score',{ascending:false})
         .limit(10);
       if(error) throw error;
@@ -1178,60 +1149,85 @@ const CloudSync={
 };
 
 // ================================================================
-// [11] SUPABASE AUTH
+// [11] AUTH — Sinkronisasi dari tabel user_progress
 // ================================================================
 async function syncPlayerFromCloud(userId, rawUsername){
   try{
-    const{data:profile,error}=await supabase.from('profiles').select('*').eq('id',userId).single();
+    const { data:progress, error } = await supabase
+      .from('user_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
 
-    if(error&&error.code==='PGRST116'){
-      // New user — create profile
-      const{data:newProfile,error:insertErr}=await supabase.from('profiles').insert({
-        id:userId,
-        username:rawUsername.substring(0,12).toUpperCase(),
-        coins:G.player.coins,
-        level:1,xp:0,
-        unlocked_skins:JSON.stringify(['common1']),
-        equipped_skin:'common1',
-        games_played:0,dashes_used:0,boxes_opened:0,portal_used:0,coins_ever:0,
-        achievements:'{}',lore_unlocked:'[]',
-        settings:JSON.stringify({lang:'id',music:true,sfx:true,horror:true,fovMode:false,volume:0.7,difficulty:'normal'})
-      }).select().single();
-      if(!insertErr&&newProfile) cloudProfile=newProfile;
-    } else if(!error&&profile){
-      cloudProfile=profile;
-      // Apply cloud data over local — cloud is authoritative
-      if(profile.coins!=null)     G.player.coins=profile.coins;
-      if(profile.level!=null)     G.player.level=profile.level;
-      if(profile.xp!=null)        G.player.xp=profile.xp;
-      if(profile.username)        G.player.name=profile.username;
-      if(profile.dashes_used!=null)  G.player.dashesUsed=profile.dashes_used;
-      if(profile.boxes_opened!=null) G.player.boxesOpened=profile.boxes_opened;
-      if(profile.portal_used!=null)  G.player.portalUsed=profile.portal_used;
-      if(profile.coins_ever!=null)   G.player.coinsEverCollected=profile.coins_ever;
-      if(profile.games_played!=null) G.player.gamesPlayed=profile.games_played;
-      if(profile.unlocked_skins){try{G.player.unlockedSkins=JSON.parse(profile.unlocked_skins);}catch(e){}}
-      if(profile.equipped_skin)   G.player.equippedSkin=profile.equipped_skin;
-      if(profile.achievements){try{Object.assign(G.achievements,JSON.parse(profile.achievements));}catch(e){}}
-      if(profile.lore_unlocked){try{G.loreUnlocked=JSON.parse(profile.lore_unlocked);}catch(e){}}
-      // Restore settings from cloud
-      if(profile.settings){
-        try{
-          const s=JSON.parse(profile.settings);
-          if(s.lang!==undefined)       G.lang=s.lang;
-          if(s.music!==undefined)      G.music=s.music;
-          if(s.sfx!==undefined)        G.sfx=s.sfx;
-          if(s.horror!==undefined)     G.horror=s.horror;
-          if(s.fovMode!==undefined)    G.fovMode=s.fovMode;
-          if(s.volume!==undefined)     G.volume=s.volume;
-          if(s.difficulty!==undefined) G.difficulty=s.difficulty;
-        }catch(e){}
-      }
+    if(error && error.code==='PGRST116'){
+      // Row belum ada — buat baru
+      const { data:newRow, error:insertErr } = await supabase
+        .from('user_progress')
+        .insert({
+          user_id:        userId,
+          username:       rawUsername.substring(0,12).toUpperCase(),
+          chips:          G.player.coins,
+          score:          0,
+          level:          1,
+          sanity:         100,
+          xp:             0,
+          games_played:   0,
+          dashes_used:    0,
+          boxes_opened:   0,
+          portal_used:    0,
+          coins_ever:     0,
+          unlocked_skins: JSON.stringify(['common1']),
+          equipped_skin:  'common1',
+          achievements:   '{}',
+          lore_unlocked:  '[]',
+          settings:       JSON.stringify({lang:'id',music:true,sfx:true,horror:true,fovMode:false,volume:0.7,difficulty:'normal'}),
+          updated_at:     new Date().toISOString()
+        })
+        .select().single();
+      if(!insertErr && newRow) cloudProfile = newRow;
+
+    }else if(!error && progress){
+      cloudProfile = progress;
+
+      // Cloud adalah sumber kebenaran — sync ke G
+      if(progress.chips   != null) G.player.coins              = progress.chips;
+      if(progress.level   != null) G.player.level              = progress.level;
+      if(progress.xp      != null) G.player.xp                 = progress.xp;
+      if(progress.username)        G.player.name               = progress.username;
+      if(progress.score   != null) G.player.totalScore         = progress.score;
+      if(progress.games_played  != null) G.player.gamesPlayed  = progress.games_played;
+      if(progress.dashes_used   != null) G.player.dashesUsed   = progress.dashes_used;
+      if(progress.boxes_opened  != null) G.player.boxesOpened  = progress.boxes_opened;
+      if(progress.portal_used   != null) G.player.portalUsed   = progress.portal_used;
+      if(progress.coins_ever    != null) G.player.coinsEverCollected = progress.coins_ever;
+      if(progress.equipped_skin)        G.player.equippedSkin  = progress.equipped_skin;
+
+      // Parse JSON fields dengan safe try/catch
+      try{ if(progress.unlocked_skins) G.player.unlockedSkins = JSON.parse(progress.unlocked_skins);}catch(e){}
+      try{ if(progress.achievements)   Object.assign(G.achievements,JSON.parse(progress.achievements));}catch(e){}
+      try{ if(progress.lore_unlocked)  G.loreUnlocked = JSON.parse(progress.lore_unlocked);}catch(e){}
+
+      // Pulihkan settings dari cloud agar sinkron lintas perangkat
+      try{
+        if(progress.settings){
+          const s=JSON.parse(progress.settings);
+          if(s.lang      !==undefined) G.lang      = s.lang;
+          if(s.music     !==undefined) G.music     = s.music;
+          if(s.sfx       !==undefined) G.sfx       = s.sfx;
+          if(s.horror    !==undefined) G.horror    = s.horror;
+          if(s.fovMode   !==undefined) G.fovMode   = s.fovMode;
+          if(s.volume    !==undefined) G.volume    = s.volume;
+          if(s.difficulty!==undefined) G.difficulty= s.difficulty;
+        }
+      }catch(e){}
+
       SaveSystem.write();
     }
-  }catch(e){
-    if(DEBUG_MODE) console.warn('syncPlayerFromCloud error:',e);
+
+  }catch(err){
+    if(DEBUG_MODE) console.warn('[Auth] syncPlayerFromCloud error:',err);
   }finally{
+    // CRITICAL: selalu sembunyikan auth screen & masuk lobby
     const authEl=document.getElementById('screen-auth');
     if(authEl) authEl.classList.remove('active');
     CloudSync._setStatus('online','CLOUD');
@@ -1239,8 +1235,8 @@ async function syncPlayerFromCloud(userId, rawUsername){
   }
 }
 
-function setAuthStatus(formId,msg,type){
-  const el=document.getElementById(formId);if(!el)return;
+function setAuthStatus(elId,msg,type){
+  const el=document.getElementById(elId);if(!el)return;
   el.innerText=msg;el.className='auth-status'+(type?' '+type:'');
 }
 
@@ -1271,48 +1267,26 @@ const AchievementSystem={
 };
 
 // ================================================================
-// [13] DAILY SYSTEM — Server-time aware
+// [13] DAILY SYSTEM — UTC-aware
 // ================================================================
 const DailySystem={
-  // Use UTC date string as server-independent day key
   _getUTCDateKey(){ return new Date().toISOString().split('T')[0]; },
   _getSundayStart(){const now=new Date(),sun=new Date(now);sun.setUTCDate(now.getUTCDate()-now.getUTCDay());sun.setUTCHours(0,0,0,0);return sun.getTime();},
   _getCurrentDayIndex(){return Math.floor((Date.now()-this._getSundayStart())/86400000);},
-  _resetIfNewWeek(){
-    const thisSunday=this._getSundayStart();
-    if(thisSunday!==G.daily.weekStart){
-      G.daily.weekStart=thisSunday;G.daily.claimedDays=[];G.daily.lastClaimed=-1;
-      G.daily.lastClaimDateKey='';
-      SaveSystem.write();
-    }
-  },
-  canClaimToday(){
-    this._resetIfNewWeek();
-    // Double-lock: check both day index AND UTC date string
-    const todayKey=this._getUTCDateKey();
-    return!G.daily.claimedDays.includes(this._getCurrentDayIndex())&&G.daily.lastClaimDateKey!==todayKey;
-  },
+  _resetIfNewWeek(){const ts=this._getSundayStart();if(ts!==G.daily.weekStart){G.daily.weekStart=ts;G.daily.claimedDays=[];G.daily.lastClaimed=-1;G.daily.lastClaimDateKey='';SaveSystem.write();}},
+  canClaimToday(){this._resetIfNewWeek();const todayKey=this._getUTCDateKey();return!G.daily.claimedDays.includes(this._getCurrentDayIndex())&&G.daily.lastClaimDateKey!==todayKey;},
   claimToday(){
-    this._resetIfNewWeek();
-    if(!this.canClaimToday())return null;
-    const dayIdx=this._getCurrentDayIndex();
-    const todayKey=this._getUTCDateKey();
-    G.daily.claimedDays.push(dayIdx);
-    G.daily.lastClaimed=dayIdx;
-    G.daily.lastClaimDateKey=todayKey;
+    this._resetIfNewWeek();if(!this.canClaimToday())return null;
+    const dayIdx=this._getCurrentDayIndex(),todayKey=this._getUTCDateKey();
+    G.daily.claimedDays.push(dayIdx);G.daily.lastClaimed=dayIdx;G.daily.lastClaimDateKey=todayKey;
     const reward=DAILY_REWARDS[Math.min(dayIdx,6)];
     const streakBonus=(dayIdx>0&&G.daily.claimedDays.includes(dayIdx-1))?Math.floor(reward.amount*0.5):0;
     const total=reward.amount+streakBonus;
-    G.player.coins+=total;
-    SaveSystem.write();
-    CloudSync.pushCoins();
-    return{...reward,amount:total,streakBonus};
+    G.player.coins+=total;SaveSystem.write();CloudSync.pushCoins();return{...reward,amount:total,streakBonus};
   },
   renderGrid(){
-    this._resetIfNewWeek();
-    const grid=document.getElementById('daily-reward-grid');if(!grid)return;
-    grid.innerHTML='';
-    const dayIdx=this._getCurrentDayIndex();
+    this._resetIfNewWeek();const grid=document.getElementById('daily-reward-grid');if(!grid)return;
+    grid.innerHTML='';const dayIdx=this._getCurrentDayIndex();
     DAILY_REWARDS.forEach((r,i)=>{
       const claimed=G.daily.claimedDays.includes(i),isToday=i===dayIdx,locked=i>dayIdx;
       const card=document.createElement('div');
@@ -1320,13 +1294,10 @@ const DailySystem={
       card.innerHTML=`<div class="daily-day">DAY ${r.day}</div><div class="daily-icon">${r.icon}</div><div class="daily-amount">+${r.amount}❖</div>${claimed?'<div class="daily-check">✓</div>':''}`;
       grid.appendChild(card);
     });
-    // Countdown using UTC
-    const now=Date.now(),nextMidnightUTC=new Date();
-    nextMidnightUTC.setUTCHours(24,0,0,0);
-    const msLeft=nextMidnightUTC.getTime()-now;
+    const nextMidnightUTC=new Date();nextMidnightUTC.setUTCHours(24,0,0,0);
+    const msLeft=nextMidnightUTC.getTime()-Date.now();
     const h=Math.floor(msLeft/3600000),m=Math.floor((msLeft%3600000)/60000);
-    const cd=document.getElementById('daily-countdown');
-    if(cd) cd.innerText=`${h}h ${m}m (UTC)`;
+    const cd=document.getElementById('daily-countdown');if(cd)cd.innerText=`${h}h ${m}m (UTC)`;
   }
 };
 
@@ -1334,40 +1305,20 @@ const DailySystem={
 // [14] QUEST SYSTEM
 // ================================================================
 const QuestSystem={
-  _getTodayKey(){ return new Date().toISOString().split('T')[0]; },
-  init(){
-    const today=this._getTodayKey();
-    if(G.quests.date!==today){
-      G.quests.date=today;G.quests.progress={};
-      const shuffled=[...QUEST_TEMPLATES].sort(()=>Math.random()-0.5).slice(0,3);
-      shuffled.forEach(q=>{G.quests.progress[q.id]={current:0,done:false};});
-      SaveSystem.write();
-    }
-  },
+  _getTodayKey(){return new Date().toISOString().split('T')[0];},
+  init(){const today=this._getTodayKey();if(G.quests.date!==today){G.quests.date=today;G.quests.progress={};const shuffled=[...QUEST_TEMPLATES].sort(()=>Math.random()-0.5).slice(0,3);shuffled.forEach(q=>{G.quests.progress[q.id]={current:0,done:false};});SaveSystem.write();}},
   getActiveQuests(){return Object.keys(G.quests.progress).map(qid=>{const qDef=QUEST_TEMPLATES.find(q=>q.id===qid);const prog=G.quests.progress[qid];return qDef?{...qDef,current:prog.current,done:prog.done}:null;}).filter(Boolean);},
-  update(type,amount=1){
-    if(G.quests.date!==this._getTodayKey())return;
-    this.getActiveQuests().forEach(q=>{
-      if(q.done||q.type!==type)return;
-      const prog=G.quests.progress[q.id];
-      prog.current=Math.min(q.target,prog.current+amount);
-      if(prog.current>=q.target&&!prog.done){prog.done=true;G.player.coins+=q.reward;SaveSystem.write();AchievementSystem._showPopup(`📋 QUEST: ${q.name[G.lang]} +${q.reward}❖`);}
-    });
-    SaveSystem.write();
-  },
+  update(type,amount=1){if(G.quests.date!==this._getTodayKey())return;this.getActiveQuests().forEach(q=>{if(q.done||q.type!==type)return;const prog=G.quests.progress[q.id];prog.current=Math.min(q.target,prog.current+amount);if(prog.current>=q.target&&!prog.done){prog.done=true;G.player.coins+=q.reward;SaveSystem.write();AchievementSystem._showPopup(`📋 QUEST: ${q.name[G.lang]} +${q.reward}❖`);}});SaveSystem.write();},
   render(){
     const list=document.getElementById('quests-list');if(!list)return;
     const quests=this.getActiveQuests();
     if(!quests.length){list.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:0.75rem;">No active quests.</div>';return;}
-    list.innerHTML=quests.map(q=>{
-      const pct=Math.min(1,q.current/q.target);
-      return`<div class="quest-item"><div><div class="quest-name ${q.done?'quest-done':''}">${q.name[G.lang]}</div><div style="width:160px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:4px;overflow:hidden;"><div style="height:100%;width:${pct*100}%;background:${q.done?'var(--neon-green)':'var(--neon-purple)'};border-radius:2px;transition:width 0.4s;"></div></div></div><div class="quest-progress">${q.done?'✓ DONE':`${q.current}/${q.target} · +${q.reward}❖`}</div></div>`;
-    }).join('');
+    list.innerHTML=quests.map(q=>{const pct=Math.min(1,q.current/q.target);return`<div class="quest-item"><div><div class="quest-name ${q.done?'quest-done':''}">${q.name[G.lang]}</div><div style="width:160px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:4px;overflow:hidden;"><div style="height:100%;width:${pct*100}%;background:${q.done?'var(--neon-green)':'var(--neon-purple)'};border-radius:2px;transition:width 0.4s;"></div></div></div><div class="quest-progress">${q.done?'✓ DONE':`${q.current}/${q.target} · +${q.reward}❖`}</div></div>`;}).join('');
   }
 };
 
 // ================================================================
-// [15] SHOP SYSTEM — Skin ownership server-verified on equip
+// [15] SHOP SYSTEM
 // ================================================================
 const Shop={
   filter:'all',
@@ -1394,82 +1345,55 @@ const Shop={
     const passiveTxt=skin.passive?`\n⚡ PASSIVE: ${skin.passiveDesc}`:'';
     const unlocked=G.player.unlockedSkins.includes(skin.id),equipped=G.player.equippedSkin===skin.id;
     if(equipped){desc.innerText=`[${skin.name}] — ${txt}${passiveTxt}`;return;}
-    if(unlocked){
-      G.player.equippedSkin=skin.id;
-      desc.innerText=G.lang==='id'?`Skin terpasang: ${skin.name}`:`Equipped: ${skin.name}`;
-      SpriteCache.clear();SaveSystem.write();CloudSync.pushAll();this.render();return;
-    }
+    if(unlocked){G.player.equippedSkin=skin.id;desc.innerText=G.lang==='id'?`Skin terpasang: ${skin.name}`:`Equipped: ${skin.name}`;SpriteCache.clear();SaveSystem.write();CloudSync.syncToCloud();this.render();return;}
     if(G.player.coins>=skin.cost){
-      G.player.coins-=skin.cost;
-      G.player.unlockedSkins.push(skin.id);
-      G.player.equippedSkin=skin.id;
+      G.player.coins-=skin.cost;G.player.unlockedSkins.push(skin.id);G.player.equippedSkin=skin.id;
       desc.innerText=G.lang==='id'?`Dibeli & dipasang: ${skin.name}`:`Purchased & equipped: ${skin.name}`;
       SpriteCache.clear();SaveSystem.write();
-      // Immediately push to cloud so purchase isn't lost on device switch
-      CloudSync.pushAll();
+      // Sync pembelian ke cloud segera agar tidak hilang jika pindah device
+      CloudSync.syncToCloud();
       this.render();AchievementSystem.checkAll();
-    }else{
-      desc.innerText=G.lang==='id'?`Chips tidak cukup: ${skin.name}`:`Insufficient chips for: ${skin.name}`;
-    }
+    }else{desc.innerText=G.lang==='id'?`Chips tidak cukup: ${skin.name}`:`Insufficient chips for: ${skin.name}`;}
   }
 };
 
 // ================================================================
-// [16] LEADERBOARD — Global + Local tabs
+// [16] LEADERBOARD — Global (dari user_progress) + Local tabs
 // ================================================================
 const Leaderboard={
   async render(mode){
-    const list=document.getElementById('lb-list');
-    const sub=document.getElementById('lb-sub');
-    if(!list)return;
+    const list=document.getElementById('lb-list');const sub=document.getElementById('lb-sub');if(!list)return;
     if(mode==='global'){
       list.innerHTML='<div style="text-align:center;color:var(--neon-cyan);font-size:0.7rem;padding:16px;font-family:\'Orbitron\',monospace;">⏳ LOADING GLOBAL DATA...</div>';
-      if(sub) sub.innerText='Top 10 global scores from all players';
+      if(sub)sub.innerText='Top 10 global scores from all players';
       const scores=await CloudSync.fetchGlobalLeaderboard();
       if(!scores.length){list.innerHTML='<div style="text-align:center;color:var(--text-muted);font-size:0.75rem;padding:20px;">No global scores yet. Be the first!</div>';return;}
-      list.innerHTML=scores.map((s,i)=>{
-        const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-        const diffBadge=s.difficulty?`<span style="font-size:0.5rem;color:var(--text-muted);margin-right:4px;">[${s.difficulty.toUpperCase()}]</span>`:'';
-        return`<div class="lb-row"><span class="lb-rank ${rankClass}">#${i+1}</span><span class="lb-name">${s.username||'???'}</span>${diffBadge}<span style="font-size:0.6rem;color:var(--text-muted);margin-right:8px;">LV${s.level}</span><span class="lb-score">${s.score}❖</span></div>`;
-      }).join('');
-    } else {
-      if(sub) sub.innerText='Top 10 local scores on this browser';
+      list.innerHTML=scores.map((s,i)=>{const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';return`<div class="lb-row"><span class="lb-rank ${rankClass}">#${i+1}</span><span class="lb-name">${s.username||'???'}</span><span style="font-size:0.6rem;color:var(--text-muted);margin-right:8px;">LV${s.level||1}</span><span class="lb-score">${s.score||0}❖</span></div>`;}).join('');
+    }else{
+      if(sub)sub.innerText='Top 10 local scores on this browser';
       const scores=SaveSystem.getLocalLeaderboard();
       if(!scores.length){list.innerHTML='<div style="text-align:center;color:var(--text-muted);font-size:0.75rem;padding:20px;">No local scores yet. Play a game!</div>';return;}
-      list.innerHTML=scores.map((s,i)=>{
-        const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-        const diffBadge=s.diff?`<span style="font-size:0.5rem;color:var(--text-muted);margin-right:4px;">[${s.diff.toUpperCase()}]</span>`:'';
-        return`<div class="lb-row"><span class="lb-rank ${rankClass}">#${i+1}</span><span class="lb-name">${s.name}</span>${diffBadge}<span style="font-size:0.6rem;color:var(--text-muted);margin-right:8px;">LV${s.level}</span><span class="lb-score">${s.score}❖</span></div>`;
-      }).join('');
+      list.innerHTML=scores.map((s,i)=>{const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';const diffBadge=s.diff?`<span style="font-size:0.5rem;color:var(--text-muted);margin-right:4px;">[${s.diff.toUpperCase()}]</span>`:'';return`<div class="lb-row"><span class="lb-rank ${rankClass}">#${i+1}</span><span class="lb-name">${s.name}</span>${diffBadge}<span style="font-size:0.6rem;color:var(--text-muted);margin-right:8px;">LV${s.level}</span><span class="lb-score">${s.score}❖</span></div>`;}).join('');
     }
   }
 };
 
 // ================================================================
-// [17] SCREENS: ACHIEVEMENTS, LORE, TUTORIAL
+// [17] SCREENS — ACHIEVEMENTS, LORE, TUTORIAL
 // ================================================================
 const AchievementsScreen={
   render(){
     const list=document.getElementById('ach-list');if(!list)return;
     let total=ACHIEVEMENT_DB.length,unlocked=0;
-    list.innerHTML=ACHIEVEMENT_DB.map(a=>{
-      const done=!!G.achievements[a.id];if(done)unlocked++;
-      const desc=G.lang==='id'?a.descId:a.desc;
-      return`<div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid rgba(255,255,255,0.04);opacity:${done?1:0.4};"><div style="font-size:1.4rem;">${a.icon}</div><div style="flex:1;"><div style="font-size:0.75rem;font-weight:700;color:${done?'var(--neon-gold)':'var(--text-main)'};">${a.name}</div><div style="font-size:0.65rem;color:var(--text-muted);">${desc}</div>${done?`<div style="font-size:0.55rem;color:var(--neon-green);margin-top:2px;">✓ UNLOCKED</div>`:''}</div><div style="font-family:'Orbitron',monospace;font-size:0.65rem;color:${done?'var(--neon-green)':'var(--text-muted)'};">${done?'✓':'+'+a.reward+'❖'}</div></div>`;
-    }).join('');
-    const achTitle=document.getElementById('ach-title');
-    if(achTitle) achTitle.innerText=`★ ACHIEVEMENTS  [${unlocked}/${total}]`;
+    list.innerHTML=ACHIEVEMENT_DB.map(a=>{const done=!!G.achievements[a.id];if(done)unlocked++;const desc=G.lang==='id'?a.descId:a.desc;return`<div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid rgba(255,255,255,0.04);opacity:${done?1:0.4};"><div style="font-size:1.4rem;">${a.icon}</div><div style="flex:1;"><div style="font-size:0.75rem;font-weight:700;color:${done?'var(--neon-gold)':'var(--text-main)'};">${a.name}</div><div style="font-size:0.65rem;color:var(--text-muted);">${desc}</div>${done?`<div style="font-size:0.55rem;color:var(--neon-green);margin-top:2px;">✓ UNLOCKED</div>`:''}</div><div style="font-family:'Orbitron',monospace;font-size:0.65rem;color:${done?'var(--neon-green)':'var(--text-muted)'};">${done?'✓':'+'+a.reward+'❖'}</div></div>`;}).join('');
+    const achTitle=document.getElementById('ach-title');if(achTitle)achTitle.innerText=`★ ACHIEVEMENTS  [${unlocked}/${total}]`;
   }
 };
 
 const LoreScreen={
   render(){
     const list=document.getElementById('lore-list');if(!list)return;
-    list.innerHTML=LORE_DB.map(l=>{
-      const unlocked=!l.locked||G.loreUnlocked.includes(l.id);
-      const body=G.lang==='id'?l.id2:l.en;
-      return`<div style="padding:14px;border-bottom:1px solid rgba(255,255,255,0.04);opacity:${unlocked?1:0.35};"><div style="font-family:'Orbitron',monospace;font-size:0.7rem;color:${unlocked?'var(--neon-purple)':'var(--text-muted)'};margin-bottom:6px;">${l.title}</div><div style="font-size:0.75rem;color:#94a3b8;line-height:1.7;">${unlocked?body:'[CLASSIFIED — Find lore scrolls in maze to unlock]'}</div></div>`;
-    }).join('');
+    list.innerHTML=LORE_DB.map(l=>{const unlocked=!l.locked||G.loreUnlocked.includes(l.id);const body=G.lang==='id'?l.id2:l.en;return`<div style="padding:14px;border-bottom:1px solid rgba(255,255,255,0.04);opacity:${unlocked?1:0.35};"><div style="font-family:'Orbitron',monospace;font-size:0.7rem;color:${unlocked?'var(--neon-purple)':'var(--text-muted)'};margin-bottom:6px;">${l.title}</div><div style="font-size:0.75rem;color:#94a3b8;line-height:1.7;">${unlocked?body:'[CLASSIFIED — Find lore scrolls in maze to unlock]'}</div></div>`;}).join('');
   }
 };
 
@@ -1481,7 +1405,7 @@ const Tutorial={
     {en:'⚠️ Avoid <span style="color:#ef4444">ENTITIES</span> — they drain your SANITY.',id:'⚠️ Hindari <span style="color:#ef4444">ENTITAS</span> — mereka menguras SANITAS.'},
     {en:'Your <span style="color:#312e81">PARADOX CLONE</span> echoes your past path. Avoid collision!',id:'<span style="color:#312e81">CLONE PARADOKS</span> mengikuti jalurmu. Hindari tabrakan!'},
     {en:'Press <b>SPACE</b> for <span style="color:#06b6d4">GLITCH DASH</span>! Phase through walls.',id:'Tekan <b>SPACE</b> untuk <span style="color:#06b6d4">GLITCH DASH</span>! Tembus dinding.'},
-    {en:'Find the <span style="color:#ef4444">❤ CORE</span> to complete the level. Use the RADAR compass!',id:'Temukan <span style="color:#ef4444">❤ CORE</span> untuk menyelesaikan level. Gunakan kompas RADAR!'},
+    {en:'Find the <span style="color:#ef4444">❤ CORE</span> to complete the level. Use the RADAR compass!',id:'Temukan <span style="color:#ef4444">❤ CORE</span> untuk menyelesaikan level. Gunakan RADAR!'},
     {en:'📦 <b>SCHRÖDINGER BOX</b>: 50/50 good or bad.<br>🌀 <b>PORTALS</b>: teleport!<br>⚡ <b>TRAPS</b>: avoid them!',id:'📦 <b>KOTAK SCHRÖDINGER</b>: 50/50 baik/buruk.<br>🌀 <b>PORTAL</b>: teleport!<br>⚡ <b>JEBAKAN</b>: hindari!'},
     {en:'🌟 The maze is <b>procedurally generated</b> — every run is unique!',id:'🌟 Labirin di-<b>generate secara prosedural</b> — setiap run unik!'},
   ],
@@ -1577,7 +1501,6 @@ const Game={
     this._updateCanvasSize();window.addEventListener('resize',()=>this._updateCanvasSize());
     document.addEventListener('visibilitychange',()=>{if(document.hidden&&this.running&&!this.paused)this.pause();});
   },
-
   _updateCanvasSize(){const maxW=window.innerWidth,maxH=window.innerHeight,scale=Math.min(maxW/(MAP_COLS*TILE_W),maxH/(MAP_ROWS*TILE_H),1.5);this.canvas.style.width=(MAP_COLS*TILE_W*scale)+'px';this.canvas.style.height=(MAP_ROWS*TILE_H*scale)+'px';},
   _getFloors(){const floors=[];for(let r=0;r<MAP_ROWS;r++)for(let c=0;c<MAP_COLS;c++)if(this.currentMap[r][c]!==1)floors.push({x:c,y:r});return floors;},
 
@@ -1588,7 +1511,9 @@ const Game={
     this.autoSaveTimer=0;this.ticks=0;this.heartbeatTimer=0;this.breathTimer=0;this.gridBgOffset=0;this.shake=0;
     this.currentMap=await MazeGen.generateWithAnimation(MAP_COLS,MAP_ROWS,this.level);
     this.player.gx=1;this.player.gy=1;this.player.rx=TILE_W;this.player.ry=TILE_H;this.player.tx=TILE_W;this.player.ty=TILE_H;
-    this.player.sanity=100+(this.hasSkin('mythical5')?20:0);this.player.facing='right';this.player.isMoving=false;this.player.walkFrame=0;this.player.dashCooldown=0;this.player.isDashing=false;this.player.trailPositions=[];this.player.trapSlowed=0;this.clone.active=false;this.ghost.active=false;
+    this.player.sanity=100+(this.hasSkin('mythical5')?20:0);
+    _lastKnownSanity=this.player.sanity; // track sanity untuk cloud sync
+    this.player.facing='right';this.player.isMoving=false;this.player.walkFrame=0;this.player.dashCooldown=0;this.player.isDashing=false;this.player.trailPositions=[];this.player.trapSlowed=0;this.clone.active=false;this.ghost.active=false;
     const floors=this._getFloors().filter(f=>!(f.x<3&&f.y<3));
     const coreFloor=floors[Math.floor(Math.random()*floors.length)];this.core.gx=coreFloor.x;this.core.gy=coreFloor.y;this.core.pulse=0;
     for(let r=0;r<MAP_ROWS;r++)for(let c=0;c<MAP_COLS;c++){if(this.currentMap[r][c]===2){this.coins.push({gx:c,gy:r,collected:false,pulse:Math.random()*Math.PI*2});this.currentMap[r][c]=0;}}
@@ -1624,7 +1549,6 @@ const Game={
     document.getElementById('vignette-overlay').style.background='none';document.getElementById('sanity-filter-layer').style.filter='none';
     document.body.classList.remove('enrage-mode','glitch-active','shaking');
   },
-
   pause(){if(!this.running)return;this.paused=true;document.getElementById('screen-pause').classList.add('active');},
   resume(){this.paused=false;document.getElementById('screen-pause').classList.remove('active');this.lastTime=performance.now();},
 
@@ -1634,6 +1558,7 @@ const Game={
     document.getElementById('hud-value-level').innerText=this.level;
     document.getElementById('hud-score').innerText=this.sessionScore;
     const s=Math.max(0,Math.min(100,this.player.sanity));
+    _lastKnownSanity=s; // update global sanity tracker
     const fill=document.getElementById('sanity-bar-fill');
     fill.style.width=s+'%';document.getElementById('sanity-num').innerText=Math.floor(s);
     if(s>60)fill.style.background='linear-gradient(90deg,#22c55e,#16a34a)';
@@ -1664,8 +1589,7 @@ const Game={
   _updateMonsters(dt){
     const enrageMult=this.enraged?1.3:1;
     for(const m of this.monsters){
-      if(m.frozen>0){m.frozen-=dt;continue;}
-      if(m.hearCooldown>0)m.hearCooldown-=dt;
+      if(m.frozen>0){m.frozen-=dt;continue;}if(m.hearCooldown>0)m.hearCooldown-=dt;
       m.rx+=(m.tx-m.rx)*8*dt;m.ry+=(m.ty-m.ry)*8*dt;
       if(Math.abs(m.rx-m.tx)<0.5)m.rx=m.tx;if(Math.abs(m.ry-m.ty)<0.5)m.ry=m.ty;
       m.moveTimer-=dt*enrageMult;if(m.moveTimer>0)continue;m.moveTimer=m.baseMoveTimer;
@@ -1704,10 +1628,13 @@ const Game={
     this.stopSession();SoundEngine.playGameOver();
     G.player.gamesPlayed++;G.player.xp+=Math.floor(this.sessionScore/10);
     QuestSystem.update('games');
+    // Update totalScore jika ini lebih tinggi
+    if(this.sessionScore>G.player.totalScore) G.player.totalScore=this.sessionScore;
     SaveSystem.addLocalScore(G.player.name,this.sessionScore,this.level,G.difficulty);
+    // Push ke cloud — update user_progress dengan score terbaik
     CloudSync.pushScore(G.player.name,this.sessionScore,this.level,G.difficulty);
     AchievementSystem.checkAll(this.sessionScore,false,this.dashUsedThisSession);
-    SaveSystem.write();CloudSync.pushAll();
+    SaveSystem.write();CloudSync.syncToCloud();
     document.getElementById('go-score-display').innerText=this.sessionScore+' ❖';
     document.getElementById('go-score-text').innerText=`LEVEL ${this.level} · XP: +${Math.floor(this.sessionScore/10)} · DIFF: ${G.difficulty.toUpperCase()}`;
     SceneMgr.go('GameOver');
@@ -1742,15 +1669,24 @@ const Game={
     if(this.player.sanity<30&&G.horror){this.heartbeatTimer-=dt;if(this.heartbeatTimer<=0){SoundEngine.playHeartbeat();this.heartbeatTimer=1.5-(this.player.sanity/100);}this.breathTimer-=dt;if(this.breathTimer<=0){SoundEngine.playBreath();this.breathTimer=2;}}
     let nearestDist=Infinity;for(const m of this.monsters){const d=Math.hypot(m.gx-this.player.gx,m.gy-this.player.gy);if(d<nearestDist)nearestDist=d;}if(nearestDist>5)SoundEngine.setAmbientVolume(1);
     this._checkCoins();this._checkBoxes();this._checkPortals();this._checkTraps();this._checkLoreItems();this._checkEnrage();
-    this.autoSaveTimer+=dt;if(this.autoSaveTimer>=AUTOSAVE_INTERVAL){this.autoSaveTimer=0;SaveSystem.write();const asi=document.getElementById('autosave-indicator');if(asi){asi.classList.add('show');clearTimeout(asi._t);asi._t=setTimeout(()=>asi.classList.remove('show'),2000);}}
+    this.autoSaveTimer+=dt;
+    if(this.autoSaveTimer>=AUTOSAVE_INTERVAL){
+      this.autoSaveTimer=0;
+      SaveSystem.write();
+      // Sync otomatis ke Supabase user_progress setiap 30 detik
+      CloudSync.syncToCloud();
+      const asi=document.getElementById('autosave-indicator');
+      if(asi){asi.classList.add('show');clearTimeout(asi._t);asi._t=setTimeout(()=>asi.classList.remove('show'),2000);}
+    }
     if(this.player.gx===this.core.gx&&this.player.gy===this.core.gy&&!this.player.isMoving){
       this.wonThisSession=true;this.stopSession();SoundEngine.playVictory();
       const bonus=1250;G.player.coins+=bonus;G.player.coinsEverCollected+=bonus;G.player.level=Math.min(20,G.player.level+1);G.player.gamesPlayed++;G.player.xp+=Math.floor(this.sessionScore/10)+100;
+      if(this.sessionScore>G.player.totalScore) G.player.totalScore=this.sessionScore;
       QuestSystem.update('games');QuestSystem.update('score',this.sessionScore);
       SaveSystem.addLocalScore(G.player.name,this.sessionScore,this.level,G.difficulty);
       CloudSync.pushScore(G.player.name,this.sessionScore,this.level,G.difficulty);
       AchievementSystem.checkAll(this.sessionScore,true,this.dashUsedThisSession);
-      SaveSystem.write();CloudSync.pushAll();
+      SaveSystem.write();CloudSync.syncToCloud();
       document.getElementById('vic-score-display').innerText=this.sessionScore+' ❖';
       document.getElementById('vic-reward-text').innerText=`+${bonus} CHIPS · LEVEL ${G.player.level} · XP: +${Math.floor(this.sessionScore/10)+100}`;
       SceneMgr.go('Victory');return;
@@ -1803,20 +1739,19 @@ const SceneMgr={
     document.getElementById('cfg-difficulty').value=G.difficulty;
     document.getElementById('cfg-lang-en').classList.toggle('active',G.lang==='en');
     document.getElementById('cfg-lang-id').classList.toggle('active',G.lang==='id');
-    // Show cloud status in config panel
-    if(currentUser&&!isGuestMode) CloudSync._setStatus('online','CLOUD');
-    else if(isGuestMode) CloudSync._setStatus('guest','GUEST');
+    if(currentUser&&!isGuestMode)CloudSync._setStatus('online','CLOUD');
+    else if(isGuestMode)CloudSync._setStatus('guest','GUEST');
     else CloudSync._setStatus('','LOCAL');
   },
   _refreshLobbyInfo(){
     const nameInput=document.getElementById('player-name-input');
-    if(nameInput&&G.player.name) nameInput.value=G.player.name;
+    if(nameInput&&G.player.name)nameInput.value=G.player.name;
     const logoutBtn=document.getElementById('btn-lobby-logout');
-    if(logoutBtn) logoutBtn.style.display=(!isGuestMode&&currentUser)?'block':'none';
+    if(logoutBtn)logoutBtn.style.display=(!isGuestMode&&currentUser)?'block':'none';
     const guestBanner=document.getElementById('lobby-guest-banner');
-    if(guestBanner) guestBanner.style.display=isGuestMode?'block':'none';
-    if(currentUser&&!isGuestMode) CloudSync._setStatus('online','CLOUD');
-    else if(isGuestMode) CloudSync._setStatus('guest','GUEST');
+    if(guestBanner)guestBanner.style.display=isGuestMode?'block':'none';
+    if(currentUser&&!isGuestMode)CloudSync._setStatus('online','CLOUD');
+    else if(isGuestMode)CloudSync._setStatus('guest','GUEST');
     else CloudSync._setStatus('','LOCAL');
   },
   applyL10n(){
@@ -1833,9 +1768,6 @@ const SceneMgr={
     set('vic-title',L.coreReached);set('vic-subtitle',L.loopBreaks);set('btn-vic-continue',L.proceedNext);set('btn-vic-menu',L.vicMenu);
     set('daily-title',L.dailyTitle);set('daily-sub',L.dailySub);set('btn-daily-claim',L.dailyClaim);set('btn-daily-back',L.dailyBack);
     set('compass-label',L.compass);set('hud-level-label',L.levelLabel);set('lobby-name-label',L.lobbyName);set('cfg-audio-label',L.audioLabel);
-    // Guest warning in auth screen
-    const gw=document.getElementById('guest-warning');
-    if(gw) gw.innerText=L.guestWarning;
     const enEl=document.getElementById('lang-en'),idEl=document.getElementById('lang-id');
     if(enEl)enEl.className=G.lang==='en'?'active':'';if(idEl)idEl.className=G.lang==='id'?'active':'';
   }
@@ -1845,10 +1777,7 @@ const SceneMgr={
 // [22] INPUT HANDLER
 // ================================================================
 const Input={
-  init(){
-    window.addEventListener('keydown',e=>this._onKeyDown(e));
-    this._setupMobile();
-  },
+  init(){window.addEventListener('keydown',e=>this._onKeyDown(e));this._setupMobile();},
   _onKeyDown(e){
     if(G.scene!=='Gameplay')return;
     if(e.code==='Escape'||e.code==='KeyP'){if(!Game.paused)Game.pause();else Game.resume();return;}
@@ -1862,10 +1791,8 @@ const Input={
   _setupMobile(){
     const isMobile='ontouchstart' in window||window.matchMedia('(max-width:1024px)').matches;
     if(!isMobile)return;
-    document.getElementById('joystick-zone').style.display='flex';
-    document.getElementById('dpad-zone').style.display='block';
-    document.getElementById('dash-btn-mobile').style.display='flex';
-    document.getElementById('compass-hud').style.bottom='210px';
+    document.getElementById('joystick-zone').style.display='flex';document.getElementById('dpad-zone').style.display='block';
+    document.getElementById('dash-btn-mobile').style.display='flex';document.getElementById('compass-hud').style.bottom='210px';
     this._setupJoystick();this._setupDpad();this._setupDashBtn();
   },
   _setupJoystick(){
@@ -1916,14 +1843,9 @@ function shareScore(score,level){
 // [24] DOMContentLoaded — MAIN ENTRY POINT
 // ================================================================
 document.addEventListener('DOMContentLoaded',()=>{
-  // Load local save first (will be overridden by cloud on auth)
-  SaveSystem.load();
-  QuestSystem.init();
-  Game.init();
-  Input.init();
-  SceneMgr.applyL10n();
+  SaveSystem.load();QuestSystem.init();Game.init();Input.init();SceneMgr.applyL10n();
 
-  // ===== AUTH TAB SWITCHING =====
+  // ===== AUTH TABS =====
   const tabLoginBtn=document.getElementById('tab-login-btn');
   const tabRegisterBtn=document.getElementById('tab-register-btn');
   const formLogin=document.getElementById('form-login');
@@ -1937,15 +1859,13 @@ document.addEventListener('DOMContentLoaded',()=>{
       currentUser=session.user;isGuestMode=false;
       const rawUsername=(session.user.user_metadata?.username||session.user.email?.split('@')[0]||'PLAYER').toUpperCase().substring(0,12);
       G.player.name=rawUsername;
-      // Reload save using user-specific key
-      SaveSystem.load();
+      SaveSystem.load(); // muat save user ini
       await syncPlayerFromCloud(session.user.id,rawUsername);
       SceneMgr._refreshLobbyInfo();
     }else{
       currentUser=null;cloudProfile=null;
       if(!isGuestMode){
-        const authEl=document.getElementById('screen-auth');
-        if(authEl) authEl.classList.add('active');
+        const authEl=document.getElementById('screen-auth');if(authEl)authEl.classList.add('active');
         CloudSync._setStatus('','LOCAL');
       }
     }
@@ -1956,7 +1876,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     bootLoader(()=>{
       if(session?.user){
         const authEl=document.getElementById('screen-auth');if(authEl)authEl.classList.remove('active');
-        // syncPlayerFromCloud will be called by onAuthStateChange
+        // onAuthStateChange akan handle sisanya
       }else if(isGuestMode){
         SceneMgr.go('Lobby');
       }else{
@@ -1972,8 +1892,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(!email||!password){setAuthStatus('login-status','Fill all fields.','error');return;}
     setAuthStatus('login-status','Authenticating...','loading');
     const{error}=await supabase.auth.signInWithPassword({email,password});
-    if(error){setAuthStatus('login-status',error.message,'error');}
-    else{setAuthStatus('login-status','✓ Access granted!','success');}
+    if(error)setAuthStatus('login-status',error.message,'error');
+    else setAuthStatus('login-status','✓ Access granted!','success');
   });
 
   // ===== REGISTER =====
@@ -1985,38 +1905,27 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(password.length<6){setAuthStatus('register-status','Password min 6 characters.','error');return;}
     setAuthStatus('register-status','Creating identity...','loading');
     const{error}=await supabase.auth.signUp({email,password,options:{data:{username}}});
-    if(error){setAuthStatus('register-status',error.message,'error');}
-    else{setAuthStatus('register-status','✓ Check your email to confirm!','success');}
+    if(error)setAuthStatus('register-status',error.message,'error');
+    else setAuthStatus('register-status','✓ Check email to confirm!','success');
   });
 
   // ===== GUEST MODE =====
   document.getElementById('btn-guest').addEventListener('click',()=>{
     isGuestMode=true;currentUser=null;cloudProfile=null;
     const authEl=document.getElementById('screen-auth');if(authEl)authEl.classList.remove('active');
-    CloudSync._setStatus('guest','GUEST');
-    SceneMgr.go('Lobby');
+    CloudSync._setStatus('guest','GUEST');SceneMgr.go('Lobby');
   });
 
-  // ===== SECURE LOGOUT — full state reset =====
+  // ===== LOGOUT — full in-memory state reset =====
   document.getElementById('btn-lobby-logout').addEventListener('click',async()=>{
-    // 1. Sign out from Supabase
     await supabase.auth.signOut();
-
-    // 2. Reset all in-memory game state variables to prevent data leakage
-    const fresh=defaultGameState();
-    Object.assign(G,fresh);
-    isGuestMode=false;currentUser=null;cloudProfile=null;
-    SpriteCache.clear();
-    Particles.clear();
-
-    // 3. Stop game if running
-    if(Game.running) Game.stopSession();
-
-    // 4. Update UI
+    // Reset semua state in-memory
+    const fresh=defaultGameState();Object.assign(G,fresh);
+    isGuestMode=false;currentUser=null;cloudProfile=null;_lastKnownSanity=100;
+    SpriteCache.clear();Particles.clear();if(Game.running)Game.stopSession();
     CloudSync._setStatus('','LOCAL');
     const authEl=document.getElementById('screen-auth');if(authEl)authEl.classList.add('active');
-    // Reset to login tab
-    document.getElementById('tab-login-btn').click();
+    tabLoginBtn.click();
     document.getElementById('login-email').value='';
     document.getElementById('login-password').value='';
     setAuthStatus('login-status','','');
@@ -2030,7 +1939,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     nameInput.addEventListener('keydown',e=>e.stopPropagation());
   }
 
-  // ===== TAMPER NOTICE =====
+  // ===== TAMPER =====
   document.getElementById('btn-tamper-ack').addEventListener('click',()=>document.getElementById('tamper-notice').classList.remove('show'));
 
   // ===== LANG TOGGLE =====
@@ -2058,26 +1967,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   wire('btn-quests-back',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
   wire('btn-lore-back',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
 
-  // ===== CONFIG — Save settings and push to cloud =====
+  // ===== CONFIG =====
   wire('btn-config-back',()=>{
     SoundEngine.playClick();
-    G.music=document.getElementById('cfg-check-music').checked;
-    G.sfx=document.getElementById('cfg-check-sfx').checked;
-    G.horror=document.getElementById('cfg-check-horror').checked;
-    G.fovMode=document.getElementById('cfg-check-fov').checked;
-    G.volume=parseInt(document.getElementById('cfg-volume').value)/100;
-    G.difficulty=document.getElementById('cfg-difficulty').value;
+    G.music=document.getElementById('cfg-check-music').checked;G.sfx=document.getElementById('cfg-check-sfx').checked;
+    G.horror=document.getElementById('cfg-check-horror').checked;G.fovMode=document.getElementById('cfg-check-fov').checked;
+    G.volume=parseInt(document.getElementById('cfg-volume').value)/100;G.difficulty=document.getElementById('cfg-difficulty').value;
     if(G.music)SoundEngine._startAmbientDrone();else SoundEngine.stopAmbientDrone();
     if(G.horror)SoundEngine._startHorrorLayer();else SoundEngine.stopHorrorLayer();
-    SoundEngine.setVolume(G.volume);
-    SaveSystem.write();
-    // Push settings to cloud so they sync across devices
-    CloudSync.pushAll();
-    SceneMgr.go('Lobby');
+    SoundEngine.setVolume(G.volume);SaveSystem.write();
+    // Push settings ke cloud agar sinkron lintas perangkat
+    CloudSync.syncToCloud();SceneMgr.go('Lobby');
   });
-
   wire('btn-config-reset',()=>{if(confirm(G.lang==='id'?'PERINGATAN: Reset semua data? Tidak bisa diurungkan!':'WARNING: Reset all data? Cannot be undone!'))SaveSystem.reset();});
-  wire('btn-manual-sync',async()=>{await CloudSync.pushAll();});
+  // Force manual sync ke user_progress
+  wire('btn-manual-sync',async()=>{await CloudSync.syncToCloud();alert(G.lang==='id'?'Sinkronisasi cloud berhasil!':'Cloud sync successful!');});
   wire('btn-export-save',()=>{const code=SaveSystem.exportCode();if(code)navigator.clipboard.writeText(code).then(()=>alert(G.lang==='id'?'Kode save disalin!':'Save code copied!'));});
   wire('btn-import-save',()=>{const code=prompt(G.lang==='id'?'Tempel kode save kamu:':'Paste your save code here:');if(code&&code.trim()){const ok=SaveSystem.importCode(code.trim());alert(ok?(G.lang==='id'?'Save berhasil diimpor! Memuat ulang...':'Save imported! Reloading...'):(G.lang==='id'?'Kode save tidak valid.':'Invalid save code.'));if(ok)setTimeout(()=>window.location.reload(),800);}});
 
@@ -2086,18 +1990,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // ===== DAILY =====
   wire('btn-daily-claim',()=>{
-    SoundEngine.playClick();
-    const reward=DailySystem.claimToday();
-    const btn=document.getElementById('btn-daily-claim');
-    if(reward){
-      SoundEngine.playCoinPickup();
-      const streak=reward.streakBonus>0?` (+${reward.streakBonus} STREAK)`:'';
-      btn.innerText=`✓ CLAIMED: ${reward.icon} +${reward.amount}${streak}`;
-      btn.disabled=true;DailySystem.renderGrid();
-    }else{
-      btn.innerText=G.lang==='id'?'SUDAH DIKLAIM HARI INI':'ALREADY CLAIMED TODAY';
-      btn.disabled=true;
-    }
+    SoundEngine.playClick();const reward=DailySystem.claimToday();const btn=document.getElementById('btn-daily-claim');
+    if(reward){SoundEngine.playCoinPickup();const streak=reward.streakBonus>0?` (+${reward.streakBonus} STREAK)`:'';btn.innerText=`✓ CLAIMED: ${reward.icon} +${reward.amount}${streak}`;btn.disabled=true;DailySystem.renderGrid();}
+    else{btn.innerText=G.lang==='id'?'SUDAH DIKLAIM HARI INI':'ALREADY CLAIMED TODAY';btn.disabled=true;}
   });
   wire('btn-daily-back',()=>{SoundEngine.playClick();SceneMgr.go('Lobby');});
 
@@ -2121,10 +2016,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // ===== SHOP FILTER TABS =====
   document.querySelectorAll('#shop-tab-container .tab-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('#shop-tab-container .tab-btn').forEach(t=>t.classList.remove('active'));
-      btn.classList.add('active');Shop.filter=btn.getAttribute('data-filter');Shop.render();
-    });
+    btn.addEventListener('click',()=>{document.querySelectorAll('#shop-tab-container .tab-btn').forEach(t=>t.classList.remove('active'));btn.classList.add('active');Shop.filter=btn.getAttribute('data-filter');Shop.render();});
   });
 
   // ===== AUTO-SAVE BEFORE UNLOAD =====
